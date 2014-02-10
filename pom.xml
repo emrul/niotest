@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.opencage</groupId>
         <artifactId>opencage-parent</artifactId>
-        <version>1.4.1</version>
+        <version>1.4.2</version>
         <relativePath>../opencage-parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.opencage.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.15.0</version>
+    <version>0.15.1</version>
 
     <dependencies>
         <dependency>
@@ -33,6 +33,20 @@
             <artifactId>hamcrest-library</artifactId>
             <!--it's a testing framework => scope is compile-->
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.marschall</groupId>
+            <artifactId>memoryfilesystem</artifactId>
+            <version>0.3.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.marschall</groupId>
+            <artifactId>zipfilesystem-standalone</artifactId>
+            <version>1.0.1</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

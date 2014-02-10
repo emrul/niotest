@@ -1,9 +1,17 @@
-package org.opencage.lindwurm.niotest.dflt;
+package org.opencage.lindwurm.niotest;
 
-import org.opencage.kleinod.paths.PathUtils;
-import org.opencage.lindwurm.niotest.tests.PathTest6IT;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.opencage.lindwurm.niotest.tests.PathTestIT;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -31,27 +39,34 @@ import java.nio.file.FileSystems;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public class DfltTest extends PathTest6IT {
+@Ignore
+public class ZipMarschallTest extends PathTestIT {
 
-    public DfltTest() {
+    private static Path zipLocation;
+    private static URI roURI;
+    private static FileSystem ro;
 
-        FS = FileSystems.getDefault();
-        play = PathUtils.getTmpDir( "DfltTest" );
+    @BeforeClass
+    public static void setUp() throws Exception {
+        zipLocation = Files.createTempDirectory( "zipTest" ).resolve( "ro.zip" );
+        try( InputStream zip = ZipMarschallTest.class.getResourceAsStream( "ro.zip" )) {
+            Files.copy( zip, zipLocation );
+        }
 
-        capabilities.put( "testCreateDirectoryRoot", "throws different exception" );
-        capabilities.put( "testCreateDirectoryRootThrowsWrongException", "throws different exception" );
+        roURI = URI.create( "zipfs:" + zipLocation.toUri() + "!/" );
+        ro = FileSystems.newFileSystem( roURI, Collections.EMPTY_MAP );
 
-        capabilities.put( "testDeleteFileDoesNotChangeParentCreationTime", "creation is lastmodifietime (spec allows is but underlying fs can do it)" );
-        capabilities.put( "testDeleteDirNotChangeParentsCreationTime", "creation is lastmodifiedtime (spec allows is but underlying fs can do it)" );
+        setPlay( ro.getPath( "play" ).toAbsolutePath() );
+    }
 
-        capabilities.put( "testSetCreationTimeViaString", "can't set creationTime" );
-        capabilities.put( "testSetCreationTimeViaView", "can't set creationTime" );
+    @AfterClass
+    public static void tearDown() throws Exception {
 
-        capabilities.put( "testCreateDirSetsLastAccessTimeOfParent", "access time is unchanged" );
-        capabilities.put( "testCreateFileSetsLastAccessTimeOfParent", "access time is unchanged" );
-        capabilities.put( "testOverwriteSetLastAccessTime", "access time is unchanged" );
+        ro.close();
+        Files.delete( zipLocation );
 
+    }
 
-
+    public ZipMarschallTest() {
     }
 }

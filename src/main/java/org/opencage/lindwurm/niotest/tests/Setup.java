@@ -5,16 +5,20 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.opencage.kleinod.collection.Sets;
 import org.opencage.kleinod.paths.PathUtils;
-import org.opencage.kleinod.text.Strings;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -47,21 +51,32 @@ import static org.junit.Assert.assertThat;
  */
 public abstract class Setup {
 
-    protected static Path play;
+    private static Path play;
+    private static Path closablePlay;
+    private static Boolean dontDelete;
 
     protected static byte[] CONTENT;
     protected static byte[] CONTENT_OTHER;
     protected static byte[] CONTENT20k;
+    protected static byte[] CONTENT50;
 
-    public FileSystem FS;
+    public static FileSystem FS;
+    private static FileSystem closedFS;
     public String[]   nameStr = {"aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii", "jjj", "kkk"};
     private int       kidCount;
 
-    protected Map<String, String> capabilities = new HashMap<>();
+    protected Map<String, String> notSupported = new HashMap<>();
+
+    public FSCapabilities capabilities = new FSCapabilities();
+
+    protected static OpenOption[] standardOpen = { StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE };
 
 
     @Rule
     public TestName testMethodName = new TestName();
+    private Path closedAf;
+    private Path closedBd;
+    private SeekableByteChannel closedReadChannel;
 
 
     @BeforeClass
@@ -74,6 +89,11 @@ public abstract class Setup {
             for ( int i = 0; i < 20000; i++ ) {
                 CONTENT20k[i] = (byte) (i);
             }
+
+            CONTENT50 = new byte[50];
+            for ( int i = 0; i < 50; i++ ) {
+                CONTENT50[i] = (byte) (i);
+            }
         } catch( UnsupportedEncodingException e ) {
             throw new IllegalStateException( "huh" );
         }
@@ -83,20 +103,13 @@ public abstract class Setup {
 
     @AfterClass
     public static void afterClass() {
-        PathUtils.delete( play );
+        if ( dontDelete != null ) {
+            PathUtils.delete( play );
+        }
     }
 
     protected String message() {
-        String ret = capabilities.get( testMethodName.getMethodName() );
-        if ( ret != null ) {
-            return ret;
-        }
-
-        return "";
-    }
-
-    protected String messageBug() {
-        String ret = capabilities.get( Strings.withoutEnd( testMethodName.getMethodName(), "Bug" ));
+        String ret = notSupported.get( testMethodName.getMethodName() );
         if ( ret != null ) {
             return ret;
         }
@@ -105,12 +118,9 @@ public abstract class Setup {
     }
 
     protected boolean possible() {
-        return !capabilities.containsKey( testMethodName.getMethodName() );
+        return !notSupported.containsKey( testMethodName.getMethodName() );
     }
 
-    protected boolean possibleBug() {
-        return !capabilities.containsKey( Strings.withoutEnd( testMethodName.getMethodName(), "Bug" ));
-    }
 
     public Path getNonEmpty( String name, int kidCount ) throws IOException {
 
@@ -159,13 +169,17 @@ public abstract class Setup {
         return FS.getPath( nameStr[0], nameStr[1], nameStr[2] ).toAbsolutePath();
     }
 
+    public Path getPathP() throws IOException {
+        return emptyDir();
+    }
+
     public Path getPathPA() throws IOException {
         return emptyDir().resolve( nameStr[0] );
     }
 
     public Path getPathPAf() throws IOException {
         Path ret = emptyDir().resolve( nameStr[0] );
-        Files.write(ret, CONTENT);
+        Files.write(ret, CONTENT, standardOpen );
         return ret;
     }
 
@@ -175,9 +189,15 @@ public abstract class Setup {
         return ret;
     }
 
-    public Path getPathPBe() throws IOException {
+    public Path getPathPBf() throws IOException {
         Path ret = emptyDir().resolve( nameStr[1] );
-        Files.write(ret, CONTENT);
+        Files.write(ret, CONTENT, standardOpen );
+        return ret;
+    }
+
+    public Path getPathPCf() throws IOException {
+        Path ret = emptyDir().resolve( nameStr[2] );
+        Files.write(ret, CONTENT, standardOpen );
         return ret;
     }
 
@@ -185,7 +205,7 @@ public abstract class Setup {
     public Path getPathPABf() throws IOException {
         Path ret = getPathPAB();
         Files.createDirectories( ret.getParent() );
-        Files.write(ret, CONTENT);
+        Files.write(ret, CONTENT, standardOpen );
         return ret;
     }
 
@@ -235,4 +255,58 @@ public abstract class Setup {
         assertThat( "set FS to the FileSystem to test", FS, notNullValue());
     }
 
+    public static void setPlay( Path play ) {
+        Setup.play = play;
+        Setup.FS = play.getFileSystem();
+    }
+
+    public static Path getPlay() {
+        return play;
+    }
+
+    public static void setDontDelete() {
+        Setup.dontDelete = true;
+    }
+
+
+    public static void setClosablePlay( Path closablePlay ) {
+        Setup.closablePlay = closablePlay;
+        Setup.closedFS = closablePlay.getFileSystem();
+    }
+
+    public FileSystem getClosedFS() throws IOException {
+        if ( closedFS != null ) {
+            closedFS = closablePlay.getFileSystem();
+            Files.createDirectories( closablePlay );
+
+            closedAf = closablePlay.resolve( nameStr[0] );
+            Files.write( closedAf, CONTENT, standardOpen );
+
+            closedBd = closablePlay.resolve( nameStr[1] );
+            closedFS.provider().createDirectory( closedBd );
+
+            Path closedCf = closablePlay.resolve( nameStr[2] );
+            Files.write( closedCf, CONTENT, standardOpen );
+            closedReadChannel = Files.newByteChannel( closedCf, StandardOpenOption.READ );
+
+            closedFS.close();
+        }
+
+        return closedFS;
+    }
+
+    public Path getClosedAf() throws IOException {
+        getClosedFS();
+        return closedAf;
+    }
+
+    public Path getClosedBd() throws IOException {
+        getClosedFS();
+        return closedBd;
+    }
+
+    public SeekableByteChannel getClosedReadChannel() throws IOException {
+        getClosedAf();
+        return closedReadChannel;
+    }
 }

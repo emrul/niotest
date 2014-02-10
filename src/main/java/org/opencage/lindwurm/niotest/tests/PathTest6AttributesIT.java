@@ -1,22 +1,18 @@
 package org.opencage.lindwurm.niotest.tests;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SeekableByteChannel;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.util.Collections;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -57,7 +53,7 @@ import static org.opencage.lindwurm.niotest.matcher.FileTimeMatcher.isCloseTo;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public abstract class PathTest6IT extends PathTest5IT {
+public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
     @Test
     public void testGetLastModifiedTime() throws IOException {
@@ -122,7 +118,7 @@ public abstract class PathTest6IT extends PathTest5IT {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
     }
-//
+
     @Test( expected = UnsupportedOperationException.class )
     public void testReadAttributesAskingForUnknownAttributesThrows() throws Exception {
 
@@ -137,45 +133,6 @@ public abstract class PathTest6IT extends PathTest5IT {
 
         Files.size( getDefaultPath() );
     }
-//
-//
-//
-//    @Test
-//    public void testModifiedDateDoesNotChangeModifiedDateOfParent() throws IOException, InterruptedException {
-//
-//        Path tmp = p.getTmpDir("testModifiedDateDoesNotChangeModifiedDateOfParent");
-//        Files.createDirectory( tmp.resolve( p.getLegalPathElement() ) );
-//        FileTime created = Files.getLastModifiedTime( tmp );
-//
-//        Thread.sleep( 2000 );
-//
-//        Files.createDirectory( tmp.resolve( p.getLegalPathElement() ).resolve( p.getLegalPathElement( 1 )));
-//        FileTime modified = Files.getLastModifiedTime( tmp );
-//
-//        assertEquals( created, modified );
-//    }
-//
-//
-//    @Test
-//    public void testModifyFileNotSetsModifiedDateOfParent() throws IOException, InterruptedException {
-//
-//        Path tmp = p.getTmpDir("testCreateFileSetsModifiedDateOfParent");
-//        Files.write( tmp.resolve( "foo" ), "hh".getBytes() );
-//
-//        FileTime created = Files.getLastModifiedTime( tmp );
-//
-//        Thread.sleep( 2000 );
-//
-//        FileTime modified = Files.getLastModifiedTime( tmp );
-//        Files.write( tmp.resolve( "foo" ), getBytes( "duh" ) );
-//
-//        assertEquals( created, modified  );
-//    }
-//
-//
-//
-//
-//
 
 //
 //    @Test
@@ -208,26 +165,10 @@ public abstract class PathTest6IT extends PathTest5IT {
 //    }
 //
     @Test
-    public void testRootIsSymbolicLinkNot() {
+    public void testRootIsNotASymbolicLink() {
         assertThat( "root is a symbolic link", Files.isSymbolicLink( getRoot() ), not(true));
     }
 
-    @Test
-    public void testReadFromExausted() throws IOException {
-
-        Path file = getPathPABf();
-
-        SeekableByteChannel channel = FS.provider().newByteChannel( file, Collections.singleton( StandardOpenOption.READ ));
-        channel.read( ByteBuffer.allocate( CONTENT.length * 2 ) );
-
-        // should be empty now
-
-        ByteBuffer bb = ByteBuffer.allocate( CONTENT.length * 2 );
-        int ret = channel.read( bb );
-
-        assertEquals( -1, ret );
-        assertEquals( 0, bb.position() );
-    }
 
 //
 //    @Test
@@ -300,7 +241,7 @@ public abstract class PathTest6IT extends PathTest5IT {
     @Test
     public void testIsSameFileOfSameContentDifferntPathIsNot() throws IOException {
 
-        assertFalse( "should not be same", FS.provider().isSameFile( getPathPAf(), getPathPBe() ) );
+        assertFalse( "should not be same", FS.provider().isSameFile( getPathPAf(), getPathPBf() ) );
     }
 
     @Test( expected = NoSuchFileException.class )
@@ -310,7 +251,7 @@ public abstract class PathTest6IT extends PathTest5IT {
 
     @Test( expected = NoSuchFileException.class )
     public void testIsSameFileOfDifferntPathNonExistingFile2Throws() throws IOException {
-        FS.provider().isSameFile( getPathPA(), getPathPBe() );
+        FS.provider().isSameFile( getPathPA(), getPathPBf() );
     }
 
     @Test
@@ -326,18 +267,9 @@ public abstract class PathTest6IT extends PathTest5IT {
         assertThat( store.supportsFileAttributeView( BasicFileAttributeView.class ), is(true));
     }
 
-//    @Test
-//    public void testFil qdw wdeStoreShowsThatBasicFileAttributeViewIsSupported() throws IOException {
-//
-//        Files.readAtt
-//        FileStore store = FS.provider().getFileStore( getDefaultPath() );
-//
-//        assertThat( store.supportsFileAttributeView( BasicFileAttributeView.class ), is(true));
-//    }
-
     @Test
     public void testBasicIsASupportedFileAttributeView() {
-        FS.supportedFileAttributeViews().contains( "basic" );
+        assertThat( FS.supportedFileAttributeViews(), hasItem( "basic" ));
     }
 
     @Test
@@ -576,30 +508,16 @@ public abstract class PathTest6IT extends PathTest5IT {
     }
 
 
-//
-//
 //    @Test
-//    public void testClosedFSisClosed() throws Exception {
-//
-//        assumeTrue( p.getCapabilities().canBeClosed());
-//
-//        FileSystem fs = p.getTmpDir( "testClosedFSisClosed" ).getFileSystem();
-//        fs.close();
-//
-//        assertFalse( "should be closed", fs.isOpen() );
-//
+//    public void testOpenChannel() throws IOException {
+//        FS.provider().newFileChannel( getPathPAf(), Collections.singleton( StandardOpenOption.READ) );
 //    }
-//
-//    @Test( expected = ClosedFileSystemException.class )
-//    public void testOpenDirectoryStreamFromClosedFSThrows() throws Exception {
-//        assumeTrue( p.getCapabilities().canBeClosed());
-//
-//        p.readOnlyFileSystem.close();
-//
-//        try ( DirectoryStream<Path> ch = Files.newDirectoryStream( p.readOnlyFileSystem.getPath( "" ) )) {
-//        }
-//    }
-//
+
+
+
+
+
+
 //    @Test( expected = NoSuchFileException.class)
 //    public void testToRealpathOnNonExistingFileThrows() throws Exception {
 //        Path path = p.getTmpDir(  ).resolve( "foooooooooo" );

@@ -55,7 +55,7 @@ import static org.opencage.lindwurm.niotest.matcher.PathIsDirectory.isDirectory;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public abstract class PathTest4IT extends PathTest3IT {
+public abstract class PathTest4CopyIT extends PathTest3FileIT {
     //private Path tmp;
     private Path src;
     private Path tgt;
@@ -63,7 +63,7 @@ public abstract class PathTest4IT extends PathTest3IT {
     private void copyMoveSetup() throws IOException {
         src = getPathPA();
         tgt = getPathPB();
-        Files.write( src, CONTENT );
+        Files.write( src, CONTENT, standardOpen );
     }
 
     private void checkContentOTarget() throws IOException {
@@ -80,7 +80,7 @@ public abstract class PathTest4IT extends PathTest3IT {
     @Test( expected = FileAlreadyExistsException.class )
     public void testCopyAlreadyThereWithoutOptionThrows() throws IOException {
         copyMoveSetup();
-        Files.write( tgt, CONTENT );
+        Files.write( tgt, CONTENT, standardOpen );
 
         Files.copy( src, tgt );
 
@@ -90,7 +90,7 @@ public abstract class PathTest4IT extends PathTest3IT {
     @Test
     public void testCopyAlreadyThereOverwrite() throws IOException {
         copyMoveSetup();
-        Files.write( tgt, CONTENT );
+        Files.write( tgt, CONTENT, standardOpen );
         Files.copy( src, tgt, StandardCopyOption.REPLACE_EXISTING  );
         checkContentOTarget();
     }
@@ -146,14 +146,14 @@ public abstract class PathTest4IT extends PathTest3IT {
     @Test( expected = FileAlreadyExistsException.class )
     public void testMoveAlreadyThereThrows() throws IOException {
         copyMoveSetup();
-        Files.write( tgt, "duh".getBytes("UTF-8") );
+        Files.write( tgt, CONTENT_OTHER, standardOpen );
         Files.move( src, tgt );
     }
 
     @Test
     public void testFailedMoveLeavesOriginal() throws Exception {
         copyMoveSetup();
-        Files.write( tgt, "duh".getBytes("UTF-8") );
+        Files.write( tgt, CONTENT, standardOpen );
 
         try { Files.move( src, tgt );
         } catch( FileAlreadyExistsException exp ) {
@@ -165,7 +165,7 @@ public abstract class PathTest4IT extends PathTest3IT {
     @Test
     public void testMoveAlreadyThereOverwrite() throws Exception {
         copyMoveSetup();
-        Files.write( tgt, CONTENT_OTHER );
+        Files.write( tgt, CONTENT_OTHER, standardOpen );
         Files.move( src, tgt, StandardCopyOption.REPLACE_EXISTING  );
 
         checkContentOTarget();
@@ -210,7 +210,7 @@ public abstract class PathTest4IT extends PathTest3IT {
         // that's a surprise, todo bug ?
 
         Path tgt = getPathPA();
-        Files.write( tgt, CONTENT );
+        Files.write( tgt, CONTENT, standardOpen );
         Path src = getPathPB();
         Files.createDirectories( src );
 
@@ -224,7 +224,7 @@ public abstract class PathTest4IT extends PathTest3IT {
 
         copyMoveSetup();
         Files.createDirectories( tgt );
-        Files.write( tgt.resolve( getPathA() ), CONTENT );
+        Files.write( tgt.resolve( getPathA() ), CONTENT, standardOpen );
 
         Files.copy( src, tgt, StandardCopyOption.REPLACE_EXISTING );
     }
@@ -240,8 +240,7 @@ public abstract class PathTest4IT extends PathTest3IT {
 
     @Test
     public void testDeleteDeletes() throws Exception{
-        final Path file = getPathPA();
-        Files.write( file, CONTENT );
+        final Path file = getPathPAf();
         Files.delete( file );
         assertThat( file, not( exists()) );
     }
@@ -260,7 +259,7 @@ public abstract class PathTest4IT extends PathTest3IT {
     @Test
     public void testDeleteFileRemovesItFromParentsKids() throws IOException, InterruptedException {
         final Path file = getPathPA();
-        Files.write( file, CONTENT );
+        Files.write( file, CONTENT, standardOpen );
         Files.delete( file );
         try ( DirectoryStream<Path> kids = Files.newDirectoryStream( file.getParent() ) ) {
             assertFalse( "delete dir does not remove it from parent stream", Forall.forall( kids ).contains( file ));

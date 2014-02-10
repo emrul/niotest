@@ -1,6 +1,4 @@
-package org.opencage.lindwurm.niotest;
-
-import org.opencage.lindwurm.niotest.essentials.EssentialsTest;
+package org.opencage.lindwurm.niotest.tests;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -28,5 +26,5 @@ import org.opencage.lindwurm.niotest.essentials.EssentialsTest;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public class StdFSEssentials extends EssentialsTest {
+public abstract class PathTestIT extends PathTest9WrongProvider {
 }

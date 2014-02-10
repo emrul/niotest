@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 
 import static org.hamcrest.core.Is.is;
@@ -38,7 +40,7 @@ import static org.junit.Assume.assumeTrue;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public abstract class PathTest5IT extends PathTest4IT {
+public abstract class PathTest5URIIT extends PathTest4CopyIT {
 
     @Test
     public void testFileSystemOfAPathIsTheConstructingOne() {
@@ -107,28 +109,16 @@ public abstract class PathTest5IT extends PathTest4IT {
 //        }
 //    }
 //
-//    @Test
-//    public void testPathToUri() {
-//        Path path = FS.getPath( p.getLegalPathElement() ).toAbsolutePath();
-//
-//        URI uri = path.toUri();
-//
-//        assertThat( uri, notNullValue() );
-//
-//        Path back = FS.provider().getPath( uri );
-//
-//        assertEquals( path, back );
-//    }
-//
-//    @Test
-//    public void testUriToPath() throws Exception {
-//        Path path = FS.getPath( p.getLegalPathElement() ).toAbsolutePath();
-//        URI uri = path.toUri();
-//
-//        Path p2 = Paths.get( uri );
-//
-//        assertThat( p2, is( path ));
-//    }
+    @Test
+    public void testPathToUriAndBackIsSame() {
+        Path path = getPathRAB();
+        URI uri = path.toUri();
+
+        assertThat( uri, notNullValue() );
+
+        Path back = Paths.get( uri );
+        assertEquals( path, back );
+    }
 
 
 }

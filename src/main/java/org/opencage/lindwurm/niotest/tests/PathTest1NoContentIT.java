@@ -48,7 +48,7 @@ import static org.opencage.lindwurm.niotest.matcher.PathStartsWith.startsWith;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public abstract class PathTest1IT extends Setup {
+public abstract class PathTest1NoContentIT extends Setup {
 
     @Test
     public void testGetNameSimple() {

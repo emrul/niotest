@@ -18,7 +18,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
-import static org.hamcrest.number.OrderingComparison.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -53,11 +52,11 @@ import static org.opencage.lindwurm.niotest.matcher.PathExists.exists;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public abstract class PathTest2IT extends PathTest1IT {
+public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testAAA2HasAPlayfield() throws Exception {
-        assertThat( "assign a playfield", play, notNullValue() );
+        assertThat( "assign a playfield", getPlay(), notNullValue() );
     }
 
     @Test
