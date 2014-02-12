@@ -346,6 +346,15 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         assertThat( "delete does modify creation time", modified, is( created ) );
     }
 
+        // another parent of root problem
+//    @Ignore
+//    @Test
+//    public void testDeleteRoot() throws IOException {
+//        Files.delete( getRoot() );
+//    }
+
+
+
 
 
 }

@@ -1,11 +1,15 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.hamcrest.Matchers;
 import org.hamcrest.core.IsNull;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.attribute.BasicFileAttributes;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -20,6 +24,7 @@ import static org.opencage.lindwurm.niotest.matcher.Matches.matches;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.absolute;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.relative;
 import static org.opencage.lindwurm.niotest.matcher.PathEndsWith.endsWith;
+import static org.opencage.lindwurm.niotest.matcher.PathIsDirectory.isDirectory;
 import static org.opencage.lindwurm.niotest.matcher.PathStartsWith.startsWith;
 
 /**
@@ -618,14 +623,15 @@ public abstract class PathTest1NoContentIT extends Setup {
         assertThat( getPathAB().toString().contains( getSeparator() ), is(true) );
     }
 
-    // todo
-//    @Test
-//    public void testPathsWithSamePathElementsButDifferentProviderAreDifferent() throws Exception {
-//        Path myABC = FS.getPath( "A", "B", "C" );
-//        Path otherABC = p.getOtherProviderFS().getPath( "A", "B", "C" );
-//
-//        assertThat( myABC, not( is( otherABC )));
-//    }
+    @Test
+    public void testPathsWithSamePathElementsButDifferentProviderAreDifferent() throws Exception {
+        assumeThat( FS, not(is( FileSystems.getDefault())));
+
+        Path myABC = FS.getPath( nameStr[0], nameStr[1], nameStr[2] );
+        Path otherABC = FileSystems.getDefault().getPath( nameStr[0], nameStr[1], nameStr[2] );
+
+        assertThat( myABC, not( is( otherABC )));
+    }
 //
 //    @Test
 //    public void testCapi() throws Exception {
@@ -656,29 +662,51 @@ public abstract class PathTest1NoContentIT extends Setup {
         getPathRAB().toFile();
     }
 
-    // todo
     @Test
-    public void testName4() throws Exception {
-
-        PathMatcher pm = FS.getPathMatcher( "regex:.*foo.*" );
-
-        assumeTrue( pm.matches( FS.getPath( "/foo" ) ));
-        assumeTrue( pm.matches( FS.getPath( "foo" ) ));
-        assumeTrue( pm.matches( FS.getPath( "foo/da" ) ));
+    public void testPathMatcherKnowsGlob() {
+        FS.getPathMatcher( "glob:*" );
     }
 
     @Test
-    public void testRegexPathMatcherWorkWithRegex() throws Exception {
-        PathMatcher pm = FS.getPathMatcher( "regex:.*foo.*" );
-
-        assumeThat( FS.getPath( "efaer/grgsfoo/da" ), matches( pm ) );
+    public void testPathMatcherKnowsRegex() {
+        FS.getPathMatcher( "regex:.*" );
     }
 
-    // todo
-//    @Test( expected = ClassCastException.class )
-//    public void testCompareToDifferentProviderThrows() throws Exception {
-//        getPathABC().compareTo( p.getOtherProviderFS().getPath( nameStr[0] ) );
-//    }
+    @Test( expected = UnsupportedOperationException.class )
+    public void testPathMatcherThrowsOnUnknownSyntax() {
+        FS.getPathMatcher( "thisisarellysillysyntax:.*" );
+    }
+
+    @Test
+    public void testPathMatherRegex() throws Exception {
+
+        PathMatcher pm = FS.getPathMatcher( "regex:.*" + nameStr[2] + ".*" );
+
+        assertThat( pm.matches( FS.getPath( nameStr[ 2 ] ).toAbsolutePath() ), is( true ) );
+        assertThat( pm.matches( FS.getPath( nameStr[ 2 ] ) ), is( true ) );
+        assertThat( pm.matches( FS.getPath( nameStr[ 2 ], "da" ) ), is( true ) );
+        assertThat( pm.matches( FS.getPath( "du", nameStr[ 2 ], "da" ) ), is( true ) );
+        assertThat( pm.matches( FS.getPath( "du", nameStr[ 2 ] + nameStr[ 0 ], "da" ) ), is( true ) );
+    }
+
+    @Test
+    public void testPathMatherGlob() throws Exception {
+
+        PathMatcher pm = FS.getPathMatcher( "glob:*.{" + nameStr[2] + "," + nameStr[3] + "}" );
+
+
+        assertThat( pm.matches( FS.getPath( /*nameStr[0], */nameStr[4] + "." + nameStr[3] )), is(true));
+        assertThat( pm.matches( FS.getPath( /*nameStr[0], */nameStr[4] + "." + nameStr[2] )), is(true));
+        assertThat( pm.matches( FS.getPath( /*nameStr[0], */nameStr[4] + nameStr[2] )), is(false));
+
+    }
+
+    @Test( expected = ClassCastException.class )
+    public void testCompareToDifferentProviderThrows() throws Exception {
+        assumeThat( FS, not(is( FileSystems.getDefault())));
+
+        getPathABC().compareTo( FileSystems.getDefault().getPath( nameStr[0] ) );
+    }
 
     @Test
     public void testCompareToOfEqualPathsIs0() throws Exception {
@@ -708,5 +736,18 @@ public abstract class PathTest1NoContentIT extends Setup {
         Path unnom = getPathAB().resolve( ".." );
         assertTrue( unnom.toString().contains( ".." ) );
     }
+
+    // only test class Files
+    @Test
+    public void testNonExistingAbsolutePathIsNotAFile() throws IOException {
+        assertThat( Files.isRegularFile( getPathPA() ), is(false));
+    }
+
+    // only test class Files
+    @Test
+    public void testNonExistingRealtivePathIsNotAFile() throws IOException {
+        assertThat( Files.isRegularFile( getPathA() ), is(false));
+    }
+
 
 }

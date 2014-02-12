@@ -54,8 +54,5 @@ public class DefaultFileSystemTest extends PathTestIT {
         notSupported.put( "testCreateFileSetsLastAccessTimeOfParent", "access time is unchanged" );
         notSupported.put( "testOverwriteSetLastAccessTime", "access time is unchanged" );
 
-
-
-
     }
 }

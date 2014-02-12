@@ -42,7 +42,7 @@ import static org.junit.Assume.assumeThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public abstract class PathTest9WrongProvider extends PathTest8ThreadSafeIT {
+public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
 
     private Path other = Paths.get( "foo" );
 

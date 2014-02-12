@@ -26,5 +26,5 @@ package org.opencage.lindwurm.niotest.tests;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public abstract class PathTestIT extends PathTest9WrongProvider {
+public abstract class PathTestIT extends PathTest10PathWithContentIT {
 }

@@ -150,13 +150,6 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 //
 //
 //
-//    // another parent of root problem
-//    @Ignore
-//    @Test
-//    public void testDeleteRoot() throws IOException {
-//        Files.delete( p.readOnlyFileSystem.getPath( "" ).getRoot() );
-//    }
-//
 //
 //    @Ignore
 //    @Test
@@ -170,15 +163,6 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
     }
 
 
-//
-//    @Test
-//    public void testIsSameFileOnEqualPath() throws IOException {
-//        Path tmp = p.getTmpDir("testIsSameFile");
-//        Path path1 = tmp.resolve( "path1" );
-//        Path path2 = tmp.resolve( "path1" );
-//
-//        assertTrue( "should be same", tmp.getFileSystem().provider().isSameFile( path1, path2 ) );
-//    }
 //
 //    @Ignore // todo: is this a java 7 bug ?
 //    @Test

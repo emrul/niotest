@@ -16,6 +16,7 @@ import java.nio.file.attribute.FileTime;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertEquals;
@@ -25,6 +26,7 @@ import static org.junit.Assume.assumeThat;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.absolute;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.relative;
 import static org.opencage.lindwurm.niotest.matcher.PathExists.exists;
+import static org.opencage.lindwurm.niotest.matcher.PathIsDirectory.isDirectory;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -61,20 +63,13 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testDefaultIsDir() throws Exception {
-        assertThat( getDefaultPath(), PathIsDirectory.isDirectory() );
+        assertThat( getDefaultPath(), isDirectory() );
     }
 
 
-    // todo use?
-//    @Test
-//    public void testContentOfDefault() throws IOException {
-//        try( DirectoryStream<Path> stream = Files.newDirectoryStream( getDefaultPath() ) ) {
-//        }
-//    }
 
     @Test
     public void testContentOfNonEmptyDir() throws IOException {
-//        assumeTrue( p.hasNonEmptyDir() );
 
         try( DirectoryStream<Path> stream = Files.newDirectoryStream( nonEmptyDir()) ) {
             assertEquals( getKidCount(), Iterators.size( stream ) );
@@ -83,7 +78,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testContentOfNonEmptyDirFiltered() throws IOException {
-//        assumeTrue( p.hasNonEmptyDir() );
 
         Path path = nonEmptyDir();
 
@@ -109,7 +103,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testNewDirIsInParentsDirStream() throws IOException {
-//        assumeTrue( p.hasNonEmptyDir() );
 
         Path dir = getPathPA();
         Files.createDirectory( dir );
@@ -139,7 +132,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         Files.createDirectory( getPathPAB() );
     }
 
-    // bug in java Path
     @Test( expected = FileAlreadyExistsException.class )
     public void testCreateDirectoryRoot() throws IOException {
         assumeThat( message(), possible(), is( true ) );
@@ -156,7 +148,7 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testRootisADir() throws IOException {
-        assertThat( getRoot(), PathIsDirectory.isDirectory() );
+        assertThat( getRoot(), isDirectory() );
     }
 
     @Test
@@ -165,25 +157,22 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
     }
 
 
-//    // TODO
-//    @Test
-//    public void testIsDirectoryNotExists() throws IOException {
-//
-//        assertThat( p.getNonExistingPath().getRoot().relativize( p.getNonExistingPath() ), isNotDirectory() );
-//
-//        assertThat( p.getNonExistingPath().toAbsolutePath(), isNotDirectory() );
-//    }
+    @Test
+    public void testNonExistingAbsolutePathIsNotADirectory() throws IOException {
+        assertThat( getPathPA(), not(isDirectory()) );
+    }
+
+    @Test
+    public void testNonExistingRealtivePathIsNotADirectory() throws IOException {
+        assertThat( getPathA(), not(isDirectory()) );
+    }
 
 
-    // todo
-//    @Test( expected = FileAlreadyExistsException.class )
-//    public void testCreateDirWithSamePathAsExistingFileFails() throws Exception {
-//
-//        Path file = p.getTmpDir( "" ).resolve( "foo" );
-//        Files.write( file, "hallo".getBytes( "UTF-8" ) );
-//
-//        Files.createDirectory( file );
-//    }
+    @Test( expected = FileAlreadyExistsException.class )
+    public void testCreateDirWithSamePathAsExistingFileFails() throws Exception {
+        Path file = getPathPAf();
+        Files.createDirectory( file );
+    }
 
     @Test
     public void testCreateDirSetsModifiedTimeOfParent() throws IOException, InterruptedException {
@@ -230,19 +219,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         assertThat( atti.creationTime(), greaterThan( before ) );
     }
 
-    // todo
-//    @Test( expected = ProviderMismatchException.class )
-//    public void testCallNewDirectoryStreamWithForeignPath() throws Exception {
-//
-//        try( DirectoryStream<Path> ch = p.FS.provider().newDirectoryStream( p.getOtherProviderFS().getPath( "" ), new DirectoryStream.Filter<Path>() {
-//            @Override
-//            public boolean accept( Path entry ) throws IOException {
-//                return false;
-//            }
-//        } ) ) {
-//        }
-//    }
-
     @Test
     public void testKidsOfAbsoluteDirAreAbsolute() throws Exception {
         assumeThat( message(), possible(), is( true ) );
@@ -252,7 +228,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
                 assertThat( kid, absolute() );
             }
         }
-
     }
 
     @Test
