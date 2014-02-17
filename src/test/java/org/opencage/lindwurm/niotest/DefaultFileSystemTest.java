@@ -54,5 +54,8 @@ public class DefaultFileSystemTest extends PathTestIT {
         notSupported.put( "testCreateFileSetsLastAccessTimeOfParent", "access time is unchanged" );
         notSupported.put( "testOverwriteSetLastAccessTime", "access time is unchanged" );
 
+        notSupported.put( "testCreateDirectoryUnnormalizedPath", "create directory does not work with unnormalized paths");
+        notSupported.put( "bugCreateDirectoryUnnormalizedPath", "create directory does not work with unnormalized paths");
+
     }
 }

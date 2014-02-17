@@ -1,18 +1,16 @@
 package org.opencage.lindwurm.niotest.tests;
 
 import org.junit.Test;
+import org.opencage.kleinod.paths.PathUtils;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.ProviderMismatchException;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
@@ -83,10 +81,57 @@ public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
     }
 
     @Test( expected = ProviderMismatchException.class )
-    public void testCopyOtherProvider() throws IOException {
+    public void testCopyOtherProviderFrom() throws IOException {
         assumeThat( FS, not(is( FileSystems.getDefault())));
 
-        FS.provider().copy( other, other );
+        FS.provider().copy( other, getPathPABf() );
+    }
+
+    @Test( expected = ProviderMismatchException.class )
+    public void testCopyOtherProviderTo() throws IOException {
+        assumeThat( FS, not(is( FileSystems.getDefault())));
+
+        FS.provider().copy( getPathPABf(), other );
+    }
+
+    @Test
+    public void testCopyOtherProviderWithFiles() throws IOException {
+        assumeThat( FS, not(is( FileSystems.getDefault())));
+
+        Path defaultTarget = PathUtils.getTmpDir("foo").resolve("duh");
+        Files.createDirectories( defaultTarget.getParent());
+
+        Files.copy(getPathPABf(), defaultTarget);
+
+        assertThat( Files.readAllBytes(defaultTarget), is(CONTENT));
+        Files.deleteIfExists(defaultTarget);
+    }
+
+    @Test( expected = ProviderMismatchException.class )
+    public void testMoveOtherProviderFrom() throws IOException {
+        assumeThat( FS, not(is( FileSystems.getDefault())));
+
+        FS.provider().move( other, getPathPB() );
+    }
+
+    @Test( expected = ProviderMismatchException.class )
+    public void testMoveOtherProviderTo() throws IOException {
+        assumeThat( FS, not(is( FileSystems.getDefault())));
+
+        FS.provider().move( getPathPABf(), other );
+    }
+
+    @Test
+    public void testMoveOtherProviderWithFiles() throws IOException {
+        assumeThat( FS, not(is( FileSystems.getDefault())));
+
+        Path defaultTarget = PathUtils.getTmpDir("foo").resolve("duh");
+        Files.createDirectories( defaultTarget.getParent());
+
+        Files.move(getPathPABf(), defaultTarget);
+
+        assertThat( Files.readAllBytes(defaultTarget), is(CONTENT));
+        Files.deleteIfExists(defaultTarget);
     }
 
     @Test( expected = ProviderMismatchException.class )
@@ -147,20 +192,7 @@ public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
         FS.provider().isHidden( other );
     }
 
-    // TODO better test
-//    @Test( expected = ProviderMismatchException.class )
-//    public void testIsSameFileOtherProvider() throws IOException {
-//        assumeThat( FS, not(is( FileSystems.getDefault())));
-//
-//        FS.provider().isSameFile( other, other );
-//    }
 
-    @Test( expected = ProviderMismatchException.class )
-    public void testMoveOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().move( other, other );
-    }
 
     @Test( expected = ProviderMismatchException.class )
     public void testNewAsynchronousFileChannelOtherProvider() throws IOException {

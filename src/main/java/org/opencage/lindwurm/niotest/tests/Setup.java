@@ -209,6 +209,18 @@ public abstract class Setup {
         return ret;
     }
 
+    public Path getPathPABr() throws IOException {
+        return getDefaultPath().toAbsolutePath().relativize(getPathPAB());
+    }
+
+    public Path getPathPAu() throws IOException {
+        return getPathPA().getParent().resolve( nameStr[2] ).resolve( ".." ).resolve( nameStr[0] );
+    }
+
+    public Path getPathPABu() throws IOException {
+        return getPathPAB().getParent().resolve( ".." ).resolve( nameStr[0] ).resolve( nameStr[1] );
+    }
+
     public Path getPathPB() throws IOException {
         return emptyDir().resolve( nameStr[1] );
     }
