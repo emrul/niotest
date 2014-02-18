@@ -42,7 +42,7 @@ public class DefaultFileSystemTest extends PathTestIT {
         capabilities.setClosable( false );
 
         notSupported.put( "testCreateDirectoryRoot", "throws different exception" );
-        notSupported.put( "testCreateDirectoryRootThrowsWrongException", "throws different exception" );
+        notSupported.put( "bugCreateDirectoryRootThrowsWrongException", "throws different exception" );
 
         notSupported.put( "testDeleteFileDoesNotChangeParentCreationTime", "creation is lastmodifietime (spec allows is but underlying fs can do it)" );
         notSupported.put( "testDeleteDirNotChangeParentsCreationTime", "creation is lastmodifiedtime (spec allows is but underlying fs can do it)" );

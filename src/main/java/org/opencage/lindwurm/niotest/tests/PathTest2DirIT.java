@@ -134,15 +134,11 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test( expected = FileAlreadyExistsException.class )
     public void testCreateDirectoryRoot() throws IOException {
-        assumeThat( message(), possible(), is( true ) );
-
         Files.createDirectory( getRoot() );
     }
 
     @Test( expected = FileSystemException.class )
-    public void testCreateDirectoryRootThrowsWrongException() throws IOException {
-        assumeThat( message(), possible(), is( false ) );
-
+    public void bugCreateDirectoryRootThrowsWrongException() throws IOException {
         Files.createDirectory( getRoot() );
     }
 
@@ -176,8 +172,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testCreateDirSetsModifiedTimeOfParent() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), is( true ) );
-
         Path tmp = emptyDir();
 
         FileTime created = Files.getLastModifiedTime( tmp );
@@ -193,8 +187,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testCreateDirSetsLastAccessTimeOfParent() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), is( true ) );
-
         Path dir = getPathPAd();
         FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
@@ -206,8 +198,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testCreateDirSetsCreationTime() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), is( true ) );
-
         Path dir = getPathPA();
         FileTime before = Files.getLastModifiedTime( dir.getParent() );
         Thread.sleep( 1000 );
@@ -221,8 +211,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testKidsOfAbsoluteDirAreAbsolute() throws Exception {
-        assumeThat( message(), possible(), is( true ) );
-
         try( DirectoryStream<Path> kids = Files.newDirectoryStream( nonEmptyDir() ) ) {
             for( Path kid : kids ) {
                 assertThat( kid, absolute() );
@@ -232,8 +220,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testKidsOfRelativeDirAreRelative() throws Exception {
-        assumeThat( message(), possible(), is( true ) );
-
         Path abs = nonEmptyDir();
         Path rel = getDefaultPath().toAbsolutePath().relativize( abs );
 
@@ -246,8 +232,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testKidsOfRelDirAreLikeTheResultOfResolve() throws Exception {
-        assumeThat( message(), possible(), is( true ) );
-
         Path abs = nonEmptyDir();
         Path rel = getDefaultPath().toAbsolutePath().relativize( abs );
 

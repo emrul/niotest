@@ -1,9 +1,7 @@
 package org.opencage.lindwurm.niotest.tests;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.hamcrest.CoreMatchers;
+import org.junit.*;
 import org.junit.rules.TestName;
 import org.opencage.kleinod.collection.Sets;
 import org.opencage.kleinod.paths.PathUtils;
@@ -20,8 +18,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -97,6 +97,11 @@ public abstract class Setup {
         } catch( UnsupportedEncodingException e ) {
             throw new IllegalStateException( "huh" );
         }
+    }
+
+    @Before
+    public void filter() {
+        assumeThat( message(), possible(), is(testMethodName.getMethodName().startsWith("test")) );
     }
 
 
@@ -214,7 +219,7 @@ public abstract class Setup {
     }
 
     public Path getPathPAu() throws IOException {
-        return getPathPA().getParent().resolve( nameStr[2] ).resolve( ".." ).resolve( nameStr[0] );
+        return getPathPA().getParent().resolve(nameStr[2]).resolve("..").resolve( nameStr[0] );
     }
 
     public Path getPathPABu() throws IOException {
