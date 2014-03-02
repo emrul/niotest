@@ -7,12 +7,7 @@ import org.opencage.kleinod.collection.Iterators;
 
 
 import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
@@ -112,7 +107,7 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         assertThat( created, greaterThan( before ) );
     }
 //
-    // todo more attis
+    // todo more attis, but only lastModifiedTTime is required
     @Test
     public void testCopyAttributesCheckModifiedTime() throws Exception {
         copyMoveSetup();
@@ -172,6 +167,30 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         assertThat( src, not( exists() ) );
     }
 
+    @Test( expected = FileAlreadyExistsException.class)
+    public void testMoveAlreadyThereDirectory() throws Exception {
+        Path src = getPathPABf();
+        Path tgt = getPathPBd();
+        Files.move( src, tgt );
+    }
+
+    @Test
+    public void testMoveAlreadyThereDirectoryOverwrite() throws Exception {
+        Path src = getPathPABf();
+        Path tgt = getPathPBd();
+        Files.move( src, tgt, StandardCopyOption.REPLACE_EXISTING  );
+
+        assertThat( Files.readAllBytes(tgt), is(CONTENT ));
+        assertThat( src, not( exists() ) );
+    }
+
+    @Test( expected = DirectoryNotEmptyException.class )
+    public void testMoveAlreadyThereNonEmptyDirectoryOverwrite() throws Exception {
+        Path src = getPathPABf();
+        Path tgt = getPathPBCf().getParent();
+
+        Files.move( src, tgt, StandardCopyOption.REPLACE_EXISTING  );
+    }
 
     @Test
     public void testMoveViaProvider() throws IOException {
@@ -180,6 +199,51 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         checkContentOTarget();
         assertThat( src, not( exists() ) );
     }
+
+    @Test
+    public void testMoveDir() throws IOException {
+        Path src = getPathPAd();
+        Files.move(src, getPathPB());
+        assertThat( getPathPB(), isDirectory());
+    }
+
+    @Test
+    public void testMoveNonEmptyDir() throws IOException {
+        getPathPABf();
+        Path src = getPathPA();
+        Files.move( src, getPathPB());
+        assertThat( getPathPBB(), exists());
+    }
+
+    @Test( expected = FileSystemException.class )
+    public void testMoveIntoItself() throws IOException {
+        Path src = getPathPAd();
+        Files.move(src, getPathPAB());
+    }
+
+
+    @Test( expected = FileSystemException.class )
+    public void testMoveRoot() throws IOException {
+        Files.move( getRoot(), getPathPB());
+    }
+
+    @Test( expected = ClassCastException.class )
+    public void bugMoveRootThrowsClassCastException() throws IOException {
+        Files.move( getRoot(), getPathPB());
+    }
+
+//    @Test
+//    public void testMoveSetsLastModifiedTime() throws IOException, InterruptedException {
+//        Path src = getPathPABf();
+//        Path tgt = getPathPB();
+//        FileTime modi = Files.getLastModifiedTime(src);
+//        Thread.sleep(2000);
+//
+//        Files.move(src,tgt);
+//
+//        assertThat( Files.getLastModifiedTime(tgt), greaterThan(modi));
+//    }
+
 
     @Test
     public void testCopyDirCreatesADirWithTheTargetName() throws Exception {
@@ -237,6 +301,13 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
 
         Files.copy( src, tgt, StandardCopyOption.REPLACE_EXISTING );
     }
+
+    // todo: is that really supposed to work, loop danger
+//    @Test( expected = FileSystemException.class )
+//    public void testCopyIntoItself() throws IOException {
+//        Path src = getPathPABf();
+//        Files.copy(src.getParent(), getPathPAC());
+//    }
 
     @Test
     public void testDeleteDeletes() throws Exception{
@@ -297,7 +368,7 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
 
     @Test
     public void testDeleteFileDoesNotChangeParentCreationTime() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), Is.is( true ) );
+        assumeThat( capabilities.supportsCreationTime(), is(true));
 
         Path parent = getPathPA();
         Path kid = getPathPABf();
@@ -313,8 +384,6 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
 
     @Test
     public void testDeleteDirChangesParentsModificationTime() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), Is.is( true ) );
-
         Path       dir = getPathPA();
         final Path kid = getPathPAB();
         Files.createDirectories( kid );
@@ -331,7 +400,7 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
 
     @Test
     public void testDeleteDirNotChangeParentsCreationTime() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), Is.is( true ) );
+        assumeThat( capabilities.supportsCreationTime(), is(true));
 
         Path parent = getPathPA();
         Path kid    = getPathPAB();

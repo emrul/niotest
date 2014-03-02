@@ -8,12 +8,10 @@ import org.opencage.kleinod.paths.PathUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +75,7 @@ public abstract class Setup {
     private Path closedAf;
     private Path closedBd;
     private SeekableByteChannel closedReadChannel;
+    protected static Path play2;
 
 
     @BeforeClass
@@ -182,6 +181,10 @@ public abstract class Setup {
         return emptyDir().resolve( nameStr[0] );
     }
 
+    public Path getPathPAC() throws IOException {
+        return emptyDir().resolve( nameStr[0] ).resolve(nameStr[2]);
+    }
+
     public Path getPathPAf() throws IOException {
         Path ret = emptyDir().resolve( nameStr[0] );
         Files.write(ret, CONTENT, standardOpen );
@@ -200,6 +203,12 @@ public abstract class Setup {
         return ret;
     }
 
+    public Path getPathPBd() throws IOException {
+        Path ret = emptyDir().resolve( nameStr[1] );
+        Files.createDirectory(ret);
+        return ret;
+    }
+
     public Path getPathPCf() throws IOException {
         Path ret = emptyDir().resolve( nameStr[2] );
         Files.write(ret, CONTENT, standardOpen );
@@ -209,6 +218,13 @@ public abstract class Setup {
 
     public Path getPathPABf() throws IOException {
         Path ret = getPathPAB();
+        Files.createDirectories( ret.getParent() );
+        Files.write(ret, CONTENT, standardOpen );
+        return ret;
+    }
+
+    public Path getPathPBCf() throws IOException {
+        Path ret = getPathPB().resolve(nameStr[2]);
         Files.createDirectories( ret.getParent() );
         Files.write(ret, CONTENT, standardOpen );
         return ret;
@@ -228,6 +244,10 @@ public abstract class Setup {
 
     public Path getPathPB() throws IOException {
         return emptyDir().resolve( nameStr[1] );
+    }
+
+    public Path getPathPBB() throws IOException {
+        return emptyDir().resolve( nameStr[1] ).resolve(nameStr[1]);
     }
 
     // P exists (freshly), A and B not
@@ -326,4 +346,36 @@ public abstract class Setup {
         getClosedAf();
         return closedReadChannel;
     }
+
+    public Path getOther() throws IOException {
+        if ( FS.equals(FileSystems.getDefault())) {
+            return PathUtils.getOrCreate(URI.create("null:/"), Collections.EMPTY_MAP).getPath("/");
+        }
+
+        return FileSystems.getDefault().getPath("foo");
+    }
+
+    protected static void set2ndPlay(Path play2) {
+        Setup.play2 = play2;
+    }
+
+    public Path getPathOtherPA() throws IOException {
+        Path dir = play2.resolve( testMethodName.getMethodName() );
+        Files.createDirectories(dir);
+        return dir.resolve(nameStr[0]);
+    }
+
+    public Path getPathOtherPAf() throws IOException {
+        Path dir = play2.resolve( testMethodName.getMethodName() );
+        Files.createDirectories(dir);
+        Path ret = dir.resolve(nameStr[0]);
+        Files.write( ret, CONTENT, standardOpen);
+        return ret;
+    }
+
+    public void bug( String not, String bug ) {
+        notSupported.put(not, "");
+        notSupported.put(bug, "");
+    }
+
 }

@@ -38,17 +38,64 @@ import java.nio.file.FileSystem;
 import java.util.Collections;
 
 
-@Ignore
 public class MarschallTest extends PathTestIT {
 
     @BeforeClass
     public static void setUp() throws IOException {
         setPlay( getOrCreate( "marschall" ).getPath( "play" ).toAbsolutePath() );
         setClosablePlay( getOrCreate( "marschallClose" ).getPath( "play" ).toAbsolutePath() );
+        set2ndPlay(getOrCreate( "marschall22" ).getPath( "play" ).toAbsolutePath() );
     }
 
     public MarschallTest() throws IOException {
-        capabilities.setClosable( true );
+
+        capabilities.doesNotSupportWatchService();
+
+        bug( "testCreateDirectoryRoot", "bugCreateDirectoryRootThrowsWrongException" );
+
+        bug( "testCheckAccessOtherProvider", "bugCheckAccessOtherProviderThrowsWrongException" );
+        bug( "testCopyOtherProviderFrom", "" );
+        bug( "testCopyOtherProviderTo", "" );
+        bug( "testCreateDirectoryOtherProvider", "" );
+        bug( "testCreateLinkOtherProvider", "" );
+        bug( "testCreateSymbolicLinkOtherProvider", "" );
+        bug( "testDeleteIfExistsOtherProvider", "" );
+        bug( "testDeleteOtherProvider", "" );
+        bug( "testGetFileStoreOtherProvider", "" );
+        bug( "testIsHiddenOtherProvider", "" );
+        bug( "testIsSameFileOnEqualPathElementsDifferentProvider", "" );
+        bug( "testMoveOtherProviderFrom", "" );
+        bug( "testMoveOtherProviderTo", "" );
+        bug( "testNewAsynchronousFileChannelOtherProvider", "" );
+        bug( "testNewByteChannelOtherProvider", "" );
+        bug( "testNewDirectoryStreamOtherProvider", "" );
+        bug( "testNewFileChannelOtherProvider", "" );
+        bug( "testNewOutputStreamOtherProvider", "" );
+        bug( "testReadAttributesOtherProvider", "" );
+        bug( "testReadAttributesStringOtherProvider", "" );
+        bug( "testReadSymbolicLinkOtherProvider", "" );
+        bug( "testGetBasicFileAttributeViewProvider", "" );
+
+
+        bug( "testMoveRoot", "bugMoveRootThrowsClassCastException" );
+        bug( "testClosedFSisClosed", "bugClosedFSisClosed" );
+        bug( "testCopyDirCreatesADirWithTheTargetName", "" );
+        bug( "testCopyNonEmptyDirDoesNotCopyKids", "" );
+        bug( "testFileAttributesAreImmutable", "" );
+        bug( "testGetNameOfDefaultPathIsItself", "" );
+        bug( "testMoveIntoItself", "" );
+        bug( "testNewDirectoryStreamUnnormalizedPath", "" );
+        bug( "testReadCreateNonExistingFileThrows", "" );
+        bug( "testReadDirStreamSetsLastAccessTime", "" );
+        bug( "testReadEmptyDirStreamSetsLastAccessTime", "" );
+        bug( "testTruncateToNegativeSizeThrows", "" );
+        bug( "testUnsupportedAttributeViewReturnsNull", "" );
+        bug( "testAppendAndReadThrows", "" );
+        bug( "testGetFileSystemOtherURI", "" );
+        bug( "testGetPathOtherURI", "" );
+
+
+
     }
 
     @SuppressWarnings("unchecked")

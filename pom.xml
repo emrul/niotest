@@ -7,13 +7,27 @@
     <parent>
         <groupId>org.opencage</groupId>
         <artifactId>opencage-parent</artifactId>
-        <version>1.4.3</version>
+        <version>1.4.4</version>
         <relativePath>../opencage-parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.opencage.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.15.3</version>
+    <version>0.16.0</version>
+
+    <repositories>
+        <repository>
+            <id>opencage-releases</id>
+                <url>https://raw.github.com/openCage/mavenrepo/master/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
 
     <dependencies>
         <dependency>
@@ -38,7 +52,7 @@
         <dependency>
             <groupId>com.github.marschall</groupId>
             <artifactId>memoryfilesystem</artifactId>
-            <version>0.3.1</version>
+            <version>0.4.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -46,6 +60,13 @@
             <groupId>com.github.marschall</groupId>
             <artifactId>zipfilesystem-standalone</artifactId>
             <version>1.0.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>com.google.jimfs</groupId>
+          <artifactId>jimfs</artifactId>
+          <version>1.0-rc1</version>
             <scope>test</scope>
         </dependency>
 

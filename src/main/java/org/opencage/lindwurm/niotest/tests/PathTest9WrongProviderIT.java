@@ -26,7 +26,7 @@ import static org.junit.Assume.assumeThat;
  * notice, this list of conditions and the following disclaimer.
  * * Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
+ * documentation and/or getOther() materials provided with the distribution.
  * <p/>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -42,62 +42,50 @@ import static org.junit.Assume.assumeThat;
  */
 public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
 
-    private Path other = Paths.get( "foo" );
-
     @Test( expected = ProviderMismatchException.class )
     public void testNewByteChannelOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().newByteChannel( other, Collections.<OpenOption>emptySet() );
+        FS.provider().newByteChannel( getOther(), Collections.<OpenOption>emptySet() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testGetBasicFileAttributeViewProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().getFileAttributeView( other, BasicFileAttributeView.class );
+        FS.provider().getFileAttributeView( getOther(), BasicFileAttributeView.class );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testCreateDirectoryOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().createDirectory( other );
+        FS.provider().createDirectory( getOther() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testNewFileChannelOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
         assumeThat( capabilities.hasFileChannels(), is(true) );
 
-        FS.provider().newFileChannel( other, Collections.<OpenOption>emptySet() );
+        FS.provider().newFileChannel( getOther(), Collections.<OpenOption>emptySet() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testCheckAccessOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
+        FS.provider().checkAccess( getOther() );
+    }
 
-        FS.provider().checkAccess( other );
+    @Test( expected = IllegalArgumentException.class )
+    public void bugCheckAccessOtherProviderThrowsWrongException() throws IOException {
+        FS.provider().checkAccess( getOther() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testCopyOtherProviderFrom() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().copy( other, getPathPABf() );
+        FS.provider().copy( getOther(), getPathPABf() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testCopyOtherProviderTo() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().copy( getPathPABf(), other );
+        FS.provider().copy( getPathPABf(), getOther() );
     }
 
     @Test
     public void testCopyOtherProviderWithFiles() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
         Path defaultTarget = PathUtils.getTmpDir("foo").resolve("duh");
         Files.createDirectories( defaultTarget.getParent());
 
@@ -109,22 +97,16 @@ public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
 
     @Test( expected = ProviderMismatchException.class )
     public void testMoveOtherProviderFrom() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().move( other, getPathPB() );
+        FS.provider().move( getOther(), getPathPB() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testMoveOtherProviderTo() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().move( getPathPABf(), other );
+        FS.provider().move( getPathPABf(), getOther() );
     }
 
     @Test
     public void testMoveOtherProviderWithFiles() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
         Path defaultTarget = PathUtils.getTmpDir("foo").resolve("duh");
         Files.createDirectories( defaultTarget.getParent());
 
@@ -136,113 +118,88 @@ public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
 
     @Test( expected = ProviderMismatchException.class )
     public void testCreateLinkOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
         assumeThat( capabilities.hasLinks(), is(true) );
 
-        FS.provider().createLink( other, other );
+        FS.provider().createLink( getOther(), getOther() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testCreateSymbolicLinkOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
         assumeThat( capabilities.hasSymbolicLinks(), is(true) );
 
-        FS.provider().createSymbolicLink( other, other );
+        FS.provider().createSymbolicLink( getOther(), getOther() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testDeleteOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().delete( other );
+        FS.provider().delete( getOther() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testDeleteIfExistsOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().deleteIfExists( other );
+        FS.provider().deleteIfExists( getOther() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testGetFileStoreOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().getFileStore( other );
+        FS.provider().getFileStore( getOther() );
     }
 
     @Test( expected = IllegalArgumentException.class )
     public void testGetPathOtherURI() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().getPath( other.toUri() );
+        FS.provider().getPath( getOther().toUri() );
     }
 
     @Test( expected = IllegalArgumentException.class )
     public void testGetFileSystemOtherURI() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().getFileSystem( other.toUri() );
+        FS.provider().getFileSystem( getOther().toUri() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testIsHiddenOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().isHidden( other );
+        FS.provider().isHidden( getOther() );
     }
-
 
 
     @Test( expected = ProviderMismatchException.class )
     public void testNewAsynchronousFileChannelOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
         assumeThat( capabilities.hasAsynchronousFileChannels(), is(true) );
 
-        FS.provider().newAsynchronousFileChannel( other, Collections.<OpenOption>emptySet(), null );
+        FS.provider().newAsynchronousFileChannel( getOther(), Collections.<OpenOption>emptySet(), null );
     }
 
 //    @Test( expected = ProviderMismatchException.class )
 //    public void testNewInputStreamOtherProvider() throws IOException {
 //        assumeThat( FS, not(is( FileSystems.getDefault())));
 //
-//        FS.provider().newInputStream( other );
+//        FS.provider().newInputStream( getOther() );
 //    }
 
     @Test( expected = ProviderMismatchException.class )
     public void testNewOutputStreamOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().newOutputStream( other );
+        FS.provider().newOutputStream( getOther() );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testNewDirectoryStreamOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().newDirectoryStream( other, null );
+        FS.provider().newDirectoryStream( getOther(), null );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testReadAttributesOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().readAttributes( other, BasicFileAttributes.class );
+        FS.provider().readAttributes( getOther(), BasicFileAttributes.class );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testReadAttributesStringOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
-
-        FS.provider().readAttributes( other, "*" );
+        FS.provider().readAttributes( getOther(), "*" );
     }
 
     @Test( expected = ProviderMismatchException.class )
     public void testReadSymbolicLinkOtherProvider() throws IOException {
-        assumeThat( FS, not(is( FileSystems.getDefault())));
         assumeThat( capabilities.hasSymbolicLinks(), is(true) );
 
-        FS.provider().readSymbolicLink( other );
+        FS.provider().readSymbolicLink( getOther() );
     }
 
 }

@@ -134,113 +134,9 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
         Files.size( getDefaultPath() );
     }
 
-//
-//    @Test
-//    public void testCreateRelativeDirectory() throws IOException {
-//        Path abs = p.getTmpDir("createRelativeDirectory").resolve( p.getLegalPathElement() );
-//        Path rel = abs.getFileSystem().getPath( "" ).toAbsolutePath().relativize( abs );
-//
-//        Files.createDirectory( rel );
-//        assertThat( rel, exists() );
-//    }
-//
-//
-//
-//
-//
-//
-//
-//
-//    @Ignore
-//    @Test
-//    public void testFSClosable() throws IOException {
-//        p.readOnlyFileSystem.close();
-//    }
-//
     @Test
     public void testRootIsNotASymbolicLink() {
         assertThat( "root is a symbolic link", Files.isSymbolicLink( getRoot() ), not(true));
-    }
-
-
-//
-//    @Ignore // todo: is this a java 7 bug ?
-//    @Test
-//    public void testIsSameFileDespiteUnormalizedPath() throws IOException {
-//        Path tmp = p.getTmpDir("testIsSameFile");
-//        Path path1 = tmp.resolve( "path1" );
-//        Files.createDirectories( path1 );
-//        assertThat( path1, exists() );
-//
-//        Path path2 = tmp.resolve( "a" ).resolve( ".." ).resolve( "path1" );
-//        // normalize() and then it works
-//
-//        assertTrue( "should be same", tmp.getFileSystem().provider().isSameFile( path1, path2 ) );
-//    }
-//
-//    @Ignore // todo: is this a java 7 bug ?
-//    @Test
-//    public void testIsSameFileDespiteUnormalizedPath3() throws IOException {
-//        Path tmp = p.getTmpDir("testIsSameFile");
-//        Path path1 = tmp.resolve( "path1" );
-//        Files.write( path1, "huhu".getBytes("UTF-8") );
-//        assertThat( path1, exists() );
-//
-//        Path path2 = tmp.resolve( "a" ).resolve( ".." ).resolve( "path1" );
-//
-//        assertThat( path2, exists() );
-//
-//        assertTrue( "should be same", tmp.getFileSystem().provider().isSameFile( path1, path2 ) );
-//    }
-//
-//    @Ignore // todo: is this a java 7 bug ?
-//    @Test
-//    public void testIsSameFileDespiteUnormalizedPath4() throws IOException {
-//        Path tmp = p.getTmpDir("testIsSameFile");
-//        Path path1 = tmp.resolve( "path1" );
-//        Files.write( path1, "huhu".getBytes("UTF-8") );
-//        assertThat( path1, exists() );
-//
-//        Path path2 = tmp.getFileSystem().getPath( "" ).toAbsolutePath().relativize( path1 );
-//        Path path3 = path2.toAbsolutePath();
-//
-//        assertThat( path2, exists() );
-//
-//        assertTrue( "should be same", tmp.getFileSystem().provider().isSameFile( path1, path2 ) );
-//        assertTrue( "should be same", tmp.getFileSystem().provider().isSameFile( path1, path3 ) );
-//    }
-//
-//    //@Ignore // todo: is this a java 7 bug ?
-//    @Test
-//    public void testIsSameFileDespiteUnormalizedPath2() throws IOException {
-//        Path tmp = p.getTmpDir("testIsSameFile");
-//        Path path1 = tmp.resolve( "path1" );
-//        Files.write( path1, "hi".getBytes( "UTF-8" ) );
-//
-//        Path path2 = tmp.resolve( "a" ).resolve( ".." ).resolve( "path1" );
-//
-//        assertTrue( "should be same", tmp.getFileSystem().provider().isSameFile( path1, path2.normalize() ) );
-//    }
-//
-    @Test
-    public void testIsSameFileOfSameContentDifferntPathIsNot() throws IOException {
-
-        assertFalse( "should not be same", FS.provider().isSameFile( getPathPAf(), getPathPBf() ) );
-    }
-
-    @Test( expected = NoSuchFileException.class )
-    public void testIsSameFileOfDifferntPathNonExistingFileThrows() throws IOException {
-        FS.provider().isSameFile( getPathPABf(), getPathPB() );
-    }
-
-    @Test( expected = NoSuchFileException.class )
-    public void testIsSameFileOfDifferntPathNonExistingFile2Throws() throws IOException {
-        FS.provider().isSameFile( getPathPA(), getPathPBf() );
-    }
-
-    @Test
-    public void testIsSameFileOfSameNonExistingPathsIsTrue() throws IOException {
-        FS.provider().isSameFile( getPathPA(), getPathPA() );
     }
 
 
@@ -390,7 +286,7 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
     @Test
     public void testSetCreationTimeViaString() throws IOException {
-        assumeThat( message(), possible(), is(true));
+        assumeThat( capabilities.supportsCreationTime(), is(true));
 
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = getPathPAf();
@@ -401,7 +297,6 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
     @Test
     public void testSetCreationTimeDoesNotChangeLastAccessTime() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), is(true));
 
         final Path file = getPathPAf();
         FileTime before = Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime();
@@ -413,7 +308,7 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
     @Test
     public void testSetCreationTimeViaView() throws IOException {
-        assumeThat( message(), possible(), is(true));
+        assumeThat( capabilities.supportsCreationTime(), is(true));
 
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = getPathPAf();
@@ -424,8 +319,6 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
     @Test
     public void testSetLastAccessTimeViaString() throws IOException {
-        assumeThat( message(), possible(), is(true));
-
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = getPathPAf();
         FS.provider().setAttribute( file, "basic:lastAccessTime", past );
@@ -435,8 +328,6 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
     @Test
     public void testSetLastAccessTimeViaView() throws IOException {
-        assumeThat( message(), possible(), is(true));
-
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = getPathPAf();
         FS.provider().getFileAttributeView( file, BasicFileAttributeView.class ).setTimes( null, past, null );
@@ -501,28 +392,6 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
 
 
-
-//    @Test( expected = NoSuchFileException.class)
-//    public void testToRealpathOnNonExistingFileThrows() throws Exception {
-//        Path path = p.getTmpDir(  ).resolve( "foooooooooo" );
-//        path.toRealPath();
-//    }
-//
-//    @Test
-//    public void testToRealOnExistingFileIsAbsolute() throws Exception {
-//        Path path = p.getTmpDir(  ).resolve( "foooooooooo" );
-//        Files.write( path, "hhh".getBytes( "UTF-8" ) );
-//        assertThat( path.toRealPath(), absolute() );
-//    }
-//
-//    @Test
-//    public void testToRealOnExistingFileIsNormalized() throws Exception {
-//        Path path = p.getTmpDir(  ).resolve( "foooooooooo" );
-//        Files.write( path, "hhh".getBytes( "UTF-8" ) );
-//        assertEquals( path.toRealPath(), path.toRealPath().normalize() );
-//    }
-//
-//
 //
 //    @Test
 //    public void testCopyResultHatCreationTime() throws Exception {

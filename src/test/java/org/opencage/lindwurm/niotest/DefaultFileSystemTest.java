@@ -4,6 +4,8 @@ import org.junit.BeforeClass;
 import org.opencage.kleinod.paths.PathUtils;
 import org.opencage.lindwurm.niotest.tests.PathTestIT;
 
+import java.nio.file.Path;
+
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
@@ -34,28 +36,29 @@ public class DefaultFileSystemTest extends PathTestIT {
 
     @BeforeClass
     public static void setUp() {
-        setPlay( PathUtils.getTmpDir( "DefaultFileSystemTest" ));
+        Path dir = PathUtils.getTmpDir( "DefaultFileSystemTest" );
+        setPlay( dir );
     }
 
     public DefaultFileSystemTest() {
 
-        capabilities.setClosable( false );
+        capabilities.notClosable();
+        capabilities.doesNotSupportCreationTime();
 
-        notSupported.put( "testCreateDirectoryRoot", "throws different exception" );
-        notSupported.put( "bugCreateDirectoryRootThrowsWrongException", "throws different exception" );
+        bug( "testCreateDirectoryRoot", "bugCreateDirectoryRootThrowsWrongException" );
 
-        notSupported.put( "testDeleteFileDoesNotChangeParentCreationTime", "creation is lastmodifietime (spec allows is but underlying fs can do it)" );
-        notSupported.put( "testDeleteDirNotChangeParentsCreationTime", "creation is lastmodifiedtime (spec allows is but underlying fs can do it)" );
+        // todo: is osx only ?
+        bug( "testCreateDirSetsLastAccessTimeOfParent", "bugCreateDirDoesNotSetLastAccessTimeOfParent" );
+        bug( "testCreateFileSetsLastAccessTimeOfParent", "bugCreateFileDoesNotSetLastAccessTimeOfParent" );
+        bug( "testOverwriteSetLastAccessTime", "bugOverwriteDoesNotSetLastAccessTime" );
 
-        notSupported.put( "testSetCreationTimeViaString", "can't set creationTime" );
-        notSupported.put( "testSetCreationTimeViaView", "can't set creationTime" );
+        bug( "testCreateDirectoryUnnormalizedPath", "bugCreateDirectoryUnnormalizedPath" );
+        bug( "testGetFileStoreUnnormalizedPath",    "bugGetFileStoreUnnormalizedPath" );
+        bug( "testNewByteChannelUnnormalizedPath",  "bugNewByteChannelUnnormalizedPath" );
+        bug( "testNewDirectoryStreamUnnormalizedPath", "bugNewDirectoryStreamUnnormalizedPath"  );
 
-        notSupported.put( "testCreateDirSetsLastAccessTimeOfParent", "access time is unchanged" );
-        notSupported.put( "testCreateFileSetsLastAccessTimeOfParent", "access time is unchanged" );
-        notSupported.put( "testOverwriteSetLastAccessTime", "access time is unchanged" );
 
-        notSupported.put( "testCreateDirectoryUnnormalizedPath", "create directory does not work with unnormalized paths");
-        notSupported.put( "bugCreateDirectoryUnnormalizedPath", "create directory does not work with unnormalized paths");
+
 
     }
 }

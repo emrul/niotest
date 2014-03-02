@@ -352,19 +352,15 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
         byte[] out = Files.readAllBytes( there );
 
-        System.out.println(new String( out, "UTF-8"));
-
         assertThat( Arrays.copyOfRange( out, 0, CONTENT.length ), is(CONTENT) );
         assertThat( Arrays.copyOfRange( out, CONTENT.length, 2 * CONTENT.length ), is(CONTENT) );
     }
 
     @Test( expected = IllegalArgumentException.class )
     public void testAppendAndReadThrows() throws IOException {
-
-        Path file = getPathPAf();
-
-        try ( SeekableByteChannel ch = FS.provider().newByteChannel( file, Sets.asSet( APPEND, READ ) )) {}
+        try ( SeekableByteChannel ch = FS.provider().newByteChannel( getPathPAf(), Sets.asSet( APPEND, READ ) )) {}
     }
+
 
 
     @Test
@@ -434,8 +430,6 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testOverwriteSetLastAccessTime() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), is(true) );
-
         Path there = getPathPAf();
         FileTime before = Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
@@ -448,9 +442,22 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
     }
 
     @Test
-    public void testOverwriteDoesNotSetLastAccessTimeOfParent() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), is(true) );
+    public void bugOverwriteDoesNotSetLastAccessTime() throws IOException, InterruptedException {
+        Path there = getPathPAf();
+        FileTime before = Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime();
+        Thread.sleep( 2000 );
 
+        Set<StandardOpenOption> options = Sets.asSet(
+                StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING );
+        try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, options )) {}
+
+        assertThat( Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime(), is( before ) );
+    }
+
+
+
+    @Test
+    public void testOverwriteDoesNotSetLastAccessTimeOfParent() throws IOException, InterruptedException {
         Path there = getPathPAf();
         FileTime before = Files.readAttributes( there.getParent(), BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
@@ -478,8 +485,6 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testCreateFileSetsLastAccessTime() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), is( true ) );
-
         Path file = getPathPAf();
         BasicFileAttributes bfa = Files.readAttributes( file, BasicFileAttributes.class );
 
@@ -488,14 +493,22 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testCreateFileSetsLastAccessTimeOfParent() throws IOException, InterruptedException {
-        assumeThat( message(), possible(), is( true ) );
-
         Path dir = getPathPAd();
         FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
 
         Files.write( getPathPABf(), CONTENT );
         assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ));
+    }
+
+    @Test
+    public void bugCreateFileDoesNotSetLastAccessTimeOfParent() throws IOException, InterruptedException {
+        Path dir = getPathPAd();
+        FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
+        Thread.sleep( 2000 );
+
+        Files.write( getPathPABf(), CONTENT );
+        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), is( before ));
     }
 
 

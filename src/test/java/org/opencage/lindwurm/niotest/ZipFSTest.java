@@ -69,14 +69,5 @@ public class ZipFSTest extends PathTestIT  {
     }
 
     public ZipFSTest() {
-
-//        System.out.println( Files.exists( zipLocation ));
-//
-//
-//        p = new TestParams().
-//                    readOnlyFileSystem( ro ).
-//                    legalPathElement( "abc", "cdf", "123", "bar", "baz" ).
-//                    setOtherProviderFS( FileSystems.getDefault() );
-
     }
 }

@@ -2,7 +2,6 @@ package org.opencage.lindwurm.niotest.tests;
 
 import org.junit.Test;
 import org.opencage.kleinod.collection.Iterators;
-import org.opencage.lindwurm.niotest.matcher.PathIsDirectory;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -67,7 +66,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
     }
 
 
-
     @Test
     public void testContentOfNonEmptyDir() throws IOException {
 
@@ -102,7 +100,7 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
     }
 
     @Test
-    public void testNewDirIsInParentsDirStream() throws IOException {
+    public void testNewDirIsInParentsDixrStream() throws IOException {
 
         Path dir = getPathPA();
         Files.createDirectory( dir );
@@ -119,6 +117,8 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         Files.createDirectory( newDir );
         assertThat( newDir, exists() );
     }
+
+
 
     @Test( expected = FileAlreadyExistsException.class )
     public void testCreateDirectoryTwiceThrows() throws IOException {
@@ -195,6 +195,15 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ));
     }
 
+    @Test
+    public void bugCreateDirDoesNotSetLastAccessTimeOfParent() throws IOException, InterruptedException {
+        Path dir = getPathPAd();
+        FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
+        Thread.sleep( 2000 );
+
+        Files.createDirectory( getPathPAB() );
+        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), is( before ));
+    }
 
     @Test
     public void testCreateDirSetsCreationTime() throws IOException, InterruptedException {

@@ -28,18 +28,22 @@ package org.opencage.lindwurm.niotest.tests;
  */
 public class FSCapabilities {
 
-    private boolean closable = false;
-    private boolean hasLinks = false;
-    private boolean hasSymbolicLinks = false;
-    private boolean hasAsynchronousFileChannels = false;
-    private boolean hasFileChannels = false;
+    private boolean closable = true;
+    private boolean hasLinks = true;
+    private boolean hasSymbolicLinks = true;
+    private boolean hasAsynchronousFileChannels = true;
+    private boolean hasFileChannels = true;
+    private boolean supportsCreationTime = true;
+    private boolean lastAccessTimeSettable = true;
+    private boolean supportsWatchService = true;
 
     public boolean isClosable() {
         return closable;
     }
 
-    public void setClosable( boolean closable ) {
-        this.closable = closable;
+    public FSCapabilities notClosable() {
+        this.closable = false;
+        return this;
     }
 
     public boolean hasLinks() {
@@ -56,5 +60,29 @@ public class FSCapabilities {
 
     public boolean hasFileChannels() {
         return hasFileChannels;
+    }
+
+    public boolean supportsCreationTime() {
+        return supportsCreationTime;
+    }
+
+    public void doesNotSupportCreationTime() {
+        this.supportsCreationTime = false;
+    }
+
+    public boolean isLastAccessTimeSettable() {
+        return lastAccessTimeSettable;
+    }
+
+    public void lastAccessTimeIsNotSettable() {
+        this.lastAccessTimeSettable = false;
+    }
+
+    public boolean supportsWatchService() {
+        return supportsWatchService;
+    }
+
+    public void doesNotSupportWatchService() {
+        this.supportsWatchService = false;
     }
 }
