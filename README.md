@@ -22,7 +22,7 @@ framework for testing java 7 nio2 based virtual filesystem
     <dependency>
         <groupId>org.opencage.lindwurm</groupId>
         <artifactId>niotest</artifactId>
-        <version>0.15.1</version>
+        <version>0.15.3</version>
     </dependency>
 
 #### Use
