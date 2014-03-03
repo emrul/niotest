@@ -75,16 +75,16 @@ public class MarschallTest extends PathTestIT {
         bug( "testReadAttributesStringOtherProvider", "" );
         bug( "testReadSymbolicLinkOtherProvider", "" );
         bug( "testGetBasicFileAttributeViewProvider", "" );
-
-
+//
+//
         bug( "testMoveRoot", "bugMoveRootThrowsClassCastException" );
         bug( "testClosedFSisClosed", "bugClosedFSisClosed" );
         bug( "testCopyDirCreatesADirWithTheTargetName", "" );
         bug( "testCopyNonEmptyDirDoesNotCopyKids", "" );
-        bug( "testFileAttributesAreImmutable", "" );
+//        bug( "testFileAttributesAreImmutable", "" ); //fix in 5.0
         bug( "testGetNameOfDefaultPathIsItself", "" );
         bug( "testMoveIntoItself", "" );
-        bug( "testNewDirectoryStreamUnnormalizedPath", "" );
+//        bug( "testNewDirectoryStreamUnnormalizedPath", "" ); // fixed in 5.0
         bug( "testReadCreateNonExistingFileThrows", "" );
         bug( "testReadDirStreamSetsLastAccessTime", "" );
         bug( "testReadEmptyDirStreamSetsLastAccessTime", "" );
