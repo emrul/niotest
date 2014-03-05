@@ -85,4 +85,24 @@ public class FSCapabilities {
     public void doesNotSupportWatchService() {
         this.supportsWatchService = false;
     }
+
+    public FSCapabilities noLinks() {
+        this.hasLinks = false;
+        return this;
+    }
+
+    public FSCapabilities noSymLinks() {
+        this.hasSymbolicLinks = false;
+        return this;
+    }
+
+    public FSCapabilities noAsynchronousFileChannels() {
+        this.hasAsynchronousFileChannels = false;
+        return this;
+    }
+
+    public FSCapabilities noFileChannels() {
+        this.hasFileChannels = false;
+        return this;
+    }
 }

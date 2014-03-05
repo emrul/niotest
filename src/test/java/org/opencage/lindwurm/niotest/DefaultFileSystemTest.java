@@ -45,6 +45,8 @@ public class DefaultFileSystemTest extends PathTestIT {
         capabilities.notClosable();
         capabilities.doesNotSupportCreationTime();
 
+        setWatcherSleep( 10000 );
+
         bug( "testCreateDirectoryRoot", "bugCreateDirectoryRootThrowsWrongException" );
 
         // todo: is osx only ?

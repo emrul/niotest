@@ -76,6 +76,7 @@ public abstract class Setup {
     private Path closedBd;
     private SeekableByteChannel closedReadChannel;
     protected static Path play2;
+    private URI closedURI;
 
 
     @BeforeClass
@@ -326,6 +327,8 @@ public abstract class Setup {
             Files.write( closedCf, CONTENT, standardOpen );
             closedReadChannel = Files.newByteChannel( closedCf, StandardOpenOption.READ );
 
+            closedURI = closablePlay.getRoot().toUri();
+
             closedFS.close();
         }
 
@@ -340,6 +343,10 @@ public abstract class Setup {
     public Path getClosedBd() throws IOException {
         getClosedFS();
         return closedBd;
+    }
+
+    public URI getClosedURI() throws IOException {
+        return closedURI;
     }
 
     public SeekableByteChannel getClosedReadChannel() throws IOException {
@@ -376,6 +383,10 @@ public abstract class Setup {
     public void bug( String not, String bug ) {
         notSupported.put(not, "");
         notSupported.put(bug, "");
+    }
+
+    public void bug( String not ) {
+        notSupported.put(not, "");
     }
 
 }

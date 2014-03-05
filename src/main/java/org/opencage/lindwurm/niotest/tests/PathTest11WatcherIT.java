@@ -28,6 +28,8 @@ import static org.opencage.lindwurm.niotest.matcher.PathExists.exists;
 public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
 
+    private long watcherSleep = 1000;
+
     @Test(expected = ProviderMismatchException.class)
     public void testRegisterOtherPath() throws Exception {
         assumeThat( capabilities.supportsWatchService(), is(true));
@@ -51,7 +53,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         Thread.sleep(1000);
         Files.delete(toBeDeleted);
 
-        Thread.sleep(10000);
+        Thread.sleep(getWatcherSleep());
 
         assertThat(dels.size(), is(1));
     }
@@ -71,26 +73,26 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         Files.move(toBeDeleted, getPathPB());
         assertThat(toBeDeleted, not(exists()));
 
-        Thread.sleep(10000); // at least OSX watcher is really slow
+        Thread.sleep(getWatcherSleep());
 
         assertThat(dels.size(), is(1));
     }
 
     @Test
     public void testWatchAModify() throws Exception {
-        assumeThat( capabilities.supportsWatchService(), is(true));
+        assumeThat(capabilities.supportsWatchService(), is(true));
 
         final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
 
         Path file = getPathPABf();
         // java 7 can only watch dirs
-        new Thread(new Watcher(file.getParent(), que, StandardWatchEventKinds.ENTRY_MODIFY )).start();
+        new Thread(new Watcher(file.getParent(), que, StandardWatchEventKinds.ENTRY_MODIFY)).start();
 
         Thread.sleep(2000);
 
-        Files.write(file,CONTENT_OTHER);
+        Files.write(file, CONTENT_OTHER);
 
-        Thread.sleep(10000);
+        Thread.sleep(getWatcherSleep());
 
         assertThat(que.size(), is(1));
     }
@@ -108,7 +110,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Files.write(getPathPAB(),CONTENT_OTHER);
 
-        Thread.sleep(10000);
+        Thread.sleep(getWatcherSleep());
 
         assertThat(que.size(), is(1));
     }
@@ -126,7 +128,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Files.copy( file, getPathPAC());
 
-        Thread.sleep(10000);
+        Thread.sleep(getWatcherSleep());
 
         assertThat(que.size(), is(1));
     }
@@ -147,7 +149,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         FS.provider().copy(src, getPathPAC());
 
-        Thread.sleep(10000);
+        Thread.sleep(getWatcherSleep());
 
         assertThat(que.size(), is(1));
     }
@@ -165,7 +167,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Files.move(file, getPathPAC());
 
-        Thread.sleep(10000);
+        Thread.sleep(getWatcherSleep());
 
         assertThat(que.size(), is(1));
     }
@@ -186,7 +188,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         FS.provider().copy( src, getPathPAC());
 
-        Thread.sleep(10000);
+        Thread.sleep(getWatcherSleep());
 
         assertThat(que.size(), is(1));
     }
@@ -196,8 +198,6 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assumeThat( capabilities.supportsWatchService(), is(true));
 
         final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
-
-        // that's a surprise, todo bug ?
 
         Path tgt = getPathPA();
         Files.write( tgt, CONTENT, standardOpen );
@@ -209,7 +209,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Files.copy( src, tgt, StandardCopyOption.REPLACE_EXISTING );
 
-        Thread.sleep(10000);
+        Thread.sleep(getWatcherSleep());
         assertThat(que.size(), is(1));
 
     }
@@ -230,7 +230,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
             channel.truncate( 2 );
         }
 
-        Thread.sleep(10000);
+        Thread.sleep(getWatcherSleep());
 
         assertThat(que.size(), is(1));
     }
@@ -307,6 +307,8 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
     }
 
 
+
+    // todo refactor
     private static class Watcher implements Runnable {
         private final Path dir;
         private final ConcurrentLinkedDeque<Path> dels;
@@ -324,31 +326,21 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
                 WatchService watcher = dir.getFileSystem().newWatchService();
                 dir.register(watcher, kind);
 
-                System.out.println("watcher is running. watching " + dir);
+                //System.out.println("watcher is running. watching " + dir);
 
                 WatchKey watckKey = watcher.take();
 
-                System.out.println("watcher is running2");
+                //System.out.println("watcher is running2");
 
 
                 List<WatchEvent<?>> events = watckKey.pollEvents();
 
-                System.out.println("watcher is running3");
+                // System.out.println("watcher is running3");
 
                 for (WatchEvent event : events) {
                     if ( event.kind().equals(kind)) {
                         dels.add((Path) event.context());
                     }
-//                    if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
-//                        System.out.println("Created: " + event.context().toString());
-//                    } else if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
-//                        System.out.println("Delete: " + event.context().toString());
-//                        dels.add((Path) event.context());
-//                    } else if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
-//                        System.out.println("Modify: " + event.context().toString());
-//                    } else {
-//                        System.out.println("other: " + event.context());
-//                    }
                 }
 
             } catch (Exception e) {
@@ -364,5 +356,11 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         watchablePlay = observablePlay;
     }
 
+    public long getWatcherSleep() {
+        return watcherSleep;
+    }
 
+    public void setWatcherSleep(long watcherSleep) {
+        this.watcherSleep = watcherSleep;
+    }
 }

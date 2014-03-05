@@ -29,12 +29,14 @@ package org.opencage.lindwurm.niotest;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.opencage.kleinod.paths.PathUtils;
 import org.opencage.lindwurm.niotest.tests.PathTestIT;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.util.Collections;
 
 
@@ -94,6 +96,8 @@ public class MarschallTest extends PathTestIT {
         bug( "testGetFileSystemOtherURI", "" );
         bug( "testGetPathOtherURI", "" );
 
+        bug( "testCantGetClosedFSViaURI");
+
 
 
     }
@@ -102,6 +106,15 @@ public class MarschallTest extends PathTestIT {
     private static FileSystem getOrCreate( String name ) throws IOException {
         URI uri = URI.create( "memory:" + name + ":///p" );
         return PathUtils.getOrCreate( uri, Collections.EMPTY_MAP );
+    }
+
+
+    @Test
+    public void testCloseOpen() throws IOException {
+        FileSystem fs  = getOrCreate("closeopen");
+        fs.close();
+
+        FileSystems.newFileSystem( URI.create( "memory:closeopen:///p"), Collections.EMPTY_MAP );
     }
 
 }

@@ -22,7 +22,7 @@ framework for testing java 7 nio2 based virtual filesystem
     <dependency>
         <groupId>org.opencage.lindwurm</groupId>
         <artifactId>niotest</artifactId>
-        <version>0.16.1</version>
+        <version>0.16.2</version>
     </dependency>
 
 #### Use
@@ -42,6 +42,8 @@ If not all tests pass because some features are not available yet they can be ig
 
             capabilities.notClosable();
             capabilities.doesNotSupportCreationTime();
+
+            setWatcherSleep( 10000 );
 
             bug( "testCreateDirectoryRoot", "bugCreateDirectoryRootThrowsWrongException" );
 

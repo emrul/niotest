@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -58,7 +60,7 @@ public abstract class PathTest5URIIT extends PathTest4CopyIT {
     }
 
     @Test( expected = IllegalArgumentException.class )
-    public void testProviderGetFileSytemWithWrongSchemeFails() {
+    public void testProviderGetFileSystemWithWrongSchemeFails() {
         FS.provider().getFileSystem(
                 URI.create( FS.provider().getScheme() + "N:" ));
     }
@@ -93,22 +95,18 @@ public abstract class PathTest5URIIT extends PathTest4CopyIT {
 //        assertThat( fs, CoreMatchers.notNullValue() );
 //    }
 //
-//    @Test( expected = FileSystemAlreadyExistsException.class )
-//    public void testNewFileSystemAgain() throws IOException {
-//        assumeTrue( !p.getCapabilities().oneFileSystemOnly() );
-//        FS.provider().newFileSystem( p.getUriForNewFS(), p.getEnvForNewFS() );
-//        FS.provider().newFileSystem( p.getUriForNewFS(), p.getEnvForNewFS() );
-//    }
-//
-//    @Test
-//    public void testGetExistingFileSystem() throws IOException {
-//        if ( p.getUriForExistingFS() != null ) {
-//            FileSystem fs  = FS.provider().getFileSystem( p.getUriForExistingFS() );
-//
-//            assertThat( fs, notNullValue() );
-//        }
-//    }
-//
+
+    @Test
+    public void testGetExistingFileSystem() throws IOException {
+        FileSystem fs = FS.provider().getFileSystem(getRoot().toUri());
+        assertThat( fs, is(FS) );
+    }
+
+    @Test( expected = FileSystemAlreadyExistsException.class )
+    public void testNewFileSystemOfExsitingThrows() throws IOException {
+        FS.provider().newFileSystem(getRoot().toUri(), Collections.EMPTY_MAP );
+    }
+
     @Test
     public void testPathToUriAndBackIsSame() {
         Path path = getPathRAB();
@@ -116,8 +114,8 @@ public abstract class PathTest5URIIT extends PathTest4CopyIT {
 
         assertThat( uri, notNullValue() );
 
-        Path back = Paths.get( uri );
-        assertEquals( path, back );
+        Path back = Paths.get(uri);
+        assertEquals(path, back);
     }
 
 

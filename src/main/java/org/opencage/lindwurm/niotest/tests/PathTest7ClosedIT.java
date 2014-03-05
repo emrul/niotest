@@ -5,10 +5,12 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.ClosedFileSystemException;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 
@@ -42,60 +44,75 @@ public abstract class PathTest7ClosedIT extends PathTest6AttributesIT {
 
     // closable FS
 
+//    @Test
+//    public void testAAA7ClosableHasClosedFS() throws Exception {
+//        assumeThat( capabilities.isClosable(), is(true ) );
+//        assertThat( getClosedFS(), notNullValue() );
+//    }
+
 
     @Test
     public void testClosedFSisClosed() throws Exception {
-        assumeThat( getClosedFS(), notNullValue() );
+        assumeThat( capabilities.isClosable(), is(true ) );
 
         assertThat( getClosedFS().isOpen(), is(false) );
     }
 
     @Test( expected = ClosedFileSystemException.class )
     public void bugClosedFSisClosed() throws Exception {
-        assumeThat( getClosedFS(), notNullValue() );
+        assumeThat( capabilities.isClosable(), is(true ) );
         getClosedFS().isOpen();
     }
 
 
+
     @Test
     public void testStdFSisOpen() throws Exception {
-        assertThat( FS.isOpen(), is(true) );
+        assumeThat( capabilities.isClosable(), is(true ) );
     }
 
     @Test( expected = ClosedFileSystemException.class )
     public void testClosedFSCantRead() throws Exception {
-        assumeThat( getClosedFS(), notNullValue() );
+        assumeThat( capabilities.isClosable(), is(true ) );
 
         Files.readAllBytes( getClosedAf() );
     }
 
     @Test( expected = ClosedFileSystemException.class )
     public void testClosedFSCantReadDir() throws Exception {
-        assumeThat( getClosedFS(), notNullValue() );
+        assumeThat( capabilities.isClosable(), is(true ) );
 
         Files.newDirectoryStream( getClosedBd() );
     }
 
     @Test( expected = ClosedFileSystemException.class )
     public void testClosedFSCantUseReadChannelPosition() throws Exception {
-        assumeThat( getClosedFS(), notNullValue() );
+        assumeThat( capabilities.isClosable(), is(true ) );
 
         getClosedReadChannel().position();
     }
 
     @Test( expected = ClosedFileSystemException.class )
     public void testClosedFSCantUseReadChannelRead() throws Exception {
-        assumeThat( getClosedFS(), notNullValue() );
+        assumeThat( capabilities.isClosable(), is(true ) );
 
         getClosedReadChannel().read( ByteBuffer.allocate(2) );
     }
 
     @Test( expected = ClosedFileSystemException.class )
     public void testClosedFSCantUseReadChannelSize() throws Exception {
-        assumeThat( getClosedFS(), notNullValue() );
+        assumeThat( capabilities.isClosable(), is(true ) );
 
         getClosedReadChannel().size();
     }
+
+    @Test( expected = FileSystemNotFoundException.class )
+    public void testCantGetClosedFSViaURI() throws Exception {
+        assumeThat( capabilities.isClosable(), is(true ) );
+
+        FS.provider().getFileSystem(getClosedURI());
+    }
+
 //
 //
 //    @Test( expected = ClosedFileSystemException.class )
