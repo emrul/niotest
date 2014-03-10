@@ -100,7 +100,7 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
     }
 
     @Test
-    public void testNewDirIsInParentsDixrStream() throws IOException {
+    public void testNewDirIsInParentsDirStream() throws IOException {
 
         Path dir = getPathPA();
         Files.createDirectory( dir );
@@ -293,4 +293,19 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         assertThat( Files.readAttributes( dir.getParent(), BasicFileAttributes.class ).lastAccessTime(), is( before ));
     }
 
+    // todo: the results of closong a dirstream are not quite clear
+    //  a) just stop iterating
+    // b) throw
+    // c) both / depends
+//    @Test
+//    public void testReadAfterCloseDirStreamThrows() throws Exception{
+//        Path     file    = getPathPABf();
+//        //getPathPAC();
+//
+//        try( DirectoryStream<Path> kids = Files.newDirectoryStream( file.getParent() ) ) {
+//            kids.close();
+//            for( Path kid : kids ) {
+//            }
+//        }
+//    }
 }

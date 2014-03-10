@@ -7,6 +7,7 @@ import org.junit.Ignore;
 import org.opencage.lindwurm.niotest.tests.PathTestIT;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,11 +24,12 @@ public class JimFSTest extends PathTestIT {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        setPlay( Jimfs.newFileSystem(Configuration.unix()).getPath("/play"));
+        Path path = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
+        System.out.println(path.toUri());
+        setPlay( path );
 
-//                getOrCreate( "marschall" ).getPath( "play" ).toAbsolutePath() );
-//        setClosablePlay( getOrCreate( "marschallClose" ).getPath( "play" ).toAbsolutePath() );
-//        set2ndPlay(getOrCreate( "marschall22" ).getPath( "play" ).toAbsolutePath() );
+        setClosablePlay(Jimfs.newFileSystem(Configuration.unix()).getPath("/play"));
+
     }
 
 }

@@ -1,18 +1,28 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.Is;
 import org.junit.Test;
+import org.opencage.kleinod.collection.Sets;
+import org.opencage.kleinod.paths.PathUtils;
+import org.opencage.lindwurm.niotest.matcher.Assumes;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.file.ClosedFileSystemException;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.Files;
+import java.nio.channels.ClosedChannelException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
 
+import static java.nio.file.StandardOpenOption.READ;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
+import static org.opencage.lindwurm.niotest.matcher.Assumes.*;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -44,24 +54,19 @@ public abstract class PathTest7ClosedIT extends PathTest6AttributesIT {
 
     // closable FS
 
-//    @Test
-//    public void testAAA7ClosableHasClosedFS() throws Exception {
-//        assumeThat( capabilities.isClosable(), is(true ) );
-//        assertThat( getClosedFS(), notNullValue() );
-//    }
+    @Test
+    public void testAAA7ClosableHasClosedFS() throws Exception {
+        assumeThat( capabilities.isClosable(), is(true ) );
+        assertThat( getClosedFS(), notNullValue() );
+    }
 
 
     @Test
+
     public void testClosedFSisClosed() throws Exception {
         assumeThat( capabilities.isClosable(), is(true ) );
 
         assertThat( getClosedFS().isOpen(), is(false) );
-    }
-
-    @Test( expected = ClosedFileSystemException.class )
-    public void bugClosedFSisClosed() throws Exception {
-        assumeThat( capabilities.isClosable(), is(true ) );
-        getClosedFS().isOpen();
     }
 
 
@@ -85,33 +90,202 @@ public abstract class PathTest7ClosedIT extends PathTest6AttributesIT {
         Files.newDirectoryStream( getClosedBd() );
     }
 
-    @Test( expected = ClosedFileSystemException.class )
+    @Test( expected = ClosedChannelException.class )
     public void testClosedFSCantUseReadChannelPosition() throws Exception {
         assumeThat( capabilities.isClosable(), is(true ) );
 
         getClosedReadChannel().position();
     }
 
-    @Test( expected = ClosedFileSystemException.class )
+    @Test( expected = ClosedChannelException.class )
     public void testClosedFSCantUseReadChannelRead() throws Exception {
         assumeThat( capabilities.isClosable(), is(true ) );
 
         getClosedReadChannel().read( ByteBuffer.allocate(2) );
     }
 
-    @Test( expected = ClosedFileSystemException.class )
+    @Test( expected = ClosedChannelException.class )
     public void testClosedFSCantUseReadChannelSize() throws Exception {
         assumeThat( capabilities.isClosable(), is(true ) );
 
         getClosedReadChannel().size();
     }
 
+    // todo test all other methods on all other channels
+
     @Test( expected = FileSystemNotFoundException.class )
     public void testCantGetClosedFSViaURI() throws Exception {
+        assumeThat(capabilities.isClosable(), is(true));
+        getClosedFSProvider().getFileSystem(getClosedURI());
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSnewByteChannel() throws Exception {
+        assumeThat(capabilities.isClosable(), is(true));
+        getClosedFS();
+        FS.provider().newByteChannel( getClosedAf(), Sets.asSet( READ ) );
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSGetBasicFileAttributeViewProvider() throws IOException {
+        assumeThat( capabilities.isClosable(), is(true ) );
+        getClosedFS();
+        FS.provider().getFileAttributeView( getClosedAf(), BasicFileAttributeView.class );
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSCreateDirectoryOtherProvider() throws IOException {
+        assumeThat(capabilities.isClosable(), is(true));
+        getClosedFSProvider().createDirectory(getClosedAf());
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSNewFileChannel() throws IOException {
+        assumeThat( capabilities.isClosable(), is(true ) );
+        assumeThat( capabilities.hasFileChannels(), is(true));
+        getClosedFSProvider().newFileChannel( getClosedAf(), Collections.<OpenOption>emptySet() );
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSCheckAccess() throws IOException {
+        assumeThat( capabilities.isClosable(), is(true ) );
+        getClosedFS();
+        FS.provider().checkAccess( getClosedAf() );
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testCopyFromClosedFS() throws IOException {
+        assumeThat( capabilities.isClosable(), is(true ) );
+        getClosedFSProvider().copy( getClosedAf(), getPathPB() );
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testCopyToClosedFS() throws IOException {
+        assumeThat( capabilities.isClosable(), is(true ) );
+        getClosedFSProvider().copy( getPathPB(), getClosedAf() );
+    }
+
+//    @Test
+//    public void testCopyOtherProviderWithFiles() throws IOException {
+//        Path defaultTarget = PathUtils.getTmpDir("foo").resolve("duh");
+//        Files.createDirectories( defaultTarget.getParent());
+//
+//        Files.copy(getPathPABf(), defaultTarget);
+//
+//        MatcherAssert.assertThat(Files.readAllBytes(defaultTarget), Is.is(CONTENT));
+//        Files.deleteIfExists(defaultTarget);
+//    }
+//
+//    @Test( expected = ProviderMismatchException.class )
+//    public void testMoveOtherProviderFrom() throws IOException {
+//        FS.provider().move( getOther(), getPathPB() );
+//    }
+//
+    @Test( expected = ClosedFileSystemException.class )
+    public void testMoveToClosedFS() throws IOException {
+        assumeThat( capabilities.isClosable(), is(true ) );
+        getClosedFSProvider().move( getPathPABf(), getClosedAf() );
+    }
+//
+//    @Test
+//    public void testMoveOtherProviderWithFiles() throws IOException {
+//        Path defaultTarget = PathUtils.getTmpDir("foo").resolve("duh");
+//        Files.createDirectories( defaultTarget.getParent());
+//
+//        Files.move(getPathPABf(), defaultTarget);
+//
+//        MatcherAssert.assertThat(Files.readAllBytes(defaultTarget), Is.is(CONTENT));
+//        Files.deleteIfExists(defaultTarget);
+//    }
+//
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSCreateLink() throws IOException {
+        assumeThat( capabilities.hasLinks(), is(true) );
         assumeThat( capabilities.isClosable(), is(true ) );
 
-        FS.provider().getFileSystem(getClosedURI());
+        getClosedFSProvider().createLink( getClosedAf(), getClosedAf() );
     }
+
+    @Test( expected = ProviderMismatchException.class )
+    public void testCreateSymbolicLinkOtherProvider() throws IOException {
+        assumeThat( capabilities.hasSymbolicLinks(), Is.is(true) );
+        assumeThat( capabilities.isClosable(), is(true ) );
+
+        getClosedFSProvider().createSymbolicLink( getClosedAf(), getClosedAf() );
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSDelete() throws IOException {
+        Assumes.assumeThat(capabilities.isClosable());
+        getClosedFSProvider().delete( getClosedAf() );
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSGetFileStore() throws IOException {
+        assumeTrue(capabilities.isClosable());
+        getClosedFSProvider().getFileStore( getClosedAf() );
+    }
+
+//    @Test( expected = IllegalArgumentException.class )
+//    public void testClosedFSGetPath() throws IOException {
+//        assumeTrue(capabilities.isClosable());
+//        getClosedFSProvider().getPath( getClosedURI() );
+//    }
+
+
+//    @Test( expected = IllegalArgumentException.class )
+//    public void testClosedFSGetFileSystemOtherURI() throws IOException {
+//        FS.provider().getFileSystem( getOther().toUri() );
+//    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSIsHidden() throws IOException {
+        assumeTrue(capabilities.isClosable());
+        getClosedFSProvider().isHidden( getClosedAf() );
+    }
+
+
+
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSNewAsynchronousFileChannel() throws IOException {
+        assumeTrue(capabilities.isClosable());
+        assumeThat( capabilities.hasAsynchronousFileChannels(), Is.is(true) );
+
+        getClosedFSProvider().newAsynchronousFileChannel( getClosedAf(), Collections.<OpenOption>emptySet(), null );
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSNewInputStream() throws IOException {
+        assumeTrue(capabilities.isClosable());
+        getClosedFSProvider().newOutputStream( getClosedAf() );
+    }
+//
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSNewOutputStream() throws IOException {
+        assumeTrue(capabilities.isClosable());
+        getClosedFSProvider().newOutputStream( getClosedAf() );
+    }
+
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSReadAttributes() throws IOException {
+        assumeTrue(capabilities.isClosable());
+        getClosedFSProvider().readAttributes( getClosedAf(), BasicFileAttributes.class );
+    }
+
+    @Test( expected = ClosedFileSystemException.class )
+    public void testClosedFSReadAttributesString() throws IOException {
+        assumeTrue(capabilities.isClosable());
+        getClosedFSProvider().readAttributes( getClosedAf(), "*" );
+    }
+//
+//    @Test( expected = ProviderMismatchException.class )
+//    public void testReadSymbolicLinkOtherProvider() throws IOException {
+//        assumeThat( capabilities.hasSymbolicLinks(), Is.is(true) );
+//
+//        FS.provider().readSymbolicLink( getOther() );
+//    }
 
 //
 //

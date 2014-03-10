@@ -31,7 +31,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opencage.kleinod.paths.PathUtils;
+import org.opencage.kleinod.type.ImmuDate;
 import org.opencage.lindwurm.niotest.tests.PathTestIT;
+import sun.java2d.StateTrackable;
 
 import java.io.IOException;
 import java.net.URI;
@@ -45,13 +47,17 @@ public class MarschallTest extends PathTestIT {
     @BeforeClass
     public static void setUp() throws IOException {
         setPlay( getOrCreate( "marschall" ).getPath( "play" ).toAbsolutePath() );
-        setClosablePlay( getOrCreate( "marschallClose" ).getPath( "play" ).toAbsolutePath() );
-        set2ndPlay(getOrCreate( "marschall22" ).getPath( "play" ).toAbsolutePath() );
+        set2ndPlay(getOrCreate("marschall22").getPath("play").toAbsolutePath());
+
+
+        String suf = ImmuDate.now().toStringFSFriendly();
+        System.out.println(suf);
+        setClosablePlay(getOrCreate("marschallClose" + suf).getPath("play").toAbsolutePath());
     }
 
     public MarschallTest() throws IOException {
 
-        capabilities.doesNotSupportWatchService();
+        capabilities.noLinks().notClosable().doesNotSupportWatchService();
 
         bug( "testCreateDirectoryRoot", "bugCreateDirectoryRootThrowsWrongException" );
 
@@ -80,7 +86,7 @@ public class MarschallTest extends PathTestIT {
 //
 //
         bug( "testMoveRoot", "bugMoveRootThrowsClassCastException" );
-        bug( "testClosedFSisClosed", "bugClosedFSisClosed" );
+        //bug( "testClosedFSisClosed", "bugClosedFSisClosed" );   // actually works
         bug( "testCopyDirCreatesADirWithTheTargetName", "" );
         bug( "testCopyNonEmptyDirDoesNotCopyKids", "" );
 //        bug( "testFileAttributesAreImmutable", "" ); //fix in 5.0
@@ -95,10 +101,6 @@ public class MarschallTest extends PathTestIT {
         bug( "testAppendAndReadThrows", "" );
         bug( "testGetFileSystemOtherURI", "" );
         bug( "testGetPathOtherURI", "" );
-
-        bug( "testCantGetClosedFSViaURI");
-
-
 
     }
 

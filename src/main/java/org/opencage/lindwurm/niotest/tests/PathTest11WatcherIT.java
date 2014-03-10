@@ -14,16 +14,37 @@ import static java.nio.file.StandardOpenOption.WRITE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
+import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.absolute;
 import static org.opencage.lindwurm.niotest.matcher.PathExists.exists;
 
 /**
- * Created with IntelliJ IDEA.
- * User: stephan
- * Date: 19/02/14
- * Time: 14:46
- * To change this template use File | Settings | File Templates.
+ * ** BEGIN LICENSE BLOCK *****
+ * BSD License (2 clause)
+ * Copyright (c) 2006 - 2013, Stephan Pfab
+ * All rights reserved.
+ * <p/>
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL Stephan Pfab BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * **** END LICENSE BLOCK ****
  */
 public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
@@ -56,6 +77,25 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         Thread.sleep(getWatcherSleep());
 
         assertThat(dels.size(), is(1));
+    }
+
+
+    @Test( expected = ClosedWatchServiceException.class )
+    public void testRegisterOnClosedWatchService() throws IOException {
+        assumeThat( capabilities.supportsWatchService(), is(true));
+
+        WatchService watcher = FS.newWatchService();
+        watcher.close();
+        getPathPAd().register(watcher, ENTRY_CREATE);
+    }
+
+
+    @Test( expected = ClosedWatchServiceException.class )
+    public void testRegisterWatchServiceOfClosedFS() throws Exception {
+        assumeThat( capabilities.supportsWatchService(), is(true));
+        assumeThat( capabilities.isClosable(), is(true));
+
+        getClosedBd().register(closedFSWatchService, StandardWatchEventKinds.ENTRY_DELETE);
     }
 
     @Test
@@ -235,17 +275,6 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assertThat(que.size(), is(1));
     }
 
-    @Test( expected = ClosedWatchServiceException.class )
-    public void testRegisterOnClosedWatchService() throws IOException {
-        assumeThat( capabilities.supportsWatchService(), is(true));
-
-        Path dir = getPathPAd();
-
-        WatchService watcher = dir.getFileSystem().newWatchService();
-        watcher.close();
-
-        dir.register( watcher, ENTRY_CREATE );
-    }
 
     @Test
     public void testTakeBlocks() throws Exception {
@@ -306,7 +335,100 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
     }
 
+    @Test
+    public void testPollAnEmptyWatchServiceReturnNull() throws Exception {
+        assumeThat( capabilities.supportsWatchService(), is(true));
 
+        Path dir = getPathPAd();
+        final WatchService watcher = dir.getFileSystem().newWatchService();
+        dir.register( watcher, StandardWatchEventKinds.ENTRY_CREATE );
+
+        assertThat(watcher.poll(), nullValue());
+    }
+
+    @Test
+    public void testWatchADeleteWithPoll() throws Exception {
+        assumeThat( capabilities.supportsWatchService(), is(true));
+
+        Path dir = getPathPA();
+        Path toBeDeleted = getPathPABf();
+        final WatchService watcher = dir.getFileSystem().newWatchService();
+        dir.register( watcher, StandardWatchEventKinds.ENTRY_DELETE );
+
+        Thread.sleep(1000);
+        Files.delete(toBeDeleted);
+
+        Thread.sleep(getWatcherSleep());
+
+        WatchKey watchKey = watcher.poll();
+        assertThat(watchKey, notNullValue());
+        assertThat(watchKey.isValid(), is(true));
+        //watchKey.pollEvents();
+    }
+
+    @Test
+    public void testWatchKeyPollEventsEmptiesQue() throws Exception {
+        assumeThat( capabilities.supportsWatchService(), is(true));
+
+        Path dir = getPathPA();
+        Path toBeDeleted = getPathPABf();
+        final WatchService watcher = dir.getFileSystem().newWatchService();
+        dir.register( watcher, StandardWatchEventKinds.ENTRY_DELETE );
+
+        Thread.sleep(1000);
+        Files.delete(toBeDeleted);
+
+        Thread.sleep(getWatcherSleep());
+
+        WatchKey watchKey = watcher.poll();
+        watchKey.pollEvents();
+        assertThat( watchKey.pollEvents(), empty());
+    }
+
+    @Test
+    public void testSignaledWatchKeyWatchesCorrectDir() throws Exception {
+        assumeThat( capabilities.supportsWatchService(), is(true));
+
+        Path dir = getPathPA();
+        Path toBeDeleted = getPathPABf();
+        final WatchService watcher = dir.getFileSystem().newWatchService();
+        dir.register( watcher, StandardWatchEventKinds.ENTRY_DELETE );
+
+        Thread.sleep(1000);
+        Files.delete(toBeDeleted);
+
+        Thread.sleep(getWatcherSleep());
+
+        WatchKey watchKey = watcher.poll();
+
+        assertThat( watchKey.watchable(), is((Watchable) dir));
+    }
+
+    @Test
+    public void testSignaledEventReportsCorrectPath() throws Exception {
+        assumeThat( capabilities.supportsWatchService(), is(true));
+
+        Path dir = getPathPA();
+        Path toBeDeleted = getPathPABf();
+        final WatchService watcher = dir.getFileSystem().newWatchService();
+        dir.register( watcher, StandardWatchEventKinds.ENTRY_DELETE );
+
+        Thread.sleep(1000);
+        Files.delete(toBeDeleted);
+
+        Thread.sleep(getWatcherSleep());
+
+        WatchKey watchKey = watcher.poll();
+
+        Path path = (Path) watchKey.pollEvents().iterator().next().context();
+
+        assertThat(path,not(absolute()));
+        assertThat( dir.resolve(path), is(toBeDeleted ));
+    }
+
+    /*
+     * ------------------------------------------------------------------------------------
+     */
 
     // todo refactor
     private static class Watcher implements Runnable {
@@ -325,18 +447,8 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
             try {
                 WatchService watcher = dir.getFileSystem().newWatchService();
                 dir.register(watcher, kind);
-
-                //System.out.println("watcher is running. watching " + dir);
-
                 WatchKey watckKey = watcher.take();
-
-                //System.out.println("watcher is running2");
-
-
                 List<WatchEvent<?>> events = watckKey.pollEvents();
-
-                // System.out.println("watcher is running3");
-
                 for (WatchEvent event : events) {
                     if ( event.kind().equals(kind)) {
                         dels.add((Path) event.context());

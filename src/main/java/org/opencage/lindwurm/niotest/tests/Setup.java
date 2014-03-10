@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.*;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,8 +60,7 @@ public abstract class Setup {
     protected static byte[] CONTENT50;
 
     public static FileSystem FS;
-    private static FileSystem closedFS;
-    public String[]   nameStr = {"aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii", "jjj", "kkk"};
+    public static String[]   nameStr = {"aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii", "jjj", "kkk"};
     private int       kidCount;
 
     protected Map<String, String> notSupported = new HashMap<>();
@@ -72,11 +72,16 @@ public abstract class Setup {
 
     @Rule
     public TestName testMethodName = new TestName();
-    private Path closedAf;
-    private Path closedBd;
-    private SeekableByteChannel closedReadChannel;
+
+
+    private static FileSystem closedFS = null;
+    protected static Path closedAf;
+    protected static Path closedBd;
+    protected static SeekableByteChannel closedReadChannel;
     protected static Path play2;
-    private URI closedURI;
+    protected static URI closedURI;
+    protected static DirectoryStream<Path> closedDirStream;
+    protected static WatchService closedFSWatchService;
 
 
     @BeforeClass
@@ -309,11 +314,11 @@ public abstract class Setup {
 
     public static void setClosablePlay( Path closablePlay ) {
         Setup.closablePlay = closablePlay;
-        Setup.closedFS = closablePlay.getFileSystem();
+        Setup.closedFS = null;
     }
 
     public FileSystem getClosedFS() throws IOException {
-        if ( closedFS != null ) {
+        if ( closedFS == null ) {
             closedFS = closablePlay.getFileSystem();
             Files.createDirectories( closablePlay );
 
@@ -329,10 +334,21 @@ public abstract class Setup {
 
             closedURI = closablePlay.getRoot().toUri();
 
+            closedDirStream = Files.newDirectoryStream( closablePlay );
+
+            if ( capabilities.supportsWatchService() ) {
+                closedFSWatchService = closedFS.newWatchService();
+            }
+
             closedFS.close();
         }
 
         return closedFS;
+    }
+
+    public FileSystemProvider getClosedFSProvider() throws IOException {
+        getClosedFS();
+        return FS.provider();
     }
 
     public Path getClosedAf() throws IOException {
