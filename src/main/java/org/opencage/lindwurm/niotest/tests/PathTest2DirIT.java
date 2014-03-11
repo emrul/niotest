@@ -15,6 +15,7 @@ import java.nio.file.attribute.FileTime;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
@@ -71,6 +72,23 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
         try( DirectoryStream<Path> stream = Files.newDirectoryStream( nonEmptyDir()) ) {
             assertEquals( getKidCount(), Iterators.size( stream ) );
+        }
+    }
+
+    @Test( expected = IllegalStateException.class )
+    public void testIteratorCanOnlyBeCalledOnceOnDirStream() throws IOException {
+
+        try( DirectoryStream<Path> stream = Files.newDirectoryStream( getPathPAd()) ) {
+            stream.iterator();
+            stream.iterator();
+        }
+    }
+
+    @Test( expected = UnsupportedOperationException.class )
+    public void testDirStreamIteratorHasNoRemove() throws IOException {
+
+        try( DirectoryStream<Path> stream = Files.newDirectoryStream( getPathPAd()) ) {
+            stream.iterator().remove();
         }
     }
 
@@ -293,19 +311,43 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         assertThat( Files.readAttributes( dir.getParent(), BasicFileAttributes.class ).lastAccessTime(), is( before ));
     }
 
-    // todo: the results of closong a dirstream are not quite clear
-    //  a) just stop iterating
-    // b) throw
-    // c) both / depends
-//    @Test
-//    public void testReadAfterCloseDirStreamThrows() throws Exception{
-//        Path     file    = getPathPABf();
-//        //getPathPAC();
-//
-//        try( DirectoryStream<Path> kids = Files.newDirectoryStream( file.getParent() ) ) {
-//            kids.close();
-//            for( Path kid : kids ) {
-//            }
-//        }
-//    }
+    @Test
+    public void testGetIteratorOfClosedDirStream() throws Exception{
+        Path     file    = getPathPABf();
+        getPathPACf(); // 2 kids
+
+
+        try( DirectoryStream<Path> kids = Files.newDirectoryStream( file.getParent() ) ) {
+            kids.close();
+            int count = 0;
+            for ( Path kid : kids ) {
+                count++;
+            }
+
+            assertThat( count, lessThan(2) );
+        }
+    }
+
+    @Test
+    public void testCloseDirStreamInTheMiddleOfIteration() throws Exception{
+        Path     file    = getPathPABf();
+        getPathPACf(); // 2 kids
+        getPathPADf(); // 3 kids
+
+
+        try( DirectoryStream<Path> kids = Files.newDirectoryStream( file.getParent() ) ) {
+            int count = 0;
+            for ( Path kid : kids ) {
+                count++;
+
+                if ( count == 1 ) {
+                    kids.close();
+                }
+
+            }
+
+            assertThat( count, lessThan(3) );
+        }
+    }
+
 }

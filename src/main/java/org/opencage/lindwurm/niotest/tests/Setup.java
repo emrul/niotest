@@ -229,6 +229,20 @@ public abstract class Setup {
         return ret;
     }
 
+    public Path getPathPACf() throws IOException {
+        Path ret = getPathPAC();
+        Files.createDirectories( ret.getParent() );
+        Files.write(ret, CONTENT, standardOpen );
+        return ret;
+    }
+
+    public Path getPathPADf() throws IOException {
+        Path ret = getPathPA().resolve( nameStr[3]);
+        Files.createDirectories( ret.getParent() );
+        Files.write(ret, CONTENT, standardOpen );
+        return ret;
+    }
+
     public Path getPathPBCf() throws IOException {
         Path ret = getPathPB().resolve(nameStr[2]);
         Files.createDirectories( ret.getParent() );

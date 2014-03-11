@@ -59,6 +59,8 @@ public class DefaultFileSystemTest extends PathTestIT {
         bug( "testNewByteChannelUnnormalizedPath",  "bugNewByteChannelUnnormalizedPath" );
         bug( "testNewDirectoryStreamUnnormalizedPath", "bugNewDirectoryStreamUnnormalizedPath"  );
 
+        bug( "testGetIteratorOfClosedDirStream" ); // throws
+
 
 
 

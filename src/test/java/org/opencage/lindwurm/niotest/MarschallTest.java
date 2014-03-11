@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.opencage.kleinod.paths.PathUtils;
 import org.opencage.kleinod.type.ImmuDate;
 import org.opencage.lindwurm.niotest.tests.PathTestIT;
-import sun.java2d.StateTrackable;
 
 import java.io.IOException;
 import java.net.URI;
@@ -101,6 +100,8 @@ public class MarschallTest extends PathTestIT {
         bug( "testAppendAndReadThrows", "" );
         bug( "testGetFileSystemOtherURI", "" );
         bug( "testGetPathOtherURI", "" );
+
+        bug( "testGetIteratorOfClosedDirStream" );
 
     }
 
