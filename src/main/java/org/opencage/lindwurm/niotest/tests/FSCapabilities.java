@@ -1,5 +1,6 @@
 package org.opencage.lindwurm.niotest.tests;
 
+
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
@@ -34,7 +35,7 @@ public class FSCapabilities {
     private boolean hasAsynchronousFileChannels = true;
     private boolean hasFileChannels = true;
     private boolean supportsCreationTime = true;
-    private boolean lastAccessTimeSettable = true;
+    private boolean supportsLastAccessTime = true;
     private boolean supportsWatchService = true;
 
     public boolean isClosable() {
@@ -66,16 +67,18 @@ public class FSCapabilities {
         return supportsCreationTime;
     }
 
-    public void doesNotSupportCreationTime() {
+    public FSCapabilities doesNotSupportCreationTime() {
         this.supportsCreationTime = false;
+        return this;
     }
 
-    public boolean isLastAccessTimeSettable() {
-        return lastAccessTimeSettable;
+    public boolean supportsLastAccessTime() {
+        return supportsLastAccessTime;
     }
 
-    public void lastAccessTimeIsNotSettable() {
-        this.lastAccessTimeSettable = false;
+    public FSCapabilities doesNotSupportLastAccessTime() {
+        this.supportsLastAccessTime = false;
+        return this;
     }
 
     public boolean supportsWatchService() {

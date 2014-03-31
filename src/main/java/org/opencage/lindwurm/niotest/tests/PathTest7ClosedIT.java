@@ -256,7 +256,8 @@ public abstract class PathTest7ClosedIT extends PathTest6AttributesIT {
     }
 
     @Test( expected = ClosedFileSystemException.class )
-    public void testClosedFSNewInputStream() throws IOException {
+    public void
+    testClosedFSNewInputStream() throws IOException {
         assumeTrue(capabilities.isClosable());
         getClosedFSProvider().newOutputStream( getClosedAf() );
     }

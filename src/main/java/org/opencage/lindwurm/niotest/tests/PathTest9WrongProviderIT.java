@@ -69,10 +69,10 @@ public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
         FS.provider().checkAccess( getOther() );
     }
 
-    @Test( expected = IllegalArgumentException.class )
-    public void bugCheckAccessOtherProviderThrowsWrongException() throws IOException {
-        FS.provider().checkAccess( getOther() );
-    }
+//    @Test( expected = IllegalArgumentException.class )
+//    public void bugCheckAccessOtherProviderThrowsWrongException() throws IOException {
+//        FS.provider().checkAccess( getOther() );
+//    }
 
     @Test( expected = ProviderMismatchException.class )
     public void testCopyOtherProviderFrom() throws IOException {

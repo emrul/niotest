@@ -215,7 +215,7 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         assertThat( getPathPBB(), exists());
     }
 
-    @Test( expected = FileSystemException.class )
+    @Test( expected = IOException.class )
     public void testMoveIntoItself() throws IOException {
         Path src = getPathPAd();
         Files.move(src, getPathPAB());
@@ -227,10 +227,10 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         Files.move( getRoot(), getPathPB());
     }
 
-    @Test( expected = ClassCastException.class )
-    public void bugMoveRootThrowsClassCastException() throws IOException {
-        Files.move( getRoot(), getPathPB());
-    }
+//    @Test( expected = ClassCastException.class )
+//    public void bugMoveRootThrowsClassCastException() throws IOException {
+//        Files.move( getRoot(), getPathPB());
+//    }
 
 //    @Test
 //    public void testMoveSetsLastModifiedTime() throws IOException, InterruptedException {

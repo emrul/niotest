@@ -174,13 +174,13 @@ public abstract class PathTest10PathWithContentIT extends PathTest9WrongProvider
         assertThat( Files.readAllBytes(getPathPB()), is(CONTENT));
     }
 
-    @Test
-    public void testCreateDirectoryUnnormalizedPath() throws IOException {
-        assumeThat( message(), possible(), is(true) );
-
-        FS.provider().createDirectory( getPathPAu());
-        assertThat(getPathPA(), exists());
-    }
+//    @Test
+//    public void testCreateDirectoryUnnormalizedPath() throws IOException {
+//        assumeThat( message(), possible(), is(true) );
+//
+//        FS.provider().createDirectory( getPathPAu());
+//        assertThat(getPathPA(), exists());
+//    }
 
     @Test
     public void testCreateDirectoryWithRelativePath() throws IOException {
@@ -193,12 +193,12 @@ public abstract class PathTest10PathWithContentIT extends PathTest9WrongProvider
     }
 
 
-    @Test( expected = NoSuchFileException.class )
-    public void bugCreateDirectoryUnnormalizedPath() throws IOException {
-        assumeThat( message(), possible(), is(false) );
-
-        FS.provider().createDirectory(getPathPAu());
-    }
+//    @Test( expected = NoSuchFileException.class )
+//    public void bugCreateDirectoryUnnormalizedPath() throws IOException {
+//        assumeThat( message(), possible(), is(false) );
+//
+//        FS.provider().createDirectory(getPathPAu());
+//    }
 
     @Test
     public void testDeleteUnnormalizedPath() throws IOException {
@@ -216,15 +216,15 @@ public abstract class PathTest10PathWithContentIT extends PathTest9WrongProvider
         assertThat(file, not(exists()));
     }
 
-    @Test
-    public void testGetFileStoreUnnormalizedPath() throws IOException {
-        FS.provider().getFileStore(getPathPABu());
-    }
+//    @Test
+//    public void testGetFileStoreUnnormalizedPath() throws IOException {
+//        FS.provider().getFileStore(getPathPABu());
+//    }
 
-    @Test( expected = NoSuchFileException.class )
-    public void bugGetFileStoreUnnormalizedPath() throws IOException {
-        FS.provider().getFileStore(getPathPABu());
-    }
+//    @Test( expected = NoSuchFileException.class )
+//    public void bugGetFileStoreUnnormalizedPath() throws IOException {
+//        FS.provider().getFileStore(getPathPABu());
+//    }
 
     @Test
     public void testIsHiddenUnnormalizedPath() throws IOException {
@@ -257,33 +257,33 @@ public abstract class PathTest10PathWithContentIT extends PathTest9WrongProvider
         getPathPAB().toRealPath();
     }
 
-    @Test
-    public void testNewByteChannelUnnormalizedPath() throws IOException {
-        try ( SeekableByteChannel ch = FS.provider().newByteChannel( getPathPAu(), Sets.asSet(WRITE, CREATE_NEW ) )) {}
+//    @Test
+//    public void testNewByteChannelUnnormalizedPath() throws IOException {
+//        try ( SeekableByteChannel ch = FS.provider().newByteChannel( getPathPAu(), Sets.asSet(WRITE, CREATE_NEW ) )) {}
+//
+//        assertThat( getPathPA(), exists());
+//    }
 
-        assertThat( getPathPA(), exists());
-    }
+//    @Test( expected = NoSuchFileException.class )
+//    public void bugNewByteChannelUnnormalizedPath() throws IOException {
+//        try ( SeekableByteChannel ch = FS.provider().newByteChannel( getPathPAu(), Sets.asSet(WRITE, CREATE_NEW ) )) {}
+//    }
 
-    @Test( expected = NoSuchFileException.class )
-    public void bugNewByteChannelUnnormalizedPath() throws IOException {
-        try ( SeekableByteChannel ch = FS.provider().newByteChannel( getPathPAu(), Sets.asSet(WRITE, CREATE_NEW ) )) {}
-    }
+//    @Test
+//    public void testNewDirectoryStreamUnnormalizedPath() throws IOException {
+//        getPathPABf();
+//        try ( DirectoryStream<Path> stream = FS.provider().newDirectoryStream( getPathPAu(), getFilterAll())) {
+//            for ( Path kid : stream ) {
+//                assertThat( kid.toAbsolutePath().normalize(), is(getPathPAB()));
+//            }
+//        }
+//    }
 
-    @Test
-    public void testNewDirectoryStreamUnnormalizedPath() throws IOException {
-        getPathPABf();
-        try ( DirectoryStream<Path> stream = FS.provider().newDirectoryStream( getPathPAu(), getFilterAll())) {
-            for ( Path kid : stream ) {
-                assertThat( kid.toAbsolutePath().normalize(), is(getPathPAB()));
-            }
-        }
-    }
-
-    @Test( expected = NoSuchFileException.class )
-    public void bugNewDirectoryStreamUnnormalizedPath() throws IOException {
-        getPathPABf();
-        try ( DirectoryStream<Path> stream = FS.provider().newDirectoryStream( getPathPAu(), getFilterAll())) {}
-    }
+//    @Test( expected = NoSuchFileException.class )
+//    public void bugNewDirectoryStreamUnnormalizedPath() throws IOException {
+//        getPathPABf();
+//        try ( DirectoryStream<Path> stream = FS.provider().newDirectoryStream( getPathPAu(), getFilterAll())) {}
+//    }
 
     /*
      * ---------------------------------------------------------------

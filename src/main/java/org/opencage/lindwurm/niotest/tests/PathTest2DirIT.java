@@ -155,10 +155,10 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         Files.createDirectory( getRoot() );
     }
 
-    @Test( expected = FileSystemException.class )
-    public void bugCreateDirectoryRootThrowsWrongException() throws IOException {
-        Files.createDirectory( getRoot() );
-    }
+//    @Test( expected = FileSystemException.class )
+//    public void bugCreateDirectoryRootThrowsWrongException() throws IOException {
+//        Files.createDirectory( getRoot() );
+//    }
 
     @Test
     public void testRootisADir() throws IOException {
@@ -205,6 +205,8 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testCreateDirSetsLastAccessTimeOfParent() throws IOException, InterruptedException {
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         Path dir = getPathPAd();
         FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
@@ -213,15 +215,15 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ));
     }
 
-    @Test
-    public void bugCreateDirDoesNotSetLastAccessTimeOfParent() throws IOException, InterruptedException {
-        Path dir = getPathPAd();
-        FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
-        Thread.sleep( 2000 );
-
-        Files.createDirectory( getPathPAB() );
-        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), is( before ));
-    }
+//    @Test
+//    public void bugCreateDirDoesNotSetLastAccessTimeOfParent() throws IOException, InterruptedException {
+//        Path dir = getPathPAd();
+//        FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
+//        Thread.sleep( 2000 );
+//
+//        Files.createDirectory( getPathPAB() );
+//        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), is( before ));
+//    }
 
     @Test
     public void testCreateDirSetsCreationTime() throws IOException, InterruptedException {

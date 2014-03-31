@@ -46,7 +46,7 @@ public class MarschallTest extends PathTestIT {
     @BeforeClass
     public static void setUp() throws IOException {
         setPlay( getOrCreate( "marschall" ).getPath( "play" ).toAbsolutePath() );
-        set2ndPlay(getOrCreate("marschall22").getPath("play").toAbsolutePath());
+        set2ndPlay(getOrCreate("marschallother").getPath("play").toAbsolutePath());
 
 
         String suf = ImmuDate.now().toStringFSFriendly();
@@ -56,51 +56,25 @@ public class MarschallTest extends PathTestIT {
 
     public MarschallTest() throws IOException {
 
-        capabilities.noLinks().notClosable().doesNotSupportWatchService();
+        capabilities.
+                noLinks().
+                notClosable().
+                doesNotSupportWatchService();
 
         bug( "testCreateDirectoryRoot", "bugCreateDirectoryRootThrowsWrongException" );
-
-        bug( "testCheckAccessOtherProvider", "bugCheckAccessOtherProviderThrowsWrongException" );
-        bug( "testCopyOtherProviderFrom", "" );
-        bug( "testCopyOtherProviderTo", "" );
-        bug( "testCreateDirectoryOtherProvider", "" );
-        bug( "testCreateLinkOtherProvider", "" );
-        bug( "testCreateSymbolicLinkOtherProvider", "" );
-        bug( "testDeleteIfExistsOtherProvider", "" );
-        bug( "testDeleteOtherProvider", "" );
-        bug( "testGetFileStoreOtherProvider", "" );
-        bug( "testIsHiddenOtherProvider", "" );
         bug( "testIsSameFileOnEqualPathElementsDifferentProvider", "" );
-        bug( "testMoveOtherProviderFrom", "" );
-        bug( "testMoveOtherProviderTo", "" );
-        bug( "testNewAsynchronousFileChannelOtherProvider", "" );
-        bug( "testNewByteChannelOtherProvider", "" );
-        bug( "testNewDirectoryStreamOtherProvider", "" );
-        bug( "testNewFileChannelOtherProvider", "" );
-        bug( "testNewOutputStreamOtherProvider", "" );
-        bug( "testReadAttributesOtherProvider", "" );
-        bug( "testReadAttributesStringOtherProvider", "" );
-        bug( "testReadSymbolicLinkOtherProvider", "" );
-        bug( "testGetBasicFileAttributeViewProvider", "" );
-//
-//
-        bug( "testMoveRoot", "bugMoveRootThrowsClassCastException" );
-        //bug( "testClosedFSisClosed", "bugClosedFSisClosed" );   // actually works
         bug( "testCopyDirCreatesADirWithTheTargetName", "" );
         bug( "testCopyNonEmptyDirDoesNotCopyKids", "" );
-//        bug( "testFileAttributesAreImmutable", "" ); //fix in 5.0
         bug( "testGetNameOfDefaultPathIsItself", "" );
         bug( "testMoveIntoItself", "" );
-//        bug( "testNewDirectoryStreamUnnormalizedPath", "" ); // fixed in 5.0
         bug( "testReadCreateNonExistingFileThrows", "" );
         bug( "testReadDirStreamSetsLastAccessTime", "" );
         bug( "testReadEmptyDirStreamSetsLastAccessTime", "" );
-        bug( "testTruncateToNegativeSizeThrows", "" );
         bug( "testUnsupportedAttributeViewReturnsNull", "" );
         bug( "testAppendAndReadThrows", "" );
         bug( "testGetFileSystemOtherURI", "" );
         bug( "testGetPathOtherURI", "" );
-
+//
         bug( "testGetIteratorOfClosedDirStream" );
 
     }

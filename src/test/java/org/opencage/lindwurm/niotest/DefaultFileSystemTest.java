@@ -42,24 +42,18 @@ public class DefaultFileSystemTest extends PathTestIT {
 
     public DefaultFileSystemTest() {
 
-        capabilities.notClosable();
-        capabilities.doesNotSupportCreationTime();
+        capabilities.
+                notClosable().
+                doesNotSupportLastAccessTime(). // osx only ?
+                doesNotSupportCreationTime();   // osx only ?
 
         setWatcherSleep( 10000 );
 
+
         bug( "testCreateDirectoryRoot", "bugCreateDirectoryRootThrowsWrongException" );
+        bug( "testGetIteratorOfClosedDirStream" );
 
-        // todo: is osx only ?
-        bug( "testCreateDirSetsLastAccessTimeOfParent", "bugCreateDirDoesNotSetLastAccessTimeOfParent" );
-        bug( "testCreateFileSetsLastAccessTimeOfParent", "bugCreateFileDoesNotSetLastAccessTimeOfParent" );
-        bug( "testOverwriteSetLastAccessTime", "bugOverwriteDoesNotSetLastAccessTime" );
-
-        bug( "testCreateDirectoryUnnormalizedPath", "bugCreateDirectoryUnnormalizedPath" );
-        bug( "testGetFileStoreUnnormalizedPath",    "bugGetFileStoreUnnormalizedPath" );
-        bug( "testNewByteChannelUnnormalizedPath",  "bugNewByteChannelUnnormalizedPath" );
-        bug( "testNewDirectoryStreamUnnormalizedPath", "bugNewDirectoryStreamUnnormalizedPath"  );
-
-        bug( "testGetIteratorOfClosedDirStream" ); // throws
+        bug( "testWatchAModify");
 
 
 

@@ -16,7 +16,6 @@ import java.nio.file.Path;
  * Time: 22:06
  * To change this template use File | Settings | File Templates.
  */
-// todo: complete
 @Ignore
 public class JimFSTest extends PathTestIT {
 
@@ -25,11 +24,16 @@ public class JimFSTest extends PathTestIT {
     @BeforeClass
     public static void setUp() throws IOException {
         Path path = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
-        System.out.println(path.toUri());
         setPlay( path );
-
         setClosablePlay(Jimfs.newFileSystem(Configuration.unix()).getPath("/play"));
+
+        set2ndPlay(Jimfs.newFileSystem(Configuration.unix()).getPath("/play"));
 
     }
 
+    public JimFSTest() {
+
+        capabilities.notClosable();
+        setWatcherSleep( 7000 );
+    }
 }

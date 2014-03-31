@@ -430,6 +430,8 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testOverwriteSetLastAccessTime() throws IOException, InterruptedException {
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         Path there = getPathPAf();
         FileTime before = Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
@@ -441,18 +443,18 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         assertThat( Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ) );
     }
 
-    @Test
-    public void bugOverwriteDoesNotSetLastAccessTime() throws IOException, InterruptedException {
-        Path there = getPathPAf();
-        FileTime before = Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime();
-        Thread.sleep( 2000 );
-
-        Set<StandardOpenOption> options = Sets.asSet(
-                StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING );
-        try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, options )) {}
-
-        assertThat( Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime(), is( before ) );
-    }
+//    @Test
+//    public void bugOverwriteDoesNotSetLastAccessTime() throws IOException, InterruptedException {
+//        Path there = getPathPAf();
+//        FileTime before = Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime();
+//        Thread.sleep( 2000 );
+//
+//        Set<StandardOpenOption> options = Sets.asSet(
+//                StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING );
+//        try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, options )) {}
+//
+//        assertThat( Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime(), is( before ) );
+//    }
 
 
 
@@ -493,6 +495,8 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testCreateFileSetsLastAccessTimeOfParent() throws IOException, InterruptedException {
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         Path dir = getPathPAd();
         FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
@@ -501,15 +505,15 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ));
     }
 
-    @Test
-    public void bugCreateFileDoesNotSetLastAccessTimeOfParent() throws IOException, InterruptedException {
-        Path dir = getPathPAd();
-        FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
-        Thread.sleep( 2000 );
-
-        Files.write( getPathPABf(), CONTENT );
-        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), is( before ));
-    }
+//    @Test
+//    public void bugCreateFileDoesNotSetLastAccessTimeOfParent() throws IOException, InterruptedException {
+//        Path dir = getPathPAd();
+//        FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
+//        Thread.sleep( 2000 );
+//
+//        Files.write( getPathPABf(), CONTENT );
+//        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), is( before ));
+//    }
 
 
     @Test
@@ -617,17 +621,17 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         assertThat( Files.size( file ), is(102L));
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testWriteBeyondFileSizeUnsupported() throws IOException {
-        assumeThat( message(), possible(), CoreMatchers.is( false ) );
-
-        Path file = getPathPAf();
-        try( SeekableByteChannel out = FS.provider().newByteChannel( file, Collections.singleton(WRITE) )) {
-            out.position( 100 );
-            out.write( ByteBuffer.wrap( "ha".getBytes( "UTF-8" ) ) );
-        }
-
-    }
+    // actually that should work: make the assert
+//    @Test( expected = UnsupportedOperationException.class )
+//    public void testWriteBeyondFileSizeUnsupported() throws IOException {
+//
+//        Path file = getPathPAf();
+//        try( SeekableByteChannel out = FS.provider().newByteChannel( file, Collections.singleton(WRITE) )) {
+//            out.position( 100 );
+//            out.write( ByteBuffer.wrap( "ha".getBytes( "UTF-8" ) ) );
+//        }
+//
+//    }
 
 
     @Test

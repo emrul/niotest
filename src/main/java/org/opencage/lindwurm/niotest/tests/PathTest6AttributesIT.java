@@ -366,15 +366,15 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
         view.readAttributes();
     }
 
-    @Test( expected = NoSuchFileException.class )
-    public void bugReadAttributesViewFutureExistingFileThrows() throws IOException {
-        assumeThat( message(), possible(), is(false) );
-
-        BasicFileAttributeView view =  FS.provider().getFileAttributeView( getPathPA(), BasicFileAttributeView.class );
-
-        getPathPAf();
-        view.readAttributes();
-    }
+//    @Test( expected = NoSuchFileException.class )
+//    public void bugReadAttributesViewFutureExistingFileThrows() throws IOException {
+//        assumeThat( message(), possible(), is(false) );
+//
+//        BasicFileAttributeView view =  FS.provider().getFileAttributeView( getPathPA(), BasicFileAttributeView.class );
+//
+//        getPathPAf();
+//        view.readAttributes();
+//    }
 
 
     @Test( expected = NoSuchFileException.class )

@@ -3,23 +3,25 @@ package org.opencage.lindwurm.niotest.tests;
 import org.junit.Test;
 import org.opencage.kleinod.collection.Ref;
 import org.opencage.kleinod.collection.Sets;
+import org.opencage.lindwurm.niotest.matcher.WatchKeyMatcher;
 
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.TimeUnit;
 
 import static java.nio.file.StandardOpenOption.WRITE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.absolute;
-import static org.opencage.lindwurm.niotest.matcher.PathExists.exists;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -50,6 +52,8 @@ import static org.opencage.lindwurm.niotest.matcher.PathExists.exists;
 public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
 
+    private WatchService watchService;
+
     @Test(expected = ProviderMismatchException.class)
     public void testRegisterOtherPath() throws Exception {
         assumeThat( capabilities.supportsWatchService(), is(true));
@@ -59,38 +63,77 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         getPathPABf().register(ws, ENTRY_DELETE);
     }
 
+
     @Test
-    public void testWatchADelete() throws Exception {
-        assumeThat( capabilities.supportsWatchService(), is(true));
+    public void testWatchADeletePollOne() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
 
-        final ConcurrentLinkedDeque<Path> dels = new ConcurrentLinkedDeque<>();
-
-        Path dir = getPathPA();
-        Path toBeDeleted = getPathPABf();
-
-        new Thread(new Watcher(dir, dels, ENTRY_DELETE)).start();
-
-        Thread.sleep(1000);
+        Path toBeDeleted = createPathWAf();
+        watcherSetup(ENTRY_DELETE);
         Files.delete(toBeDeleted);
-
         Thread.sleep(getWatcherSleep());
 
-        assertThat(dels.size(), is(1));
+        assertThat(getWatchService().poll(),notNullValue());
+    }
+
+//    @Test
+//    public void testWatchADeletePollAValidKey() throws Exception {
+//        assumeThat(capabilities.supportsWatchService(), is(true));
+//
+//        Path toBeDeleted = createPathWAf();
+//        watcherSetup(ENTRY_DELETE);
+//        Files.delete(toBeDeleted);
+//        Thread.sleep(getWatcherSleep());
+//
+//        assertThat(getWatchService().poll().isValid(), is(true));
+//    }
+
+//    @Test
+//    public void testWatchADeletePollReturnKeyWatchingTheDir() throws Exception {
+//        assumeThat(capabilities.supportsWatchService(), is(true));
+//
+//        Path toBeDeleted = createPathWAf();
+//        watcherSetup(ENTRY_DELETE);
+//        Files.delete(toBeDeleted);
+//        Thread.sleep(getWatcherSleep());
+//
+//        assertThat((Path)getWatchService().poll().watchable(), is(toBeDeleted.getParent()));
+//    }
+
+    @Test
+    public void testWatchADelete2() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        Path toBeDeleted = createPathWAf();
+        watcherSetup(ENTRY_DELETE);
+        Files.delete(toBeDeleted);
+
+        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( toBeDeleted, ENTRY_DELETE ));
+    }
+
+    @Test( timeout = 20000 )
+    public void testWatchADeleteTake() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        Path toBeDeleted = createPathWAf();
+        watcherSetup(ENTRY_DELETE);
+        Files.delete(toBeDeleted);
+
+        assertThat( waitForWatchService().take(), WatchKeyMatcher.correctKey( toBeDeleted, ENTRY_DELETE ));
+    }
+
+    @Test( timeout = 20000 )
+    public void testWatchADeletePollTimeOut() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        Path toBeDeleted = createPathWAf();
+        watcherSetup(ENTRY_DELETE);
+        Files.delete(toBeDeleted);
+
+        assertThat( waitForWatchService().poll( 1000, TimeUnit.MILLISECONDS), WatchKeyMatcher.correctKey( toBeDeleted, ENTRY_DELETE ));
     }
 
 
-//    @Test
-//    public void testWD() throws Exception {
-//        assumeThat( capabilities.supportsWatchService(), is(true));
-//
-//        Path toDel = getPathWf();
-//        watch( toDel.getParent(), ENTRY_DELETE );
-//        Files.delete(toDel);
-//        Thread.sleep(getWatcherSleep());
-//
-//        assertThat( polledEvents().size(), is(1));
-//
-//    }
 
     @Test( expected = ClosedWatchServiceException.class )
     public void testRegisterOnClosedWatchService() throws IOException {
@@ -111,61 +154,80 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
     }
 
     @Test
-    public void testWatchADeleteFromMove() throws Exception {
-        assumeThat( capabilities.supportsWatchService(), is(true));
+    public void testWatchADeleteFromAMove() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
 
-        final ConcurrentLinkedDeque<Path> dels = new ConcurrentLinkedDeque<>();
+        Path toBeMoved = createPathWAf();
+        watcherSetup(ENTRY_DELETE);
+        Files.move(toBeMoved, getPathPB());
 
-        Path dir = getPathPA();
-        Path toBeDeleted = getPathPABf();
-
-        new Thread(new Watcher(dir, dels, ENTRY_DELETE)).start();
-        Thread.sleep(3000);
-
-        Files.move(toBeDeleted, getPathPB());
-        assertThat(toBeDeleted, not(exists()));
-
-        Thread.sleep(getWatcherSleep());
-
-        assertThat(dels.size(), is(1));
+        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( toBeMoved, ENTRY_DELETE ));
     }
 
     @Test
     public void testWatchAModify() throws Exception {
         assumeThat(capabilities.supportsWatchService(), is(true));
 
-        final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
+        Path toBeModified = createPathWAf();
+        watcherSetup(ENTRY_MODIFY);
+        Files.write(toBeModified, CONTENT_OTHER);
 
-        Path file = getPathPABf();
-        // java 7 can only watch dirs
-        new Thread(new Watcher(file.getParent(), que, StandardWatchEventKinds.ENTRY_MODIFY)).start();
-
-        Thread.sleep(2000);
-
-        Files.write(file, CONTENT_OTHER);
-
-        Thread.sleep(getWatcherSleep());
-
-        assertThat(que.size(), is(1));
+        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( toBeModified, ENTRY_MODIFY ));
     }
+
+
+    @Test
+    public void testWatchOther() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        Path toBeModified = createPathWAf();
+        watcherSetup(ENTRY_CREATE );
+        Files.write(toBeModified, CONTENT_OTHER);
+
+        assertThat( waitForWatchService().poll(), nullValue() );
+    }
+
+
+//    // watch several events one dir
+//    @Test
+//    public void testWatchOther2() throws Exception {
+//        assumeThat(capabilities.supportsWatchService(), is(true));
+//
+//        Path toBeModified = createPathWAf();
+//        Path toBeCreated = getPathWB();
+//        watcherSetup(ENTRY_CREATE, ENTRY_MODIFY );
+//        Files.write(toBeModified, CONTENT_OTHER);
+//        Files.write(toBeCreated, CONTENT_OTHER);
+//
+//        Thread.sleep(10000);
+//
+//        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( toBeModified, ENTRY_MODIFY ) );
+//    }
+
+    // several events multiple dir
+
+    // change in unwatched dir => no effect
+
+    // change in subdir effect
+
+    // 2 changes one file
+
+    // 1 change 2 watchservices
+
+    // change listen in other watchservice
+
 
     @Test
     public void testWatchACreate() throws Exception {
-        assumeThat( capabilities.supportsWatchService(), is(true));
+        assumeThat(capabilities.supportsWatchService(), is(true));
 
-        final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
+        Path toBeCreated = getPathWA();
+        watcherSetup(ENTRY_CREATE);
+        Files.write(toBeCreated, CONTENT );
 
-        Path dir = getPathPAd();
-        new Thread(new Watcher(dir, que, StandardWatchEventKinds.ENTRY_CREATE )).start();
-
-        Thread.sleep(2000);
-
-        Files.write(getPathPAB(),CONTENT_OTHER);
-
-        Thread.sleep(getWatcherSleep());
-
-        assertThat(que.size(), is(1));
+        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( toBeCreated, ENTRY_CREATE ));
     }
+
 
     @Test
     public void testWatchACreateFromCopy() throws Exception {
@@ -174,7 +236,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
 
         Path file = getPathPABf();
-        new Thread(new Watcher(file.getParent(), que, StandardWatchEventKinds.ENTRY_CREATE )).start();
+        new Thread(new Watcher(file.getParent(), que, ENTRY_CREATE )).start();
 
         Thread.sleep(2000);
 
@@ -195,7 +257,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         Path src = getPathOtherPAf();
         Path dir = getPathPAd();
 
-        new Thread(new Watcher(dir, que, StandardWatchEventKinds.ENTRY_CREATE )).start();
+        new Thread(new Watcher(dir, que, ENTRY_CREATE )).start();
 
         Thread.sleep(2000);
 
@@ -213,7 +275,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
 
         Path file = getPathPABf();
-        new Thread(new Watcher(file.getParent(), que, StandardWatchEventKinds.ENTRY_CREATE )).start();
+        new Thread(new Watcher(file.getParent(), que, ENTRY_CREATE )).start();
 
         Thread.sleep(2000);
 
@@ -234,7 +296,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         Path src = getPathOtherPAf();
         Path dir = getPathPAd();
 
-        new Thread(new Watcher(dir, que, StandardWatchEventKinds.ENTRY_CREATE )).start();
+        new Thread(new Watcher(dir, que, ENTRY_CREATE )).start();
 
         Thread.sleep(2000);
 
@@ -256,7 +318,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         Path src = getPathPB();
         Files.createDirectories( src );
 
-        new Thread(new Watcher(tgt.getParent(), que, StandardWatchEventKinds.ENTRY_MODIFY )).start();
+        new Thread(new Watcher(tgt.getParent(), que, ENTRY_MODIFY )).start();
         Thread.sleep(2000);
 
         Files.copy( src, tgt, StandardCopyOption.REPLACE_EXISTING );
@@ -293,7 +355,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Path file = getPathPAf();
         final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
-        new Thread(new Watcher(file.getParent(), que, StandardWatchEventKinds.ENTRY_MODIFY )).start();
+        new Thread(new Watcher(file.getParent(), que, ENTRY_MODIFY )).start();
         Thread.sleep(2000);
 
         try( SeekableByteChannel channel =  FS.provider().newByteChannel( file, Sets.asSet(WRITE) )) {
@@ -312,7 +374,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Path dir = getPathPAd();
         final WatchService watcher = dir.getFileSystem().newWatchService();
-        dir.register( watcher, StandardWatchEventKinds.ENTRY_CREATE );
+        dir.register( watcher, ENTRY_CREATE );
 
         final Ref<Boolean> interrupted = Ref.valueOf(false);
 
@@ -342,7 +404,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Path dir = getPathPAd();
         final WatchService watcher = dir.getFileSystem().newWatchService();
-        dir.register( watcher, StandardWatchEventKinds.ENTRY_CREATE );
+        dir.register( watcher, ENTRY_CREATE );
 
         final Ref<Boolean> interrupted = Ref.valueOf(false);
 
@@ -371,7 +433,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Path dir = getPathPAd();
         final WatchService watcher = dir.getFileSystem().newWatchService();
-        WatchKey key = dir.register( watcher, StandardWatchEventKinds.ENTRY_CREATE );
+        WatchKey key = dir.register( watcher, ENTRY_CREATE );
 
         watcher.close();
         Thread.sleep(getWatcherSleep());
@@ -387,7 +449,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Path dir = getPathPAd();
         final WatchService watcher = dir.getFileSystem().newWatchService();
-        dir.register( watcher, StandardWatchEventKinds.ENTRY_CREATE );
+        dir.register( watcher, ENTRY_CREATE );
 
         assertThat(watcher.poll(), nullValue());
     }
@@ -479,7 +541,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Path dir = getPathPAd();
         final WatchService watcher = dir.getFileSystem().newWatchService();
-        WatchKey key = dir.register( watcher, StandardWatchEventKinds.ENTRY_CREATE );
+        WatchKey key = dir.register( watcher, ENTRY_CREATE );
 
         final Ref<WatchKey> hm = Ref.valueOf(null);
 
@@ -513,7 +575,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Path dir = getPathPAd();
         final WatchService watcher = dir.getFileSystem().newWatchService();
-        WatchKey key = dir.register( watcher, StandardWatchEventKinds.ENTRY_CREATE );
+        WatchKey key = dir.register( watcher, ENTRY_CREATE );
 
         Files.delete(dir);
         Thread.sleep(getWatcherSleep());
@@ -527,7 +589,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Path dir = getPathPAd();
         final WatchService watcher = dir.getFileSystem().newWatchService();
-        WatchKey key = dir.register( watcher, StandardWatchEventKinds.ENTRY_CREATE );
+        WatchKey key = dir.register( watcher, ENTRY_CREATE );
 
         Files.move( dir, getPathPB());
         Thread.sleep(getWatcherSleep());
@@ -543,7 +605,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Path file = getPathPABf();
         // java 7 can only watch dirs
-        new Thread(new Watcher(file.getParent(), que, StandardWatchEventKinds.ENTRY_MODIFY)).start();
+        new Thread(new Watcher(file.getParent(), que, ENTRY_MODIFY)).start();
 
         Thread.sleep(2000);
 
@@ -554,6 +616,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         assertThat(que.size(), is(1));
     }
+
 
     /*
      * ------------------------------------------------------------------------------------
@@ -600,4 +663,40 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
     public void setWatcherSleep(long watcherSleep) {
         this.watcherSleep = watcherSleep;
     }
+
+    public Path createPathWAf() throws IOException {
+        Path ret = getPathWA();
+        Files.write(ret, CONTENT, standardOpen );
+        return ret;
+    }
+
+    public Path getPathWA() throws IOException {
+        return createPathW().resolve(nameStr[0]);
+    }
+
+    public Path getPathWB() throws IOException {
+        return createPathW().resolve(nameStr[1]);
+    }
+
+    public Path createPathW() throws IOException {
+        Path ret = emptyDir().resolve( nameStr[3] );
+        Files.createDirectories(ret);
+        return ret;
+    }
+
+    public WatchService getWatchService() {
+        return watchService;
+    }
+
+    public WatchService waitForWatchService() throws InterruptedException {
+        Thread.sleep(getWatcherSleep());
+        return watchService;
+    }
+
+
+    private void watcherSetup(WatchEvent.Kind<Path> ... kinds ) throws IOException {
+        watchService = FS.newWatchService();
+        createPathW().register(watchService, kinds);
+    }
+
 }
