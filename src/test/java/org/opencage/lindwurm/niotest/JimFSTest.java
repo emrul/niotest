@@ -16,7 +16,6 @@ import java.nio.file.Path;
  * Time: 22:06
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
 public class JimFSTest extends PathTestIT {
 
     //Jimfs.newFileSystem(Configuration.unix())

@@ -13,7 +13,7 @@
 
     <groupId>org.opencage.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.16.4</version>
+    <version>0.16.5</version>
 
     <repositories>
         <repository>

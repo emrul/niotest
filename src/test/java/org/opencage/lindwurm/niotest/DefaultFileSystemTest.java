@@ -47,7 +47,7 @@ public class DefaultFileSystemTest extends PathTestIT {
                 doesNotSupportLastAccessTime(). // osx only ?
                 doesNotSupportCreationTime();   // osx only ?
 
-        setWatcherSleep( 10000 );
+        setWatcherSleep( 30000 );
 
 
         bug( "testCreateDirectoryRoot", "bugCreateDirectoryRootThrowsWrongException" );

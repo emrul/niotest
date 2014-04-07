@@ -1,5 +1,6 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.opencage.kleinod.collection.Ref;
 import org.opencage.kleinod.collection.Sets;
@@ -18,10 +19,13 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
+import static org.opencage.lindwurm.niotest.matcher.Has.has;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.absolute;
+import static org.opencage.lindwurm.niotest.matcher.WatchEventMatcher.isEvent;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -65,43 +69,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
 
     @Test
-    public void testWatchADeletePollOne() throws Exception {
-        assumeThat(capabilities.supportsWatchService(), is(true));
-
-        Path toBeDeleted = createPathWAf();
-        watcherSetup(ENTRY_DELETE);
-        Files.delete(toBeDeleted);
-        Thread.sleep(getWatcherSleep());
-
-        assertThat(getWatchService().poll(),notNullValue());
-    }
-
-//    @Test
-//    public void testWatchADeletePollAValidKey() throws Exception {
-//        assumeThat(capabilities.supportsWatchService(), is(true));
-//
-//        Path toBeDeleted = createPathWAf();
-//        watcherSetup(ENTRY_DELETE);
-//        Files.delete(toBeDeleted);
-//        Thread.sleep(getWatcherSleep());
-//
-//        assertThat(getWatchService().poll().isValid(), is(true));
-//    }
-
-//    @Test
-//    public void testWatchADeletePollReturnKeyWatchingTheDir() throws Exception {
-//        assumeThat(capabilities.supportsWatchService(), is(true));
-//
-//        Path toBeDeleted = createPathWAf();
-//        watcherSetup(ENTRY_DELETE);
-//        Files.delete(toBeDeleted);
-//        Thread.sleep(getWatcherSleep());
-//
-//        assertThat((Path)getWatchService().poll().watchable(), is(toBeDeleted.getParent()));
-//    }
-
-    @Test
-    public void testWatchADelete2() throws Exception {
+    public void testWatchADelete() throws Exception {
         assumeThat(capabilities.supportsWatchService(), is(true));
 
         Path toBeDeleted = createPathWAf();
@@ -133,6 +101,15 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assertThat( waitForWatchService().poll( 1000, TimeUnit.MILLISECONDS), WatchKeyMatcher.correctKey( toBeDeleted, ENTRY_DELETE ));
     }
 
+    @Test( timeout = 3000 )
+    public void testPollWithTimeoutTimesOut() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        watcherSetup(ENTRY_DELETE);
+        // no events
+
+        getWatchService().poll( 1000, TimeUnit.MILLISECONDS);
+    }
 
 
     @Test( expected = ClosedWatchServiceException.class )
@@ -175,9 +152,31 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( toBeModified, ENTRY_MODIFY ));
     }
 
+    @Test
+    public void testKidsChangesOfADirIsNotAModify() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        Path toBeCreated = getPathWAB();
+        Path dir = createPathWAd();
+        watcherSetup(ENTRY_MODIFY);
+        Files.write(toBeCreated, CONTENT);
+
+        assertThat( waitForWatchService().poll(), nullValue() );
+    }
 
     @Test
-    public void testWatchOther() throws Exception {
+    public void testReadIsNotModify() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        Path toBeModified = createPathWAf();
+        watcherSetup(ENTRY_MODIFY);
+        Files.readAllBytes(toBeModified );
+
+        assertThat( waitForWatchService().poll(), nullValue() );
+    }
+
+    @Test
+    public void testWatchForOtherEventCatchesNothing() throws Exception {
         assumeThat(capabilities.supportsWatchService(), is(true));
 
         Path toBeModified = createPathWAf();
@@ -187,34 +186,96 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assertThat( waitForWatchService().poll(), nullValue() );
     }
 
+    @Test
+    public void testWatchInOtherDirCatchesNothing() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
 
-//    // watch several events one dir
+        watcherSetup(ENTRY_CREATE );
+        getPathPAf();
+
+        assertThat( waitForWatchService().poll(), nullValue() );
+    }
+
+    @Test( timeout = 90000 )
+    public void testNotResetWatchKeyDoesNotQue() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        watcherSetup(ENTRY_CREATE );
+        createPathWAf();
+
+        WatchKey key = waitForWatchService().take();
+        key.pollEvents();
+
+        createPathWBf();
+
+        assertThat(waitForWatchService().poll(), nullValue() );
+    }
+
+    @Test( timeout = 90000 )
+    public void testResetWatchKeyDoesQue() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        watcherSetup(ENTRY_CREATE );
+        createPathWAf();
+
+        WatchKey key = waitForWatchService().take();
+        key.pollEvents();
+        key.reset();
+
+        Path file = createPathWBf();
+
+        assertThat(waitForWatchService().poll(),  WatchKeyMatcher.correctKey( file, ENTRY_CREATE ) );
+    }
+
+
+    // watch several events one dir
+    @Test
+    public void testWatchSeveralEvents() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        Path toBeModified = createPathWAf();
+        Path toBeCreated = getPathWB();
+        watcherSetup(ENTRY_CREATE, ENTRY_MODIFY);
+        Files.write(toBeModified, CONTENT_OTHER);
+        Files.write(toBeCreated, CONTENT_OTHER);
+
+
+        WatchKey key = waitForWatchService().poll();
+        assertThat(key, notNullValue());
+        List<WatchEvent<?>> watchEvents = key.pollEvents();
+
+        assertThat( watchEvents, has(isEvent(toBeModified, ENTRY_MODIFY), isEvent(toBeCreated, ENTRY_CREATE)));
+    }
+
+    // todo ?
 //    @Test
-//    public void testWatchOther2() throws Exception {
+//    public void testWatchSeveralEvents2() throws Exception {
 //        assumeThat(capabilities.supportsWatchService(), is(true));
-//
-//        Path toBeModified = createPathWAf();
-//        Path toBeCreated = getPathWB();
-//        watcherSetup(ENTRY_CREATE, ENTRY_MODIFY );
-//        Files.write(toBeModified, CONTENT_OTHER);
-//        Files.write(toBeCreated, CONTENT_OTHER);
-//
-//        Thread.sleep(10000);
-//
-//        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( toBeModified, ENTRY_MODIFY ) );
+//        watcherSetup(ENTRY_CREATE);
+//        createPathW().register(watchService, ENTRY_MODIFY);
 //    }
+
 
     // several events multiple dir
 
     // change in unwatched dir => no effect
 
-    // change in subdir effect
 
-    // 2 changes one file
 
-    // 1 change 2 watchservices
+    @Test
+    public void testWatchACreateBy2WatchServies() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
 
-    // change listen in other watchservice
+        Path toBeCreated = getPathWA();
+        watcherSetup(ENTRY_CREATE);
+        WatchService watchService2 = FS.newWatchService();
+        createPathW().register(watchService2, ENTRY_CREATE);
+
+        Files.write(toBeCreated, CONTENT );
+
+        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( toBeCreated, ENTRY_CREATE ));
+        assertThat( watchService2.poll(), WatchKeyMatcher.correctKey( toBeCreated, ENTRY_CREATE ));
+    }
 
 
     @Test
@@ -228,23 +289,26 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( toBeCreated, ENTRY_CREATE ));
     }
 
+    @Test
+    public void testWatchACreateDir() throws Exception {
+        assumeThat(capabilities.supportsWatchService(), is(true));
+
+        Path toBeCreated = getPathWA();
+        watcherSetup(ENTRY_CREATE);
+        Files.createDirectories(toBeCreated);
+
+        assertThat(waitForWatchService().poll(), WatchKeyMatcher.correctKey(toBeCreated, ENTRY_CREATE));
+    }
+
 
     @Test
     public void testWatchACreateFromCopy() throws Exception {
         assumeThat( capabilities.supportsWatchService(), is(true));
 
-        final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
+        watcherSetup(ENTRY_CREATE);
+        Files.copy( getPathPAf(), getPathWA());
 
-        Path file = getPathPABf();
-        new Thread(new Watcher(file.getParent(), que, ENTRY_CREATE )).start();
-
-        Thread.sleep(2000);
-
-        Files.copy( file, getPathPAC());
-
-        Thread.sleep(getWatcherSleep());
-
-        assertThat(que.size(), is(1));
+        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( getPathWA(), ENTRY_CREATE ));
     }
 
     @Test
@@ -252,38 +316,21 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assumeThat(play2, notNullValue());
         assumeThat( capabilities.supportsWatchService(), is(true));
 
-        final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
 
-        Path src = getPathOtherPAf();
-        Path dir = getPathPAd();
+        watcherSetup(ENTRY_CREATE);
+        Files.copy( getPathOtherPAf(), getPathWA());
 
-        new Thread(new Watcher(dir, que, ENTRY_CREATE )).start();
-
-        Thread.sleep(2000);
-
-        FS.provider().copy(src, getPathPAC());
-
-        Thread.sleep(getWatcherSleep());
-
-        assertThat(que.size(), is(1));
+        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( getPathWA(), ENTRY_CREATE ));
     }
 
     @Test
     public void testWatchACreateFromMove() throws Exception {
         assumeThat( capabilities.supportsWatchService(), is(true));
 
-        final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
+        watcherSetup(ENTRY_CREATE);
+        Files.move( getPathPAf(), getPathWA());
 
-        Path file = getPathPABf();
-        new Thread(new Watcher(file.getParent(), que, ENTRY_CREATE )).start();
-
-        Thread.sleep(2000);
-
-        Files.move(file, getPathPAC());
-
-        Thread.sleep(getWatcherSleep());
-
-        assertThat(que.size(), is(1));
+        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( getPathWA(), ENTRY_CREATE ));
     }
 
     @Test
@@ -291,20 +338,10 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assumeThat(play2, notNullValue());
         assumeThat( capabilities.supportsWatchService(), is(true));
 
-        final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
+        watcherSetup(ENTRY_CREATE);
+        Files.move( getPathOtherPAf(), getPathWA());
 
-        Path src = getPathOtherPAf();
-        Path dir = getPathPAd();
-
-        new Thread(new Watcher(dir, que, ENTRY_CREATE )).start();
-
-        Thread.sleep(2000);
-
-        FS.provider().copy( src, getPathPAC());
-
-        Thread.sleep(getWatcherSleep());
-
-        assertThat(que.size(), is(1));
+        assertThat( waitForWatchService().poll(), WatchKeyMatcher.correctKey( getPathWA(), ENTRY_CREATE ));
     }
 
     @Test
@@ -351,21 +388,17 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
     @Test
     public void testWatchATruncate() throws Exception {
-        assumeThat( capabilities.supportsWatchService(), is(true));
+        assumeThat(capabilities.supportsWatchService(), is(true));
 
-        Path file = getPathPAf();
-        final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
-        new Thread(new Watcher(file.getParent(), que, ENTRY_MODIFY )).start();
-        Thread.sleep(2000);
-
-        try( SeekableByteChannel channel =  FS.provider().newByteChannel( file, Sets.asSet(WRITE) )) {
-            channel.truncate( 2 );
+        Path file = createPathWAf();
+        watcherSetup(ENTRY_MODIFY);
+        try (SeekableByteChannel channel = FS.provider().newByteChannel(file, Sets.asSet(WRITE))) {
+            channel.truncate(2);
         }
 
-        Thread.sleep(getWatcherSleep());
-
-        assertThat(que.size(), is(1));
+        assertThat(waitForWatchService().poll(), WatchKeyMatcher.correctKey(file, ENTRY_MODIFY));
     }
+
 
 
     @Test
@@ -597,24 +630,22 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assertThat(key.isValid(), is(false));
     }
 
+    // todo
     @Test
     public void testWatchTwoModifiesOneKey() throws Exception {
         assumeThat(capabilities.supportsWatchService(), is(true));
 
-        final ConcurrentLinkedDeque<Path> que = new ConcurrentLinkedDeque<>();
+        Path toBeModified = createPathWAf();
+        watcherSetup(ENTRY_MODIFY);
+        Files.write(toBeModified, CONTENT_OTHER);
+        Files.write(toBeModified, CONTENT );
 
-        Path file = getPathPABf();
-        // java 7 can only watch dirs
-        new Thread(new Watcher(file.getParent(), que, ENTRY_MODIFY)).start();
 
-        Thread.sleep(2000);
+        WatchKey key = waitForWatchService().poll();
+        assertThat(key, notNullValue());
+        List<WatchEvent<?>> watchEvents = key.pollEvents();
 
-        Files.write(file, CONTENT_OTHER);
-        Files.write(file, CONTENT);
-
-        Thread.sleep(getWatcherSleep());
-
-        assertThat(que.size(), is(1));
+        assertThat( watchEvents, has(isEvent(toBeModified, ENTRY_MODIFY), isEvent(toBeModified, ENTRY_MODIFY)));
     }
 
 
@@ -670,6 +701,22 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         return ret;
     }
 
+    public Path createPathWBf() throws IOException {
+        Path ret = getPathWB();
+        Files.write(ret, CONTENT, standardOpen );
+        return ret;
+    }
+
+    public Path getPathWAB() throws IOException {
+        return getPathWA().resolve(nameStr[1]);
+    }
+
+    public Path createPathWAd() throws IOException {
+        Path ret = getPathWA();
+        Files.createDirectories(ret);
+        return ret;
+    }
+
     public Path getPathWA() throws IOException {
         return createPathW().resolve(nameStr[0]);
     }
@@ -694,9 +741,9 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
     }
 
 
-    private void watcherSetup(WatchEvent.Kind<Path> ... kinds ) throws IOException {
+    private WatchKey watcherSetup(WatchEvent.Kind<Path> ... kinds ) throws IOException {
         watchService = FS.newWatchService();
-        createPathW().register(watchService, kinds);
+        return createPathW().register(watchService, kinds);
     }
 
 }
