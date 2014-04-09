@@ -54,6 +54,10 @@ public class DefaultFileSystemTest extends PathTestIT {
         bug( "testGetIteratorOfClosedDirStream" );
 
         bug( "testWatchAModify");
+        bug( "testWatchATruncate");
+        bug( "testWatchSeveralEvents");
+        bug( "testWatchTwoModifiesOneKey");
+
 
 
 

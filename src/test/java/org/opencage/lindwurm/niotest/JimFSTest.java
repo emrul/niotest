@@ -32,7 +32,21 @@ public class JimFSTest extends PathTestIT {
 
     public JimFSTest() {
 
-        capabilities.notClosable();
+        capabilities.notClosable().doesNotSupportLastAccessTime();
         setWatcherSleep( 7000 );
+
+        bug("testAppendAndReadThrows");
+        bug("testCloseDirStreamInTheMiddleOfIteration");
+        bug("testGetExistingFileSystem");
+        bug("testGetFileSystemOtherURI");
+        bug("testGetIteratorOfClosedDirStream");
+        bug("testIsSameFileOfDifferentPathNonExistingFile2Throws");
+        bug("testIsSameFileOfDifferentPathNonExistingFileThrows");
+        bug("testReadUnsupportedAttributesThrows");
+        bug("testRegisterOtherPath");
+        bug("testNewFileSystemOfExsitingThrows");
+        bug("testRegisterOtherPath");
+
+
     }
 }

@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.opencage</groupId>
         <artifactId>opencage-parent</artifactId>
-        <version>1.5</version>
+        <version>1.5.1</version>
         <relativePath>../opencage-parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.opencage.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.16.5</version>
+    <version>0.17</version>
 
     <repositories>
         <repository>
