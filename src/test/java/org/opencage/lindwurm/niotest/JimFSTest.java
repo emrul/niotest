@@ -46,6 +46,7 @@ public class JimFSTest extends PathTestIT {
         bug("testRegisterOtherPath");
         bug("testNewFileSystemOfExsitingThrows");
         bug("testRegisterOtherPath");
+        bug("testWatchAModify"); // inconsistent, test bug ?
 
 
     }

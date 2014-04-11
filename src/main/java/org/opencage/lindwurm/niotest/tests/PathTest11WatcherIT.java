@@ -302,7 +302,9 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
         Path toBeCreated = getPathWA();
         watcherSetup(ENTRY_CREATE);
-        Files.createDirectories(toBeCreated);
+        Files.createDirectory(toBeCreated);
+
+        //Thread.sleep(10000);
 
         assertThat(waitForWatchService().poll(), correctKey(toBeCreated, ENTRY_CREATE));
     }

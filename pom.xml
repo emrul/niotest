@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.opencage</groupId>
             <artifactId>kleinod</artifactId>
-            <version>0.16.7</version>
+            <version>0.16.8</version>
         </dependency>
 
         <dependency>
