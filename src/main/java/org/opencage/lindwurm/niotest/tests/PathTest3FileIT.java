@@ -1,6 +1,7 @@
 package org.opencage.lindwurm.niotest.tests;
 
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opencage.kleinod.collection.Sets;
 
@@ -726,6 +727,45 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
     public void testWriteChannelOfDir() throws IOException {
 
         try( SeekableByteChannel channel =  FS.provider().newByteChannel( getPathPAd(), Sets.asSet(WRITE) )) {
+        }
+    }
+
+    @Test
+    public void testEveryChannelWriteUpdatesLastModifiedTime() throws IOException, InterruptedException {
+
+        Path file =  getPathPAf();
+
+        try( SeekableByteChannel channel =  FS.provider().newByteChannel( file, Sets.asSet(WRITE) )) {
+            for ( int i = 0; i < 3; i++ ) {
+
+                FileTime before = FileTime.fromMillis( System.currentTimeMillis());
+
+                Thread.sleep( 2000 );
+                ByteBuffer bb = ByteBuffer.allocate(20);
+                bb.array()[5] = (byte) i;
+                channel.write(bb);
+
+                assertThat( Files.getLastModifiedTime( file ), Matchers.greaterThan( before ));
+            }
+        }
+    }
+
+    @Test
+    public void testEveryChannelReadUpdatesLastAccessTime() throws IOException, InterruptedException {
+
+        Path file =  getPathPAf();
+
+        try( SeekableByteChannel channel =  FS.provider().newByteChannel( file, Sets.asSet(READ) )) {
+            for ( int i = 0; i < 3; i++ ) {
+
+                FileTime before = FileTime.fromMillis( System.currentTimeMillis());
+
+                Thread.sleep( 2000 );
+                ByteBuffer bb = ByteBuffer.allocate(3);
+                channel.read( bb );
+
+                assertThat( Files.readAttributes( file, BasicFileAttributes.class).lastAccessTime(), Matchers.greaterThan( before ));
+            }
         }
     }
 
