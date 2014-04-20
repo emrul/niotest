@@ -4,6 +4,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.opencage.kleinod.collection.Sets;
+import org.opencage.kleinod.lambda.F0;
 import org.opencage.kleinod.paths.PathUtils;
 
 import java.io.IOException;
@@ -66,6 +67,12 @@ public abstract class Setup {
     protected Map<String, String> notSupported = new HashMap<>();
 
     public FSCapabilities capabilities = new FSCapabilities();
+    public F0<Void> shake = new F0<Void>() {
+        @Override
+        public Void call() {
+            return null;
+        }
+    };
 
     protected static OpenOption[] standardOpen = { StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE };
 
@@ -194,7 +201,12 @@ public abstract class Setup {
     public Path getPathPAf() throws IOException {
         Path ret = emptyDir().resolve( nameStr[0] );
         Files.write(ret, CONTENT, standardOpen );
+        shake();
         return ret;
+    }
+
+    private void shake() {
+        shake.call();
     }
 
     public Path getPathPAd() throws IOException {

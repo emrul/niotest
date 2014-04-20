@@ -13,7 +13,7 @@
 
     <groupId>org.opencage.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.17</version>
+    <version>0.17.1</version>
 
     <repositories>
         <repository>
@@ -65,9 +65,16 @@
         </dependency>
 
         <dependency>
-          <groupId>com.google.jimfs</groupId>
-          <artifactId>jimfs</artifactId>
-          <version>1.0-rc1</version>
+            <groupId>com.google.jimfs</groupId>
+            <artifactId>jimfs</artifactId>
+            <version>1.0-rc1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.weltraumschaf</groupId>
+            <artifactId>jvfs</artifactId>
+            <version>0.1.4-20131205</version>
             <scope>test</scope>
         </dependency>
 

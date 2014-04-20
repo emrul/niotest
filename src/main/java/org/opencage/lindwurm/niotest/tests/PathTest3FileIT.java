@@ -10,12 +10,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.NonReadableChannelException;
 import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
@@ -727,6 +722,13 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         }
     }
 
+    @Test( expected = FileSystemException.class )
+    public void testWriteChannelOfDir() throws IOException {
+
+        try( SeekableByteChannel channel =  FS.provider().newByteChannel( getPathPAd(), Sets.asSet(WRITE) )) {
+        }
+    }
+
     // todo
 //    @Test( expected = NonWritableChannelException.class )
 //    public void testTruncateOnAppendChannelThrows() throws Exception{
@@ -736,7 +738,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 //        }
 //    }
 
-    // todo unclrea
+    // todo unclear
 //    @Test
 //    public void testTruncat2e() throws Exception{
 //        Path file = getPathPAf();
