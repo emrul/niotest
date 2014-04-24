@@ -113,11 +113,11 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         copyMoveSetup();
         BasicFileAttributes srcAttis = Files.readAttributes( src, BasicFileAttributes.class );
         Thread.sleep( 2000 );
-        Files.copy( src, tgt, StandardCopyOption.COPY_ATTRIBUTES );
-        BasicFileAttributes tgtAttis = Files.readAttributes( tgt, BasicFileAttributes.class );
 
-        assertEquals( srcAttis.lastModifiedTime(), tgtAttis.lastModifiedTime() );
-        Thread.sleep( 2000 );
+        Files.copy( src, tgt, StandardCopyOption.COPY_ATTRIBUTES );
+
+        BasicFileAttributes tgtAttis = Files.readAttributes( tgt, BasicFileAttributes.class );
+        assertThat( tgtAttis.lastModifiedTime(), is( srcAttis.lastModifiedTime()));
     }
 
     @Test

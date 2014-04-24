@@ -61,21 +61,22 @@ public class MarschallTest extends PathTestIT {
                 notClosable().
                 doesNotSupportWatchService();
 
-        bug( "testCreateDirectoryRoot", "bugCreateDirectoryRootThrowsWrongException" );
-        bug( "testIsSameFileOnEqualPathElementsDifferentProvider", "" );
-        bug( "testCopyDirCreatesADirWithTheTargetName", "" );
-        bug( "testCopyNonEmptyDirDoesNotCopyKids", "" );
-        bug( "testGetNameOfDefaultPathIsItself", "" );
-        bug( "testMoveIntoItself", "" );
-        bug( "testReadCreateNonExistingFileThrows", "" );
-        bug( "testReadDirStreamSetsLastAccessTime", "" );
-        bug( "testReadEmptyDirStreamSetsLastAccessTime", "" );
-        bug( "testUnsupportedAttributeViewReturnsNull", "" );
-        bug( "testAppendAndReadThrows", "" );
-        bug( "testGetFileSystemOtherURI", "" );
-        bug( "testGetPathOtherURI", "" );
-//
+        bug( "testCreateDirectoryRoot" );
+        bug( "testIsSameFileOnEqualPathElementsDifferentProvider" );
+        bug( "testCopyDirCreatesADirWithTheTargetName" );
+        bug( "testCopyNonEmptyDirDoesNotCopyKids" );
+        bug( "testGetNameOfDefaultPathIsItself" );
+        bug( "testMoveIntoItself" );
+        bug( "testReadCreateNonExistingFileThrows" );
+        bug( "testReadDirStreamSetsLastAccessTime" );
+        bug( "testReadEmptyDirStreamSetsLastAccessTime" );
+        bug( "testUnsupportedAttributeViewReturnsNull" );
+        bug( "testAppendAndReadThrows" );
+        bug( "testGetFileSystemOtherURI" );
+        bug( "testGetPathOtherURI" );
         bug( "testGetIteratorOfClosedDirStream" );
+        bug( "testEveryChannelReadUpdatesLastAccessTime" );
+        bug( "testEveryChannelWriteUpdatesLastModifiedTime" );
 
     }
 

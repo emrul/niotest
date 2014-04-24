@@ -752,6 +752,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testEveryChannelReadUpdatesLastAccessTime() throws IOException, InterruptedException {
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
 
         Path file =  getPathPAf();
 
