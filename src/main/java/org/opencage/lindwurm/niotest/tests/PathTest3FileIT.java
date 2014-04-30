@@ -150,6 +150,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         Files.write( target, CONTENT20k, standardOpen );
         byte[] out = Files.readAllBytes( target );
 
+
         assertThat( out, is( CONTENT20k ) );
     }
 
@@ -300,7 +301,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
         Path notthere = getPathPA();
 
-        try ( SeekableByteChannel ch = FS.provider().newByteChannel( notthere, Collections.singleton( StandardOpenOption.WRITE ) )) {}
+        try ( SeekableByteChannel ch = FS.provider().newByteChannel( notthere, Collections.singleton( WRITE ) )) {}
     }
 
     @Test
@@ -308,7 +309,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
         Path there = getPathPAf();
 
-        try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, Collections.singleton( StandardOpenOption.WRITE ) )) {}
+        try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, Collections.singleton( WRITE ) )) {}
 
         assertThat( Files.size( there ), is((long)CONTENT.length) );
     }
@@ -319,7 +320,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         Path notthere = getPathPA();
 
         Set<StandardOpenOption> options = Sets.asSet(
-            StandardOpenOption.WRITE, StandardOpenOption.CREATE );
+            WRITE, StandardOpenOption.CREATE );
 
         try ( SeekableByteChannel ch = FS.provider().newByteChannel( notthere, options )) {}
 
@@ -332,7 +333,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         Path there = getPathPAf();
 
         Set<StandardOpenOption> options = Sets.asSet(
-                StandardOpenOption.WRITE, StandardOpenOption.CREATE );
+                WRITE, StandardOpenOption.CREATE );
 
         try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, options )) {}
 
@@ -365,7 +366,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         Path notthere = getPathPA();
 
         Set<StandardOpenOption> options = Sets.asSet(
-            StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW );
+            WRITE, StandardOpenOption.CREATE_NEW );
 
         try ( SeekableByteChannel ch = FS.provider().newByteChannel( notthere, options )) {}
 
@@ -378,7 +379,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         Path there = getPathPAf();
 
         Set<StandardOpenOption> options = Sets.asSet(
-                StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW );
+                WRITE, StandardOpenOption.CREATE_NEW );
 
         try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, options )) {}
     }
@@ -400,7 +401,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         Path there = getPathPAf();
 
         Set<StandardOpenOption> options = Sets.asSet(
-                StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING );
+                WRITE, TRUNCATE_EXISTING );
 
         try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, options )) {}
 
@@ -414,9 +415,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         Path there = getPathPAf();
 
         FileTime created = Files.readAttributes( there, BasicFileAttributes.class ).creationTime();
-
-        Set<StandardOpenOption> options = Sets.asSet(
-                StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING );
+        Set<StandardOpenOption> options = Sets.asSet( WRITE, TRUNCATE_EXISTING );
 
         try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, options )) {}
 
@@ -433,7 +432,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         Thread.sleep( 2000 );
 
         Set<StandardOpenOption> options = Sets.asSet(
-                StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING );
+                WRITE, TRUNCATE_EXISTING );
         try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, options )) {}
 
         assertThat( Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ) );
@@ -456,12 +455,13 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testOverwriteDoesNotSetLastAccessTimeOfParent() throws IOException, InterruptedException {
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         Path there = getPathPAf();
         FileTime before = Files.readAttributes( there.getParent(), BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
 
-        Set<StandardOpenOption> options = Sets.asSet(
-                StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING );
+        Set<StandardOpenOption> options = Sets.asSet( WRITE, TRUNCATE_EXISTING );
         try ( SeekableByteChannel ch = FS.provider().newByteChannel( there, options )) {}
 
         assertThat( Files.readAttributes( there.getParent(), BasicFileAttributes.class ).lastAccessTime(), is( before ) );
@@ -542,6 +542,8 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testReadFileSetsLastAccessTime() throws Exception{
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         Path     file    = getPathPAf();
         FileTime before  = Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
@@ -553,6 +555,8 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testReadFileDoesNotSetParentsLastAccessTime() throws Exception{
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         Path     file    = getPathPAf();
         FileTime before  = Files.readAttributes( file.getParent(), BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );

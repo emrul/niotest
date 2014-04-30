@@ -1,5 +1,6 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.hamcrest.core.Is;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -297,6 +298,7 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
     @Test
     public void testSetCreationTimeDoesNotChangeLastAccessTime() throws IOException, InterruptedException {
+        assumeThat( capabilities.supportsLastAccessTime(), Is.is(true));
 
         final Path file = getPathPAf();
         FileTime before = Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime();
@@ -319,6 +321,8 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
     @Test
     public void testSetLastAccessTimeViaString() throws IOException {
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = getPathPAf();
         FS.provider().setAttribute( file, "basic:lastAccessTime", past );
@@ -328,6 +332,8 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
     @Test
     public void testSetLastAccessTimeViaView() throws IOException {
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = getPathPAf();
         FS.provider().getFileAttributeView( file, BasicFileAttributeView.class ).setTimes( null, past, null );

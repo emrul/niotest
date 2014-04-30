@@ -273,6 +273,8 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testReadDirStreamSetsLastAccessTime() throws Exception{
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         Path     dir    = getPathPAd().getParent();
         FileTime before  = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
@@ -287,6 +289,8 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testReadEmptyDirStreamSetsLastAccessTime() throws Exception{
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         Path     dir    = getPathPAd();
         FileTime before  = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
@@ -301,6 +305,8 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testReadDirStreamDoesNotSetParentsLastAccessTime() throws Exception{
+        assumeThat( capabilities.supportsLastAccessTime(), is(true));
+
         Path     dir    = getPathPAd();
         FileTime before  = Files.readAttributes( dir.getParent(), BasicFileAttributes.class ).lastAccessTime();
         Thread.sleep( 2000 );
