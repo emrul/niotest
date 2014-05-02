@@ -37,6 +37,7 @@ public class FSCapabilities {
     private boolean supportsCreationTime = true;
     private boolean supportsLastAccessTime = true;
     private boolean supportsWatchService = true;
+    private boolean filestores = false;
 
     public boolean isClosable() {
         return closable;
@@ -107,5 +108,14 @@ public class FSCapabilities {
     public FSCapabilities noFileChannels() {
         this.hasFileChannels = false;
         return this;
+    }
+
+    public FSCapabilities fileStores( boolean sup ) {
+        this.filestores = sup;
+        return this;
+    }
+
+    public boolean supportsFileStores() {
+        return filestores;
     }
 }

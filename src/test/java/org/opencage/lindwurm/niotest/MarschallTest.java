@@ -57,6 +57,7 @@ public class MarschallTest extends PathTestIT {
     public MarschallTest() throws IOException {
 
         capabilities.
+                fileStores(true).
                 noLinks().
                 notClosable().
                 doesNotSupportWatchService();

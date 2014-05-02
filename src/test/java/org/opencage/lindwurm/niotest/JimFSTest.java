@@ -32,7 +32,7 @@ public class JimFSTest extends PathTestIT {
 
     public JimFSTest() {
 
-        capabilities.notClosable().doesNotSupportLastAccessTime();
+        capabilities.notClosable().doesNotSupportLastAccessTime().fileStores(true);
         setWatcherSleep( 7000 );
 
         bug("testAppendAndReadThrows");
@@ -47,6 +47,10 @@ public class JimFSTest extends PathTestIT {
         bug("testNewFileSystemOfExsitingThrows");
         bug("testRegisterOtherPath");
         bug("testWatchAModify"); // inconsistent, test bug ?
+
+        // fixed but not released
+        bug( "testFileStoreUnallocatedSpaceIsSmallerUsableSpace");
+        bug( "testPathFileStoreGrowingFileLowersUsableSpace");
 
 
     }

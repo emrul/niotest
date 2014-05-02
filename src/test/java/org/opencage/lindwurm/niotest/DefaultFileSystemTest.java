@@ -43,6 +43,7 @@ public class DefaultFileSystemTest extends PathTestIT {
     public DefaultFileSystemTest() {
 
         capabilities.
+                fileStores(true).
                 notClosable().
                 doesNotSupportLastAccessTime(). // osx only ?
                 doesNotSupportCreationTime();   // osx only ?
@@ -63,4 +64,5 @@ public class DefaultFileSystemTest extends PathTestIT {
 
 
     }
+
 }
