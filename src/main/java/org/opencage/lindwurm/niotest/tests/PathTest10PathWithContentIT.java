@@ -70,6 +70,7 @@ public abstract class PathTest10PathWithContentIT extends PathTest9WrongProvider
 
     @Test
     public void testIsSameFileOfSameContentDifferentPathIsNot() throws IOException {
+
         assertThat(FS.provider().isSameFile(getPathPAf(), getPathPBf()), is(false));
     }
 

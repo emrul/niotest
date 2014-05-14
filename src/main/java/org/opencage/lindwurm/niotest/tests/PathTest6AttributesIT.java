@@ -141,12 +141,6 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
     }
 
 
-    @Test
-    public void testFileStoreShowsThatBasicFileAttributeViewIsSupported() throws IOException {
-        FileStore store = FS.provider().getFileStore( getDefaultPath() );
-
-        assertThat( store.supportsFileAttributeView( BasicFileAttributeView.class ), is(true));
-    }
 
     @Test
     public void testBasicIsASupportedFileAttributeView() {

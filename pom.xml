@@ -26,6 +26,18 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+
+        <repository>
+            <id>oss-sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
     </repositories>
 
 
@@ -77,6 +89,15 @@
             <version>0.1.4-20131205</version>
             <scope>test</scope>
         </dependency>
+
+        <!--no snapshots-->
+        <!--<dependency>-->
+            <!--<groupId>com.github.sylvainjuge</groupId>-->
+            <!--<artifactId>memoryfs</artifactId>-->
+            <!--<version>0.1-SNAPSHOT</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
 
     </dependencies>
 

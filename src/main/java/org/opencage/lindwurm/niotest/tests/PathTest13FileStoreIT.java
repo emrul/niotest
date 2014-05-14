@@ -1,13 +1,17 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.hamcrest.number.OrderingComparison;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -68,6 +72,7 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
     public void testFileStoreUnallocatedSpaceIsSmallerUsableSpace() throws IOException {
         assumeThat( capabilities.supportsFileStores(), is(true));
 
+
         for (FileStore store : FS.getFileStores() ) {
             assertThat( store.getUnallocatedSpace(), greaterThanOrEqualTo(store.getUsableSpace()));
         }
@@ -106,5 +111,15 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
 //        assertThat( store.getUnallocatedSpace(), lessThanOrEqualTo( before + CONTENT.length - CONTENT20k.length ));
         assertThat( store.getUsableSpace(), lessThanOrEqualTo( before  ));
     }
+
+    @Test
+    public void testFileStoreShowsThatBasicFileAttributeViewIsSupported() throws IOException {
+        assumeThat( capabilities.supportsFileStores(), is(true));
+
+        FileStore store = FS.provider().getFileStore( getDefaultPath() );
+
+        Assert.assertThat(store.supportsFileAttributeView(BasicFileAttributeView.class), CoreMatchers.is(true));
+    }
+
 
 }
