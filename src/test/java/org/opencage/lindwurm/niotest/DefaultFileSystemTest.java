@@ -50,7 +50,7 @@ public class DefaultFileSystemTest extends PathTestIT {
                 notClosable().
                 lastAccessTime( false ). // OSX only ?
                 creationTime( false ).   // OSX only ?
-                watcherSleepTime( 12000 ).
+                watcherSleepTime( 17000 ).
                 noSecondPlayground().
 
                 bug( "testCreateDirectoryRoot" ).
