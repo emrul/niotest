@@ -85,18 +85,19 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
         assertThat(FS.getFileStores(), hasItem(FS.provider().getFileStore(getPathPAf())));
     }
 
-    @Test
-    public void testPathFileStoreGrowingFileLowersUnallocatedSpace() throws IOException {
-        assumeThat( capabilities.supportsFileStores(), is(true));
-
-        Path      file = getPathPAf();
-        FileStore store = FS.provider().getFileStore(file);
-        long      before = store.getUnallocatedSpace();
-        Files.write(file, CONTENT50 );
-
-//        assertThat( store.getUnallocatedSpace(), lessThanOrEqualTo( before + CONTENT.length - CONTENT50.length ));
-        assertThat( store.getUnallocatedSpace(), lessThanOrEqualTo( before  ));
-    }
+    // todo: other operations on the filesystem make it unclear what should happen
+//    @Test
+//    public void testPathFileStoreGrowingFileLowersUnallocatedSpace() throws IOException {
+//        assumeThat( capabilities.supportsFileStores(), is(true));
+//
+//        Path      file = getPathPAf();
+//        FileStore store = FS.provider().getFileStore(file);
+//        long      before = store.getUnallocatedSpace();
+//        Files.write(file, CONTENT50 );
+//
+////        assertThat( store.getUnallocatedSpace(), lessThanOrEqualTo( before + CONTENT.length - CONTENT50.length ));
+//        assertThat( store.getUnallocatedSpace(), lessThanOrEqualTo( before  ));
+//    }
 
 
     @Test
