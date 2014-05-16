@@ -1,7 +1,9 @@
 package org.opencage.lindwurm.niotest;
 
 import org.junit.BeforeClass;
+import org.opencage.kleinod.os.OS;
 import org.opencage.kleinod.paths.PathUtils;
+import org.opencage.lindwurm.niotest.tests.FSDescription;
 import org.opencage.lindwurm.niotest.tests.PathTestIT;
 
 import java.nio.file.Path;
@@ -44,7 +46,7 @@ public class DefaultFileSystemTest extends PathTestIT {
 
     public DefaultFileSystemTest() {
 
-        describe().
+        FSDescription description = describe().
                 playground(playground).
                 fileStores(true).
                 notClosable().
@@ -59,6 +61,11 @@ public class DefaultFileSystemTest extends PathTestIT {
                 bug( "testWatchATruncate").
                 bug( "testWatchSeveralEvents").
                 bug( "testWatchTwoModifiesOneKey");
+
+        if (OS.isLinux()) {
+            description.bug("testDeleteWatchedDirCancelsKeys").
+                        bug("testMovedWatchedDirCancelsKeys");
+        }
     }
 
 }
