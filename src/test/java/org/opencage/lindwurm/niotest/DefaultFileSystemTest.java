@@ -34,35 +34,31 @@ import java.nio.file.Path;
  */
 public class DefaultFileSystemTest extends PathTestIT {
 
+    private static Path playground;
+
     @BeforeClass
     public static void setUp() {
-        Path dir = PathUtils.getTmpDir( "DefaultFileSystemTest" );
-        setPlay( dir );
+        // create filesystems just once, not for every test
+        playground = PathUtils.getTmpDir( "DefaultFileSystemTest" );
     }
 
     public DefaultFileSystemTest() {
 
-        capabilities.
+        describe().
+                playground(playground).
                 fileStores(true).
                 notClosable().
-                doesNotSupportLastAccessTime(). // osx only ?
-                doesNotSupportCreationTime();   // osx only ?
+                lastAccessTime( false ). // OSX only ?
+                creationTime( false ).   // OSX only ?
+                watcherSleepTime( 12000 ).
+                noSecondPlayground().
 
-        setWatcherSleep( 12000 );
-
-
-        bug( "testCreateDirectoryRoot", "bugCreateDirectoryRootThrowsWrongException" );
-        bug( "testGetIteratorOfClosedDirStream" );
-
-        bug( "testWatchAModify");
-        bug( "testWatchATruncate");
-        bug( "testWatchSeveralEvents");
-        bug( "testWatchTwoModifiesOneKey");
-
-
-
-
-
+                bug( "testCreateDirectoryRoot" ).
+                bug( "testGetIteratorOfClosedDirStream" ).
+                bug( "testWatchAModify").
+                bug( "testWatchATruncate").
+                bug( "testWatchSeveralEvents").
+                bug( "testWatchTwoModifiesOneKey");
     }
 
 }

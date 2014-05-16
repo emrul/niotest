@@ -27,95 +27,16 @@ package org.opencage.lindwurm.niotest.tests;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public class FSCapabilities {
+public interface FSCapabilities {
 
-    private boolean closable = true;
-    private boolean hasLinks = true;
-    private boolean hasSymbolicLinks = true;
-    private boolean hasAsynchronousFileChannels = true;
-    private boolean hasFileChannels = true;
-    private boolean supportsCreationTime = true;
-    private boolean supportsLastAccessTime = true;
-    private boolean supportsWatchService = true;
-    private boolean filestores = false;
-
-    public boolean isClosable() {
-        return closable;
-    }
-
-    public FSCapabilities notClosable() {
-        this.closable = false;
-        return this;
-    }
-
-    public boolean hasLinks() {
-        return hasLinks;
-    }
-
-    public boolean hasSymbolicLinks() {
-        return hasSymbolicLinks;
-    }
-
-    public boolean hasAsynchronousFileChannels() {
-        return hasAsynchronousFileChannels;
-    }
-
-    public boolean hasFileChannels() {
-        return hasFileChannels;
-    }
-
-    public boolean supportsCreationTime() {
-        return supportsCreationTime;
-    }
-
-    public FSCapabilities doesNotSupportCreationTime() {
-        this.supportsCreationTime = false;
-        return this;
-    }
-
-    public boolean supportsLastAccessTime() {
-        return supportsLastAccessTime;
-    }
-
-    public FSCapabilities doesNotSupportLastAccessTime() {
-        this.supportsLastAccessTime = false;
-        return this;
-    }
-
-    public boolean supportsWatchService() {
-        return supportsWatchService;
-    }
-
-    public void doesNotSupportWatchService() {
-        this.supportsWatchService = false;
-    }
-
-    public FSCapabilities noLinks() {
-        this.hasLinks = false;
-        return this;
-    }
-
-    public FSCapabilities noSymLinks() {
-        this.hasSymbolicLinks = false;
-        return this;
-    }
-
-    public FSCapabilities noAsynchronousFileChannels() {
-        this.hasAsynchronousFileChannels = false;
-        return this;
-    }
-
-    public FSCapabilities noFileChannels() {
-        this.hasFileChannels = false;
-        return this;
-    }
-
-    public FSCapabilities fileStores( boolean sup ) {
-        this.filestores = sup;
-        return this;
-    }
-
-    public boolean supportsFileStores() {
-        return filestores;
-    }
+    boolean isClosable();
+    boolean hasLinks();
+    boolean hasSymbolicLinks();
+    boolean hasAsynchronousFileChannels();
+    boolean hasFileChannels();
+    boolean supportsCreationTime();
+    boolean supportsLastAccessTime();
+    boolean supportsWatchService();
+    boolean supportsFileStores();
+    boolean has2ndFileSystem();
 }

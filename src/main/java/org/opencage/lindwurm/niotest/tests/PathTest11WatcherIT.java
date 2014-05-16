@@ -562,15 +562,15 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
      * ------------------------------------------------------------------------------------
      */
 
-    private long watcherSleep = 1000;
+    long watcherSleep = 1000;
 
     public long getWatcherSleep() {
         return watcherSleep;
     }
 
-    public void setWatcherSleep(long watcherSleep) {
-        this.watcherSleep = watcherSleep;
-    }
+//    public void setWatcherSleep(long watcherSleep) {
+//        this.watcherSleep = watcherSleep;
+//    }
 
     public Path createPathWAf() throws IOException {
         Path ret = getPathWA();

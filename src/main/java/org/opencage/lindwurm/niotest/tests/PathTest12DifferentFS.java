@@ -1,5 +1,6 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,8 +23,18 @@ import static org.opencage.lindwurm.niotest.matcher.PathExists.exists;
 public abstract class PathTest12DifferentFS extends PathTest11WatcherIT {
 
     @Test
+    public void testAAA12() {
+        assumeThat( capabilities.has2ndFileSystem(), is(true));
+
+        assertThat(play2, notNullValue() );
+
+        assertThat( FS.provider(), is(play2.getFileSystem().provider()));
+        assertThat( FS, not(is(play2.getFileSystem())));
+    }
+
+    @Test
     public void testCopyDifferentFS() throws IOException {
-        assumeThat(play2, notNullValue());
+        assumeThat( capabilities.has2ndFileSystem(), is(true));
 
         Path src = getPathPABf();
         FS.provider().copy( src, getPathOtherPA());
@@ -33,14 +44,14 @@ public abstract class PathTest12DifferentFS extends PathTest11WatcherIT {
 
     @Test
     public void testIsSameFileDifferentFS() throws IOException {
-        assumeThat(play2, notNullValue());
+        assumeThat( capabilities.has2ndFileSystem(), is(true));
 
         assertThat(FS.provider().isSameFile(getPathPAf(), getPathOtherPAf()), is(false));
     }
 
     @Test
     public void testMoveDifferentFS() throws IOException {
-        assumeThat(play2, notNullValue());
+        assumeThat( capabilities.has2ndFileSystem(), is(true));
 
         Path src = getPathPABf();
         FS.provider().move(src, getPathOtherPA());

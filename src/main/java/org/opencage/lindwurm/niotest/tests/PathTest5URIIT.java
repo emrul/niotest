@@ -103,7 +103,7 @@ public abstract class PathTest5URIIT extends PathTest4CopyIT {
     }
 
     @Test( expected = FileSystemAlreadyExistsException.class )
-    public void testNewFileSystemOfExsitingThrows() throws IOException {
+    public void testNewFileSystemOfExistingThrows() throws IOException {
         FS.provider().newFileSystem(getRoot().toUri(), Collections.EMPTY_MAP );
     }
 

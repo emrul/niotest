@@ -27,4 +27,13 @@ package org.opencage.lindwurm.niotest.tests;
  * **** END LICENSE BLOCK ****
  */
 public abstract class PathTestIT extends PathTest13FileStoreIT {
+
+    public FSDescription describe() {
+
+        FSDescription ret = new FSDescription(this);
+        capabilities = ret;
+
+        return ret;
+    }
+
 }

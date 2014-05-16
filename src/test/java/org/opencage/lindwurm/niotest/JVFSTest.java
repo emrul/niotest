@@ -16,19 +16,24 @@ import java.util.Collections;
 @Ignore
 public class JVFSTest extends PathTestIT {
 
+    private static Path playground;
+    private static Path playground2;
+
     @BeforeClass
     public static void setUp() throws IOException {
 
-        Path path = PathUtils.getOrCreate(URI.create("jvfs:///"), Collections.<String, Object>emptyMap()).getPath( "/play");
-
-        setPlay(path);
-        set2ndPlay(PathUtils.getOrCreate(URI.create("jvfs:///"), Collections.<String, Object>emptyMap()).getPath( "/play2"));
+        playground = PathUtils.getOrCreate(URI.create("jvfs:///"), Collections.<String, Object>emptyMap()).getPath( "/play");
+        //playground2 = PathUtils.getOrCreate(URI.create("jvfs:///"), Collections.<String, Object>emptyMap()).getPath( "/play2");
 
     }
 
     public JVFSTest() {
 
-        capabilities.notClosable().doesNotSupportWatchService();
+        describe().
+                playground( playground ).
+                noSecondPlayground(). //secondPlayground( playground2 ).
+                notClosable().
+                doesNotSupportWatchService();
     }
 
 }

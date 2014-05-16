@@ -3,54 +3,57 @@ package org.opencage.lindwurm.niotest;
 import com.google.jimfs.Configuration;
 import com.google.jimfs.Jimfs;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.opencage.lindwurm.niotest.tests.PathTestIT;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * Created with IntelliJ IDEA.
- * User: stephan
- * Date: 28/02/14
- * Time: 22:06
- * To change this template use File | Settings | File Templates.
- */
+* Created with IntelliJ IDEA.
+* User: stephan
+* Date: 28/02/14
+* Time: 22:06
+* To change this template use File | Settings | File Templates.
+*/
 public class JimFSTest extends PathTestIT {
-
-    //Jimfs.newFileSystem(Configuration.unix())
+    private static Path playground;
+    private static Path secondPlay;
+    private static Path closablePlayground;
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Path path = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
-        setPlay( path );
-        setClosablePlay(Jimfs.newFileSystem(Configuration.unix()).getPath("/play"));
-
-        set2ndPlay(Jimfs.newFileSystem(Configuration.unix()).getPath("/play"));
+        playground  = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
+//        closablePlayground = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
+        secondPlay  = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
 
     }
 
     public JimFSTest() {
 
-        capabilities.notClosable().doesNotSupportLastAccessTime().fileStores(true);
-        setWatcherSleep( 7000 );
+        describe().
+                playground(playground).
+                watcherSleepTime(7000).
+                lastAccessTime(false).
+                fileStores(true).
+                secondPlayground(secondPlay).
+                notClosable(). //closablePlayground( closablePlayground ).
 
-        bug("testAppendAndReadThrows");
-        bug("testCloseDirStreamInTheMiddleOfIteration");
-        bug("testGetExistingFileSystem");
-        bug("testGetFileSystemOtherURI");
-        bug("testGetIteratorOfClosedDirStream");
-        bug("testIsSameFileOfDifferentPathNonExistingFile2Throws");
-        bug("testIsSameFileOfDifferentPathNonExistingFileThrows");
-        bug("testReadUnsupportedAttributesThrows");
-        bug("testRegisterOtherPath");
-        bug("testNewFileSystemOfExsitingThrows");
-        bug("testRegisterOtherPath");
-        bug("testWatchAModify"); // inconsistent, test bug ?
+                bug("testAppendAndReadThrows").
+                bug("testCloseDirStreamInTheMiddleOfIteration").
+                bug("testGetExistingFileSystem").
+                bug("testGetFileSystemOtherURI").
+                bug("testGetIteratorOfClosedDirStream").
+                bug("testIsSameFileOfDifferentPathNonExistingFile2Throws").
+                bug("testIsSameFileOfDifferentPathNonExistingFileThrows").
+                bug("testReadUnsupportedAttributesThrows").
+                bug("testRegisterOtherPath").
+                bug("testNewFileSystemOfExistingThrows").
+                bug("testRegisterOtherPath").
+                bug("testWatchAModify").
 
-        // fixed but not released
-        bug( "testFileStoreUnallocatedSpaceIsSmallerUsableSpace");
-        bug( "testPathFileStoreGrowingFileLowersUsableSpace");
+                // fixed but not released
+                bug( "testFileStoreUnallocatedSpaceIsSmallerUsableSpace").
+                bug( "testPathFileStoreGrowingFileLowersUsableSpace");
 
 
     }

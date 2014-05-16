@@ -51,22 +51,22 @@ import static org.junit.Assume.assumeThat;
  */
 public abstract class Setup {
 
-    private static Path play;
-    private static Path closablePlay;
-    private static Boolean dontDelete;
+    private Path play;
+    private Path closablePlay;
+    private Boolean dontDelete;
 
     protected static byte[] CONTENT;
     protected static byte[] CONTENT_OTHER;
     protected static byte[] CONTENT20k;
     protected static byte[] CONTENT50;
 
-    public static FileSystem FS;
+    public FileSystem FS;
     public static String[]   nameStr = {"aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii", "jjj", "kkk"};
     private int       kidCount;
 
     protected Map<String, String> notSupported = new HashMap<>();
 
-    public FSCapabilities capabilities = new FSCapabilities();
+    public FSCapabilities capabilities;
     public F0<Void> shake = new F0<Void>() {
         @Override
         public Void call() {
@@ -81,14 +81,14 @@ public abstract class Setup {
     public TestName testMethodName = new TestName();
 
 
-    private static FileSystem closedFS = null;
-    protected static Path closedAf;
-    protected static Path closedBd;
-    protected static SeekableByteChannel closedReadChannel;
-    protected static Path play2;
-    protected static URI closedURI;
-    protected static DirectoryStream<Path> closedDirStream;
-    protected static WatchService closedFSWatchService;
+    private FileSystem closedFS = null;
+    protected Path closedAf;
+    protected Path closedBd;
+    protected SeekableByteChannel closedReadChannel;
+    protected Path play2;
+    protected URI closedURI;
+    protected DirectoryStream<Path> closedDirStream;
+    protected WatchService closedFSWatchService;
 
 
     @BeforeClass
@@ -118,12 +118,13 @@ public abstract class Setup {
 
 
 
-    @AfterClass
-    public static void afterClass() {
-        if ( dontDelete != null ) {
-            PathUtils.delete( play );
-        }
-    }
+    // TODO
+//    @AfterClass
+//    public static void afterClass() {
+//        if ( dontDelete != null ) {
+//            PathUtils.delete( play );
+//        }
+//    }
 
     protected String message() {
         String ret = notSupported.get( testMethodName.getMethodName() );
@@ -328,23 +329,23 @@ public abstract class Setup {
         assertThat( "set FS to the FileSystem to test", FS, notNullValue());
     }
 
-    public static void setPlay( Path play ) {
-        Setup.play = play;
-        Setup.FS = play.getFileSystem();
+    public void setPlay( Path play ) {
+        this.play = play;
+        this.FS = play.getFileSystem();
     }
 
-    public static Path getPlay() {
+    public Path getPlay() {
         return play;
     }
 
-    public static void setDontDelete() {
-        Setup.dontDelete = true;
-    }
-
-
-    public static void setClosablePlay( Path closablePlay ) {
-        Setup.closablePlay = closablePlay;
-        Setup.closedFS = null;
+//    public static void setDontDelete() {
+//        Setup.dontDelete = true;
+//    }
+//
+//
+    public void setClosablePlay( Path closablePlay ) {
+        this.closablePlay = closablePlay;
+        closedFS = null;
     }
 
     public FileSystem getClosedFS() throws IOException {
@@ -408,9 +409,9 @@ public abstract class Setup {
         return FileSystems.getDefault().getPath("foo");
     }
 
-    protected static void set2ndPlay(Path play2) {
-        Setup.play2 = play2;
-    }
+//    protected static void set2ndPlay(Path play2) {
+//        Setup.play2 = play2;
+//    }
 
     public Path getPathOtherPA() throws IOException {
         Path dir = play2.resolve( testMethodName.getMethodName() );
@@ -426,13 +427,5 @@ public abstract class Setup {
         return ret;
     }
 
-    public void bug( String not, String bug ) {
-        notSupported.put(not, "");
-        notSupported.put(bug, "");
-    }
-
-    public void bug( String not ) {
-        notSupported.put(not, "");
-    }
 
 }

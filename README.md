@@ -24,64 +24,100 @@ Niotest is a framework for testing java 7 nio2 based virtual filesystem as speci
     <dependency>
         <groupId>org.opencage.lindwurm</groupId>
         <artifactId>niotest</artifactId>
-        <version>0.17.1</version>
+        <version>0.18</version>
     </dependency>
 
 #### Use
 
-Extend PathTestIT and show it a playgound in your new FilesSystem.
+Extend PathTestIT and show it a playground in your new FilesSystem.
+Examples are in source under test, e.g. for the DefaultFilesystem
 
 
     public class DefaultFileSystemTest extends PathTestIT {
 
+        private static Path playground;
+
         @BeforeClass
         public static void setUp() {
-            setPlay( PathUtils.getTmpDir( "DefaultFileSystemTest" ));
+            // create filesystems just once, not for every test
+            playground = PathUtils.getTmpDir( "DefaultFileSystemTest" );
         }
 
         public DefaultFileSystemTest() {
 
-            capabilities.notClosable();
-            capabilities.doesNotSupportCreationTime();
+            describe().
+                    playground(playground).
+                    fileStores(true).
+                    notClosable().
+                    lastAccessTime( false ). // OSX only ?
+                    creationTime( false ).   // OSX only ?
+                    watcherSleepTime( 12000 ).
+                    noSecondPlayground().
 
-            setWatcherSleep( 10000 );
-
-            bug( "testCreateDirectoryRoot" );
+                    bug( "testCreateDirectoryRoot" ).
+                    bug( "testGetIteratorOfClosedDirStream" ).
+                    bug( "testWatchAModify").
+                    bug( "testWatchATruncate").
+                    bug( "testWatchSeveralEvents").
+                    bug( "testWatchTwoModifiesOneKey");
         }
+
     }
 
 #### Howto
 
-A perfect FileSystem implements the full API. This is the start:
+Start with:
 
+
+    public class MyFSTestIT extends PathTestIT {
+
+        private static Path playground;
 
         @BeforeClass
         public static void setUp() {
-            setPlay(  -- empty path-- );
+            // create filesystems just once, not for every test
+            playground = <create filesystem>
         }
-        
-If many tests fail it usually means that some optional areas are not supported. Turn off the whole block of test via the capabilties variable.
 
-        public YourFileSystemTest() {
-            capabilities.notClosable();
-            capabilities.doesNotSupportCreationTime();
+        public DefaultFileSystemTest() {
+
+            describe().
+                    playground(playground).
+                    noClosable().
+                    noSecondPlayground();
         }
+    }
         
+If many tests fail it usually means that some optional areas are not supported. Turn off the whole block.
+
+            describe().
+                    playground(playground).
+                    noClosable().
+                    noSecondPlayground().
+                    doesNotSupportWatchService();
+
+
+
 If only some tests fail it might make sense to defere their fixing for a later time.
 
-		bug( "testReadAttributesViewFutureExistingFile" );
+            describe().
+                    playground(playground).
+                    noClosable().
+                    noSecondPlayground().
+                    doesNotSupportWatchService().
+		            bug( "testReadAttributesViewFutureExistingFile" );
 
 If many tests still fail it is probably the the basics are not complete yet. Niotest uses same basic calls to your new filesystem during setup. The stacktrace of many failed test will look the same in that case. You have to fix these calls first to get meaningfull results form the test suit. Try to get tests from the first 3 NioPathNTestIt to work.
 
 If many WatchService tests fail it might be the default time of 1s to wait for events to move through the system is too short (e.g. OSX default implementation). Wait longer:
 
-	   setWatcherSleep( 10000 );
+            describe().
+                    playground(playground).
+                    noClosable().
+                    noSecondPlayground().
+                	setWatcherSleep( 10000 ).
+		            bug( "testReadAttributesViewFutureExistingFile" );
 	   
-	   
-If you don't want niotest to clean up after the tests:
-
-       setDontDelete();
-	  	        
 
 ## Q&A
 
@@ -90,7 +126,7 @@ If you don't want niotest to clean up after the tests:
 
 * if it is from an unsupported capability (e.g. FileChannel): turn off that capability
 
-    capability.notClosable();
+    describe().... notClosable();
 
 * if it is a bug (in your filesystem implementation): fix it
 
