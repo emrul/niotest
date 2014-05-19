@@ -1,18 +1,19 @@
 package org.opencage.lindwurm.niotest.tests;
 
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.Is;
 import org.junit.Test;
 import org.opencage.kleinod.collection.Sets;
-import org.opencage.kleinod.paths.PathUtils;
 import org.opencage.lindwurm.niotest.matcher.Assumes;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.Collections;
 
 import static java.nio.file.StandardOpenOption.READ;
@@ -22,7 +23,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 import static org.junit.Assume.assumeTrue;
-import static org.opencage.lindwurm.niotest.matcher.Assumes.*;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -309,5 +309,82 @@ public abstract class PathTest7ClosedIT extends PathTest6AttributesIT {
 //        Files.readAllBytes( file );
 //    }
 //
+
+    private ClosedFSVars closed;
+
+    public void setClosablePlay( ClosedFSVars vars ) {
+        this.closed = vars;
+    }
+
+    public FileSystem getClosedFS() throws IOException {
+
+        if ( closed.fs == null ) {
+            closed.fs = closed.play.getFileSystem();
+        }
+
+        if ( !closed.fs.isOpen() ) {
+            return closed.fs;
+        }
+
+        closed.provider = closed.fs.provider();
+
+        closed.pathAf = closed.play.resolve( nameStr[0] );
+        closed.pathBd = closed.play.resolve( nameStr[1] );
+
+        Files.createDirectories(closed.play);
+        Files.write( closed.pathAf, CONTENT, standardOpen );
+        closed.provider.createDirectory(closed.pathBd);
+
+
+        Path closedCf = closed.play.resolve( nameStr[2] );
+        Files.write( closedCf, CONTENT, standardOpen );
+        closed.readChannel = Files.newByteChannel( closedCf, StandardOpenOption.READ );
+
+        closed.uri = closed.play.getRoot().toUri();
+
+        closed.dirStream = Files.newDirectoryStream( closed.play );
+
+        if ( capabilities.supportsWatchService() ) {
+            closed.watchService = closed.fs.newWatchService();
+        }
+
+        closed.fs.close();
+
+        return closed.fs;
+    }
+
+    public FileSystemProvider getClosedFSProvider() throws IOException {
+        getClosedFS();
+        return FS.provider();
+    }
+
+    public Path getClosedAf() throws IOException {
+        getClosedFS();
+        return closed.pathAf;
+    }
+
+    public Path getClosedBd() throws IOException {
+        getClosedFS();
+        return closed.pathBd;
+    }
+
+    public URI getClosedURI() throws IOException {
+        getClosedFS();
+        return closed.uri;
+    }
+
+    public SeekableByteChannel getClosedReadChannel() throws IOException {
+        getClosedAf();
+        return closed.readChannel;
+    }
+
+    public WatchService getClosedFSWatchService() throws IOException {
+        getClosedFS();
+        return closed.watchService;
+    }
+
+
+
+
 
 }

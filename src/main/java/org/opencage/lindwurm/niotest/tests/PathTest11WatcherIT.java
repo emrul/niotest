@@ -125,7 +125,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assumeThat( capabilities.supportsWatchService(), is(true));
         assumeThat( capabilities.isClosable(), is(true));
 
-        getClosedBd().register(closedFSWatchService, ENTRY_DELETE);
+        getClosedBd().register( getClosedFSWatchService(), ENTRY_DELETE);
     }
 
     @Test
@@ -320,17 +320,6 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assertThat( waitForWatchService().poll(), correctKey(getPathWA(), ENTRY_CREATE));
     }
 
-    @Test
-    public void testWatchACreateFromCopyFromOtherFS() throws Exception {
-        assumeThat(play2, notNullValue());
-        assumeThat( capabilities.supportsWatchService(), is(true));
-
-
-        watcherSetup(ENTRY_CREATE);
-        Files.copy( getPathOtherPAf(), getPathWA());
-
-        assertThat( waitForWatchService().poll(), correctKey(getPathWA(), ENTRY_CREATE));
-    }
 
     @Test
     public void testWatchACreateFromMove() throws Exception {
@@ -342,16 +331,6 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         assertThat( waitForWatchService().poll(), correctKey(getPathWA(), ENTRY_CREATE));
     }
 
-    @Test
-    public void testWatchACreateFromMoveFromOtherFS() throws Exception {
-        assumeThat(play2, notNullValue());
-        assumeThat( capabilities.supportsWatchService(), is(true));
-
-        watcherSetup(ENTRY_CREATE);
-        Files.move( getPathOtherPAf(), getPathWA());
-
-        assertThat( waitForWatchService().poll(), correctKey(getPathWA(), ENTRY_CREATE));
-    }
 
 //    @Test
 //    public void testCopyDirReplaceExistingOverwritesFile() throws Exception {
@@ -618,7 +597,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
     }
 
 
-    private WatchKey watcherSetup(WatchEvent.Kind<Path> ... kinds ) throws IOException {
+    WatchKey watcherSetup(WatchEvent.Kind<Path> ... kinds ) throws IOException {
         watchService = FS.newWatchService();
         return createPathW().register(watchService, kinds);
     }

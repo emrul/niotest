@@ -52,7 +52,6 @@ import static org.junit.Assume.assumeThat;
 public abstract class Setup {
 
     private Path play;
-    private Path closablePlay;
     private Boolean dontDelete;
 
     protected static byte[] CONTENT;
@@ -79,16 +78,6 @@ public abstract class Setup {
 
     @Rule
     public TestName testMethodName = new TestName();
-
-
-    private FileSystem closedFS = null;
-    protected Path closedAf;
-    protected Path closedBd;
-    protected SeekableByteChannel closedReadChannel;
-    protected Path play2;
-    protected URI closedURI;
-    protected DirectoryStream<Path> closedDirStream;
-    protected WatchService closedFSWatchService;
 
 
     @BeforeClass
@@ -343,63 +332,6 @@ public abstract class Setup {
 //    }
 //
 //
-    public void setClosablePlay( Path closablePlay ) {
-        this.closablePlay = closablePlay;
-        closedFS = null;
-    }
-
-    public FileSystem getClosedFS() throws IOException {
-        if ( closedFS == null ) {
-            closedFS = closablePlay.getFileSystem();
-            Files.createDirectories( closablePlay );
-
-            closedAf = closablePlay.resolve( nameStr[0] );
-            Files.write( closedAf, CONTENT, standardOpen );
-
-            closedBd = closablePlay.resolve( nameStr[1] );
-            closedFS.provider().createDirectory( closedBd );
-
-            Path closedCf = closablePlay.resolve( nameStr[2] );
-            Files.write( closedCf, CONTENT, standardOpen );
-            closedReadChannel = Files.newByteChannel( closedCf, StandardOpenOption.READ );
-
-            closedURI = closablePlay.getRoot().toUri();
-
-            closedDirStream = Files.newDirectoryStream( closablePlay );
-
-            if ( capabilities.supportsWatchService() ) {
-                closedFSWatchService = closedFS.newWatchService();
-            }
-
-            closedFS.close();
-        }
-
-        return closedFS;
-    }
-
-    public FileSystemProvider getClosedFSProvider() throws IOException {
-        getClosedFS();
-        return FS.provider();
-    }
-
-    public Path getClosedAf() throws IOException {
-        getClosedFS();
-        return closedAf;
-    }
-
-    public Path getClosedBd() throws IOException {
-        getClosedFS();
-        return closedBd;
-    }
-
-    public URI getClosedURI() throws IOException {
-        return closedURI;
-    }
-
-    public SeekableByteChannel getClosedReadChannel() throws IOException {
-        getClosedAf();
-        return closedReadChannel;
-    }
 
     public Path getOther() throws IOException {
         if ( FS.equals(FileSystems.getDefault())) {
@@ -412,20 +344,6 @@ public abstract class Setup {
 //    protected static void set2ndPlay(Path play2) {
 //        Setup.play2 = play2;
 //    }
-
-    public Path getPathOtherPA() throws IOException {
-        Path dir = play2.resolve( testMethodName.getMethodName() );
-        Files.createDirectories(dir);
-        return dir.resolve(nameStr[0]);
-    }
-
-    public Path getPathOtherPAf() throws IOException {
-        Path dir = play2.resolve( testMethodName.getMethodName() );
-        Files.createDirectories(dir);
-        Path ret = dir.resolve(nameStr[0]);
-        Files.write( ret, CONTENT, standardOpen);
-        return ret;
-    }
 
 
 }

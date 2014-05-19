@@ -150,8 +150,8 @@ public class FSDescription implements FSCapabilities {
         return this;
     }
 
-    public FSDescription closablePlayground(Path closablePlayground) {
-        this.setup.setClosablePlay( closablePlayground );
+    public FSDescription closablePlayground(ClosedFSVars closedVars) {
+        this.setup.setClosablePlay( closedVars );
         return this;
     }
 }
