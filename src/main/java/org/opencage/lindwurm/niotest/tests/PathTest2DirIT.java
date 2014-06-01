@@ -1,12 +1,11 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
-import org.opencage.kleinod.collection.Iterators;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -17,12 +16,15 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.collection.IsIterableWithSize.iterableWithSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
+import static org.opencage.lindwurm.niotest.Utils.getSize;
+import static org.opencage.lindwurm.niotest.matcher.IteratorMatcher.isIn;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.absolute;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.relative;
 import static org.opencage.lindwurm.niotest.matcher.PathExists.exists;
@@ -71,7 +73,7 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
     public void testContentOfNonEmptyDir() throws IOException {
 
         try( DirectoryStream<Path> stream = Files.newDirectoryStream( nonEmptyDir()) ) {
-            assertEquals( getKidCount(), Iterators.size( stream ) );
+            assertThat( getSize( stream ), is(getKidCount()));
         }
     }
 
@@ -91,6 +93,7 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
             stream.iterator().remove();
         }
     }
+
 
     @Test
     public void testContentOfNonEmptyDirFiltered() throws IOException {
@@ -113,7 +116,9 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         };
 
         try( DirectoryStream<Path> stream = Files.newDirectoryStream( path, filter ) ) {
-            assertEquals( getKidCount() - 1, Iterators.size( stream ) );
+            assertThat(getSize(stream), is(getKidCount() - 1));
+
+//            assertEquals( getKidCount() - 1, Iterators.size( stream ) );
         }
     }
 
@@ -124,7 +129,7 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         Files.createDirectory( dir );
 
         try( DirectoryStream<Path> kids = Files.newDirectoryStream( dir.getParent() ) ) {
-            assertThat( kids, containsInAnyOrder( dir ) );
+            assertThat( dir, isIn(kids) );
         }
     }
 

@@ -1,6 +1,12 @@
 package org.opencage.lindwurm.niotest.tests;
 
 
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
@@ -39,4 +45,8 @@ public interface FSCapabilities {
     boolean supportsWatchService();
     boolean supportsFileStores();
     boolean has2ndFileSystem();
+    Runnable shake();
+    Function<FileSystem,URI> toURI();
+
+
 }

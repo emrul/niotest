@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.opencage</groupId>
         <artifactId>opencage-parent</artifactId>
-        <version>1.5.1</version>
+        <version>1.6</version>
         <relativePath>../opencage-parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.opencage.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.18.1</version>
+    <version>0.19</version>
 
     <repositories>
         <repository>
@@ -26,18 +26,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-
-        <repository>
-            <id>oss-sonatype</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
     </repositories>
 
 
@@ -45,7 +33,7 @@
         <dependency>
             <groupId>org.opencage</groupId>
             <artifactId>kleinod</artifactId>
-            <version>0.16.8</version>
+            <version>0.17</version>
         </dependency>
 
         <dependency>
@@ -79,7 +67,7 @@
         <dependency>
             <groupId>com.google.jimfs</groupId>
             <artifactId>jimfs</artifactId>
-            <version>1.0-rc1</version>
+            <version>1.0-rc2</version>
             <scope>test</scope>
         </dependency>
 

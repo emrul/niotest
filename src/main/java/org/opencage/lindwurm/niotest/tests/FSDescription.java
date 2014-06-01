@@ -1,6 +1,11 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.opencage.kleinod.text.Strings;
+
+import java.net.URI;
+import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.util.function.Function;
 
 /**
  * Created by stephan on 15/05/14.
@@ -18,9 +23,9 @@ public class FSDescription implements FSCapabilities {
     private boolean supportsLastAccessTime = true;
     private boolean supportsWatchService = true;
     private boolean has2ndFileSystem = true;
-
     private boolean filestores = false;
-
+    private Runnable shake = () -> {};
+    private Function<FileSystem, URI> toURI = FSDescription::toURIWithRoot;
 
     FSDescription(PathTestIT setup) {
         this.setup = setup;
@@ -129,6 +134,11 @@ public class FSDescription implements FSCapabilities {
         return this;
     }
 
+    public FSDescription shake( Runnable f ) {
+        this.shake = f;
+        return this;
+    }
+
 
     public boolean supportsFileStores() {
         return filestores;
@@ -137,6 +147,25 @@ public class FSDescription implements FSCapabilities {
     @Override
     public boolean has2ndFileSystem() {
         return has2ndFileSystem;
+    }
+
+    @Override
+    public Runnable shake() {
+        return shake;
+    }
+
+    @Override
+    public Function<FileSystem,URI> toURI() {
+        return toURI;
+    }
+
+    public static URI toURIWithRoot( FileSystem fs ) {
+        return fs.getPath("").toAbsolutePath().getRoot().toUri();
+    }
+
+    public static URI toURIWithoutPath( FileSystem fs ) {
+        Path root =  fs.getPath("").toAbsolutePath().getRoot();
+        return URI.create( Strings.withoutEnd( root.toUri().toString(), root.toString()));
     }
 
     public FSDescription watcherSleepTime( long seconds ) {
@@ -152,6 +181,12 @@ public class FSDescription implements FSCapabilities {
 
     public FSDescription closablePlayground(ClosedFSVars closedVars) {
         this.setup.setClosablePlay( closedVars );
+        return this;
+    }
+
+
+    public FSDescription fileSystemURI( Function<FileSystem,URI> func ) {
+        toURI = func;
         return this;
     }
 }

@@ -49,7 +49,7 @@
 //    public void testAAA() throws Exception {
 //
 //        assertThat( "extend EssentialsTest for concrete FileSystem and set protected member", ep, notNullValue() );
-//        assertThat( "set a base dir path in ep", ep.getBase(), notNullValue() );
+//        assertThat( "set a eighty dir path in ep", ep.getBase(), notNullValue() );
 //
 //    }
 //

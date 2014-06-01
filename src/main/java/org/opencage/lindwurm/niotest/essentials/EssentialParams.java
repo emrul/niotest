@@ -33,18 +33,18 @@
 // * **** END LICENSE BLOCK ****
 // */
 //public class EssentialParams {
-//    private Path base;
+//    private Path eighty;
 //    private String dirName = "adir";
 //
 //    public Path getBase() {
-//        return base;
+//        return eighty;
 //    }
 //
 //    public String getDirName() {
 //        return dirName;
 //    }
 //
-//    public void setBase( Path base ) {
-//        this.base = base;
+//    public void setBase( Path eighty ) {
+//        this.eighty = eighty;
 //    }
 //}

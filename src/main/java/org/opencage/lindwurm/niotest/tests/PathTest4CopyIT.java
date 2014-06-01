@@ -1,9 +1,7 @@
 package org.opencage.lindwurm.niotest.tests;
 
-import org.hamcrest.core.Is;
+import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
-import org.opencage.kleinod.collection.Forall;
-import org.opencage.kleinod.collection.Iterators;
 
 
 import java.io.IOException;
@@ -13,6 +11,8 @@ import java.nio.file.attribute.FileTime;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.collection.IsIterableWithSize.iterableWithSize;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -264,7 +264,8 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         Files.copy( src, tgt );
 
         try ( DirectoryStream<Path> kids = Files.newDirectoryStream( tgt )) {
-            assertEquals( 0, Iterators.size( kids ) );
+            assertThat( kids, IsIterableWithSize.<Path>iterableWithSize(0));
+//            assertEquals( 0, Iterators.size( kids ) );
         }
     }
 
@@ -333,7 +334,7 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         Files.write( file, CONTENT, standardOpen );
         Files.delete( file );
         try ( DirectoryStream<Path> kids = Files.newDirectoryStream( file.getParent() ) ) {
-            assertFalse( "delete dir does not remove it from parent stream", Forall.forall( kids ).contains( file ));
+            assertThat( file, not(isIn( kids) ));
         }
     }
 

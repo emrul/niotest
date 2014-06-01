@@ -152,7 +152,7 @@ public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
 
     @Test( expected = IllegalArgumentException.class )
     public void testGetFileSystemOtherURI() throws IOException {
-        FS.provider().getFileSystem( getOther().toUri() );
+        FS.provider().getFileSystem( capabilities.toURI().apply( getOther().getFileSystem()));
     }
 
     @Test( expected = ProviderMismatchException.class )

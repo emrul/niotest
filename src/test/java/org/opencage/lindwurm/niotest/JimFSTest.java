@@ -3,10 +3,19 @@ package org.opencage.lindwurm.niotest;
 import com.google.jimfs.Configuration;
 import com.google.jimfs.Jimfs;
 import org.junit.BeforeClass;
+import org.junit.Test;
+import org.opencage.kleinod.text.Strings;
+import org.opencage.lindwurm.niotest.tests.ClosedFSVars;
+import org.opencage.lindwurm.niotest.tests.FSDescription;
 import org.opencage.lindwurm.niotest.tests.PathTestIT;
 
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
 * Created with IntelliJ IDEA.
@@ -18,12 +27,12 @@ import java.nio.file.Path;
 public class JimFSTest extends PathTestIT {
     private static Path playground;
     private static Path secondPlay;
-    private static Path closablePlayground;
+    private static ClosedFSVars closablePlayground;
 
     @BeforeClass
     public static void setUp() throws IOException {
         playground  = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
-//        closablePlayground = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
+        closablePlayground = new ClosedFSVars( Jimfs.newFileSystem(Configuration.unix()).getPath("/play"));
         secondPlay  = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
 
     }
@@ -36,25 +45,37 @@ public class JimFSTest extends PathTestIT {
                 lastAccessTime(false).
                 fileStores(true).
                 secondPlayground(secondPlay).
-                notClosable(). //closablePlayground( closablePlayground ).
+                closablePlayground(closablePlayground).
+                fileSystemURI(FSDescription::toURIWithoutPath).
 
+                bug("testCopyToClosedFS").
+                bug("testClosedFSGetFileStore").
                 bug("testAppendAndReadThrows").
                 bug("testCloseDirStreamInTheMiddleOfIteration").
-                bug("testGetExistingFileSystem").
-                bug("testGetFileSystemOtherURI").
+//                bug("testGetExistingFileSystem").
+//                bug("testGetFileSystemOtherURI").
                 bug("testGetIteratorOfClosedDirStream").
                 bug("testIsSameFileOfDifferentPathNonExistingFile2Throws").
                 bug("testIsSameFileOfDifferentPathNonExistingFileThrows").
                 bug("testReadUnsupportedAttributesThrows").
                 bug("testRegisterOtherPath").
-                bug("testNewFileSystemOfExistingThrows").
-                bug("testRegisterOtherPath").
-                bug("testWatchAModify").
-
-                // fixed but not released
-                bug( "testFileStoreUnallocatedSpaceIsSmallerUsableSpace").
-                bug( "testPathFileStoreGrowingFileLowersUsableSpace");
+                bug("testNewFileSystemOfExistingThrows"); // needs env see below
+//                bug("testRegisterOtherPath").
+//                bug("testWatchAModify").
+//
+//                // fixed but not released
+//                bug( "testFileStoreUnallocatedSpaceIsSmallerUsableSpace").
+//                bug( "testPathFileStoreGrowingFileLowersUsableSpace")
 
 
     }
+
+    @Test( expected = FileSystemAlreadyExistsException.class )
+    public void testJimFSNewFileSystemOfExistingThrows() throws IOException {
+        URI uriThisFS = URI.create( Strings.withoutEnd(getRoot().toUri().toString(), getRoot().toString()));
+        Map<String, Object > env = new HashMap<>();
+        env.put("config", Configuration.unix());
+        FS.provider().newFileSystem(  uriThisFS, env );
+    }
+
 }

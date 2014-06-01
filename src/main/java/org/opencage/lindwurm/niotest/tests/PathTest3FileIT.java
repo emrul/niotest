@@ -535,7 +535,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testModifiedDateIsCloseToCurrentTime() throws Exception{
-        Path     file          = getPathPAf();
+        Path     file   = getPathPAf();
         FileTime before = TimeConversion.toFileTime( new Date());
         assertThat( Files.getLastModifiedTime( file ), isCloseTo( before ) );
     }

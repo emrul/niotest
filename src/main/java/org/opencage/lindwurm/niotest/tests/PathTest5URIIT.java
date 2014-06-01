@@ -1,6 +1,7 @@
 package org.opencage.lindwurm.niotest.tests;
 
 import org.junit.Test;
+import org.opencage.kleinod.text.Strings;
 
 import java.io.IOException;
 import java.net.URI;
@@ -98,13 +99,14 @@ public abstract class PathTest5URIIT extends PathTest4CopyIT {
 
     @Test
     public void testGetExistingFileSystem() throws IOException {
-        FileSystem fs = FS.provider().getFileSystem(getRoot().toUri());
+
+        FileSystem fs = FS.provider().getFileSystem( capabilities.toURI().apply(FS) );
         assertThat( fs, is(FS) );
     }
 
     @Test( expected = FileSystemAlreadyExistsException.class )
     public void testNewFileSystemOfExistingThrows() throws IOException {
-        FS.provider().newFileSystem(getRoot().toUri(), Collections.EMPTY_MAP );
+        FS.provider().newFileSystem(  capabilities.toURI().apply(FS), Collections.EMPTY_MAP );
     }
 
     @Test
