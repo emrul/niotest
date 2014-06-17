@@ -31,11 +31,10 @@ public class JimFSTest extends PathTestIT {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        playground  = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
+        playground  = Jimfs.newFileSystem(Configuration.unix().toBuilder().setAttributeViews("basic", "owner", "posix", "unix").build()).getPath("/play");
         closablePlayground = new ClosedFSVars( Jimfs.newFileSystem(Configuration.unix()).getPath("/play"));
         secondPlay  = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
-
-    }
+            }
 
     public JimFSTest() {
 
@@ -59,6 +58,7 @@ public class JimFSTest extends PathTestIT {
                 bug("testIsSameFileOfDifferentPathNonExistingFileThrows").
                 bug("testReadUnsupportedAttributesThrows").
                 bug("testRegisterOtherPath").
+                bug("testIllegalCharsNull").
                 bug("testNewFileSystemOfExistingThrows"); // needs env see below
 //                bug("testRegisterOtherPath").
 //                bug("testWatchAModify").

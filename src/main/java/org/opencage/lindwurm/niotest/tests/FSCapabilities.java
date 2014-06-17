@@ -3,6 +3,7 @@ package org.opencage.lindwurm.niotest.tests;
 
 import java.net.URI;
 import java.nio.file.FileSystem;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -47,6 +48,7 @@ public interface FSCapabilities {
     boolean has2ndFileSystem();
     Runnable shake();
     Function<FileSystem,URI> toURI();
+    Collection<Character> getPathIllegalCharacters();
 
-
+    boolean supportsPrincipals();
 }

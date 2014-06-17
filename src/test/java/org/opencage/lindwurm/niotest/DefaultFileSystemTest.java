@@ -54,6 +54,7 @@ public class DefaultFileSystemTest extends PathTestIT {
                 creationTime( false ).   // OSX only ?
                 watcherSleepTime( 12000 ).
                 noSecondPlayground().
+                unix().
 
                 bug( "testCreateDirectoryRoot" ).
                 bug( "testGetIteratorOfClosedDirStream" ).

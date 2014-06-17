@@ -6,7 +6,13 @@ import org.opencage.kleinod.collection.Sets;
 
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.*;
+import java.nio.file.ClosedWatchServiceException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.ProviderMismatchException;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +27,6 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 import static org.opencage.lindwurm.niotest.matcher.Has.has;
-import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.absolute;
 import static org.opencage.lindwurm.niotest.matcher.WatchEventMatcher.isEvent;
 import static org.opencage.lindwurm.niotest.matcher.WatchKeyMatcher.correctKey;
 

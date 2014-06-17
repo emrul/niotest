@@ -5,6 +5,9 @@ import org.opencage.kleinod.text.Strings;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.function.Function;
 
 /**
@@ -26,6 +29,8 @@ public class FSDescription implements FSCapabilities {
     private boolean filestores = false;
     private Runnable shake = () -> {};
     private Function<FileSystem, URI> toURI = FSDescription::toURIWithRoot;
+    private Collection<Character> pathIllegalCharacters = Collections.emptyList();
+    private boolean principals = false;
 
     FSDescription(PathTestIT setup) {
         this.setup = setup;
@@ -159,6 +164,16 @@ public class FSDescription implements FSCapabilities {
         return toURI;
     }
 
+    @Override
+    public Collection<Character> getPathIllegalCharacters() {
+        return pathIllegalCharacters;
+    }
+
+    @Override
+    public boolean supportsPrincipals() {
+        return principals;
+    }
+
     public static URI toURIWithRoot( FileSystem fs ) {
         return fs.getPath("").toAbsolutePath().getRoot().toUri();
     }
@@ -187,6 +202,21 @@ public class FSDescription implements FSCapabilities {
 
     public FSDescription fileSystemURI( Function<FileSystem,URI> func ) {
         toURI = func;
+        return this;
+    }
+
+    public FSDescription unix() {
+        pathIllegalCharacters = Arrays.asList('\u0000');
+        principals = true;
+        return this;
+    }
+
+    public void pathIllegalCharacters(Collection<Character> getPathIllegalCharacters) {
+        this.pathIllegalCharacters = getPathIllegalCharacters;
+    }
+
+    public FSDescription principals( boolean p ) {
+        principals = p;
         return this;
     }
 }

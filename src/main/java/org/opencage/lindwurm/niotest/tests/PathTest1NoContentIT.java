@@ -5,15 +5,13 @@ import org.hamcrest.core.IsNull;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -737,17 +735,41 @@ public abstract class PathTest1NoContentIT extends Setup {
         assertTrue( unnom.toString().contains( ".." ) );
     }
 
-    // only test class Files
+    // only tests class Files
     @Test
     public void testNonExistingAbsolutePathIsNotAFile() throws IOException {
         assertThat( Files.isRegularFile( getPathPA() ), is(false));
     }
 
-    // only test class Files
+    // only tests class Files
     @Test
     public void testNonExistingRealtivePathIsNotAFile() throws IOException {
         assertThat( Files.isRegularFile( getPathA() ), is(false));
     }
 
+    @Test
+    public void testIllegalCharsNull() {
+
+        for ( Character ill : capabilities.getPathIllegalCharacters() ) {
+            boolean thrown = false;
+            try {
+                FS.getPath("" + ill);
+            } catch ( InvalidPathException e ) {
+                thrown = true;
+            }
+
+            assertThat( "illegal character allowed" + ill , thrown, is(true));
+        }
+    }
+
+    @Test
+    public void testSeparatorIsNoFileName() {
+        Path path = FS.getPath( nameStr[3] + FS.getSeparator() + nameStr[0]);
+
+        for ( Path elem : path ) {
+            assertThat( elem.toString(), not(containsString( FS.getSeparator())));
+        }
+
+    }
 
 }
