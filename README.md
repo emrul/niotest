@@ -1,4 +1,5 @@
-niotest
+niotest  [![Build Status](https://travis-ci.org/openCage/niotest.svg?branch=master)](https://travis-ci.org/openCage/niotest) (unit test)[![Coverage Status](https://coveralls.io/repos/openCage/niotest/badge.png)](https://coveralls.io/r/openCage/niotest)
+                                                                                                                                       1
 =======
 
 Niotest is a framework for testing java 7 nio2 based virtual filesystem as specified in [JSR-203](https://jcp.org/en/jsr/detail?id=203). It should eventually cover the full api with all special cases. To get any reasonable results a readwrite implementation with a decent coverage of the API is needed.

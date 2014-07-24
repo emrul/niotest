@@ -1,5 +1,7 @@
-//package org.opencage.lindwurm.niotest;
-//
+package org.opencage.lindwurm.niotest;
+
+import org.opencage.lindwurm.niotest.tests.PathTestIT;
+
 //import com.github.sylvainjuge.memoryfs.MemoryFileSystem;
 //import com.github.sylvainjuge.memoryfs.MemoryFileSystemProvider;
 //import org.junit.BeforeClass;
@@ -15,11 +17,11 @@
 //import java.util.Collections;
 //
 ///**
-// * Created by stephan on 05/05/14.
-// */
+//* Created by stephan on 05/05/14.
+//*/
 //@Ignore
-//public class SylvainjugeMemoryFSTestIT extends PathTestIT {
-//
+public class SylvainjugeMemoryFSTestIT { //extends PathTestIT {
+
 //    @BeforeClass
 //    public static void setUp() throws IOException {
 //
@@ -57,5 +59,5 @@
 //                noLinks().
 //                noSymLinks().
 //                doesNotSupportWatchService();
-//    }
-//}
+    //}
+}

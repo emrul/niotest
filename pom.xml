@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.opencage</groupId>
         <artifactId>opencage-parent</artifactId>
-        <version>1.6</version>
+        <version>1.6.1</version>
         <relativePath>../opencage-parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.opencage.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.19.1</version>
+    <version>0.19.2</version>
 
     <repositories>
         <repository>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.opencage</groupId>
             <artifactId>kleinod</artifactId>
-            <version>0.17</version>
+            <version>0.17.2</version>
         </dependency>
 
         <dependency>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>com.google.jimfs</groupId>
             <artifactId>jimfs</artifactId>
-            <version>1.0-rc2</version>
+            <version>1.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -89,6 +89,20 @@
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <configuration>
+                    <repoToken>3p4cMPBwcCVy730ljFqp9L0qRd7X9E3UE</repoToken>
+                </configuration>
+            </plugin>
 
-    
+        </plugins>
+    </build>
+
+
+
+
 </project>

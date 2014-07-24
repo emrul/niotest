@@ -1,7 +1,7 @@
 package org.opencage.lindwurm.niotest;
 
-import com.google.jimfs.Configuration;
-import com.google.jimfs.Jimfs;
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opencage.kleinod.text.Strings;

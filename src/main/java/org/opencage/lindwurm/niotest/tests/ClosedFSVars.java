@@ -11,16 +11,16 @@ import java.nio.file.spi.FileSystemProvider;
  */
 public class ClosedFSVars {
 
-    FileSystem fs;
-    Path       play;
-    Path       pathAf;
-    Path       pathBd;
-    Path       pathCf;
-    SeekableByteChannel readChannel;
-    URI        uri;
-    DirectoryStream<Path> dirStream;
-    WatchService watchService;
-    public FileSystemProvider provider;
+    public FileSystem            fs;
+    public Path                  play;
+    public Path                  pathAf;
+    public Path                  pathBd;
+    public Path                  pathCf;
+    public SeekableByteChannel   readChannel;
+    public URI                   uri;
+    public DirectoryStream<Path> dirStream;
+    public WatchService          watchService;
+    public FileSystemProvider    provider;
 
     public ClosedFSVars(Path play) throws IOException {
         this.play = play;
