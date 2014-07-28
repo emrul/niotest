@@ -34,7 +34,7 @@ import java.nio.file.Path;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public class DefaultFileSystemTest extends PathTestIT {
+public class DefaultFileSystemTestIT extends PathTestIT {
 
     private static Path playground;
 
@@ -44,7 +44,7 @@ public class DefaultFileSystemTest extends PathTestIT {
         playground = PathUtils.getTmpDir( "DefaultFileSystemTest" );
     }
 
-    public DefaultFileSystemTest() {
+    public DefaultFileSystemTestIT() {
 
         FSDescription description = describe().
                 playground(playground).

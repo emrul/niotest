@@ -24,7 +24,7 @@ import java.util.Map;
 * Time: 22:06
 * To change this template use File | Settings | File Templates.
 */
-public class JimFSTest extends PathTestIT {
+public class JimFSTestIT extends PathTestIT {
     private static Path playground;
     private static Path secondPlay;
     private static ClosedFSVars closablePlayground;
@@ -36,7 +36,7 @@ public class JimFSTest extends PathTestIT {
         secondPlay  = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
             }
 
-    public JimFSTest() {
+    public JimFSTestIT() {
 
         describe().
                 playground(playground).

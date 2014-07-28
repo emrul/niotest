@@ -40,7 +40,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 
 
-public class MarschallTest extends PathTestIT {
+public class MarschallTestIT extends PathTestIT {
 
     private static Path playground;
     private static Path playground2;
@@ -56,7 +56,7 @@ public class MarschallTest extends PathTestIT {
 //        setClosablePlay(getOrCreate("marschallClose" + suf).getPath("play").toAbsolutePath());
     }
 
-    public MarschallTest() throws IOException {
+    public MarschallTestIT() throws IOException {
 
         describe().
                 playground( playground ).

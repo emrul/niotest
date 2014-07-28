@@ -179,6 +179,7 @@ public abstract class Setup {
     public Path getPathPAf() throws IOException {
         Path ret = emptyDir().resolve( nameStr[0] );
         Files.write(ret, CONTENT, standardOpen );
+        // NOSONAR
         capabilities.shake().run();
         return ret;
     }

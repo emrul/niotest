@@ -14,7 +14,7 @@ import java.util.Collections;
 * Created by stephan on 19/04/14.
 */
 @Ignore
-public class JVFSTest extends PathTestIT {
+public class JVFSTestIT extends PathTestIT {
 
     private static Path playground;
     private static Path playground2;
@@ -27,7 +27,7 @@ public class JVFSTest extends PathTestIT {
 
     }
 
-    public JVFSTest() {
+    public JVFSTestIT() {
 
         describe().
                 playground( playground ).
