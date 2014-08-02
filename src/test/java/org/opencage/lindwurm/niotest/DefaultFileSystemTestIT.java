@@ -63,7 +63,7 @@ public class DefaultFileSystemTestIT extends PathTestIT {
                 bug( "testWatchSeveralEvents").
                 bug( "testWatchTwoModifiesOneKey");
 
-        if (OS.isLinux()) {
+        if ( new OS().isLinux()) {
             description.bug("testDeleteWatchedDirCancelsKeys").
                         bug("testMovedWatchedDirCancelsKeys");
         }
