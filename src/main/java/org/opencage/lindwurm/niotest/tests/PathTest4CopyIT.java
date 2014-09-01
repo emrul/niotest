@@ -354,6 +354,17 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
     }
 
     @Test
+    public void testDeleteEmptiedDir() throws IOException {
+
+        Path file = getPathPABf();
+        Files.delete( file );
+
+        Files.delete( file.getParent() );
+        assertThat( file.getParent(), not( exists() ) );
+    }
+
+
+    @Test
     public void testDeleteFileChangesParentsModificationTime() throws IOException, InterruptedException {
         Path       dir = getPathPA();
         final Path kid = getPathPABf();

@@ -152,4 +152,24 @@ public class NullPath implements Path {
     public int compareTo(Path other) {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NullPath paths = (NullPath) o;
+
+        if (absolute != paths.absolute) return false;
+        if (fileSystem != null ? !fileSystem.equals(paths.fileSystem) : paths.fileSystem != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = fileSystem != null ? fileSystem.hashCode() : 0;
+        result = 31 * result + (absolute ? 1 : 0);
+        return result;
+    }
 }
