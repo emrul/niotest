@@ -66,6 +66,7 @@ public abstract class Setup {
 
     @Rule
     public TestName testMethodName = new TestName();
+    public Path sizeLimitedPlayground;
 
 
     @BeforeClass

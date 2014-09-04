@@ -2,8 +2,10 @@ package org.opencage.lindwurm.niotest.tests;
 
 import org.opencage.kleinod.text.Strings;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,6 +33,8 @@ public class FSDescription implements FSCapabilities {
     private Function<FileSystem, URI> toURI = FSDescription::toURIWithRoot;
     private Collection<Character> pathIllegalCharacters = Collections.emptyList();
     private boolean principals = false;
+
+    private boolean hasSizeLimitedFileSystem = false; // todo turn true when implemented
 
     FSDescription(PathTestIT setup) {
         this.setup = setup;
@@ -155,6 +159,11 @@ public class FSDescription implements FSCapabilities {
     }
 
     @Override
+    public boolean hasSizeLimitedFileSystem() {
+        return hasSizeLimitedFileSystem;
+    }
+
+    @Override
     public Runnable shake() {
         return shake;
     }
@@ -217,6 +226,17 @@ public class FSDescription implements FSCapabilities {
 
     public FSDescription principals( boolean p ) {
         principals = p;
+        return this;
+    }
+
+    public FSDescription sizeLimitedPlayground( Path limitedPlayground ) {
+        hasSizeLimitedFileSystem = true;
+        setup.sizeLimitedPlayground = limitedPlayground;
+        try {
+            Files.createDirectories( limitedPlayground );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 }

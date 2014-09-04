@@ -46,6 +46,7 @@ public interface FSCapabilities {
     boolean supportsWatchService();
     boolean supportsFileStores();
     boolean has2ndFileSystem();
+    boolean hasSizeLimitedFileSystem();
     Runnable shake();
     Function<FileSystem,URI> toURI();
     Collection<Character> getPathIllegalCharacters();

@@ -28,13 +28,15 @@ public class JimFSTestIT extends PathTestIT {
     private static Path playground;
     private static Path secondPlay;
     private static ClosedFSVars closablePlayground;
+    private static Path sizeLimitedPlay;
 
     @BeforeClass
     public static void setUp() throws IOException {
         playground  = Jimfs.newFileSystem(Configuration.unix().toBuilder().setAttributeViews("basic", "owner", "posix", "unix").build()).getPath("/play");
         closablePlayground = new ClosedFSVars( Jimfs.newFileSystem(Configuration.unix()).getPath("/play"));
         secondPlay  = Jimfs.newFileSystem(Configuration.unix()).getPath("/play");
-            }
+        sizeLimitedPlay  = Jimfs.newFileSystem(Configuration.unix().toBuilder().setMaxSize( 12000L).build()).getPath("/play");
+    }
 
     public JimFSTestIT() {
 
@@ -46,6 +48,7 @@ public class JimFSTestIT extends PathTestIT {
                 secondPlayground(secondPlay).
                 closablePlayground(closablePlayground).
                 fileSystemURI(FSDescription::toURIWithoutPath).
+                sizeLimitedPlayground( sizeLimitedPlay ).
 
                 bug("testCopyToClosedFS").
                 bug("testClosedFSGetFileStore").
