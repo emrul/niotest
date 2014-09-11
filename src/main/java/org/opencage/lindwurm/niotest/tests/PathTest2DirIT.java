@@ -1,27 +1,18 @@
 package org.opencage.lindwurm.niotest.tests;
 
-import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.collection.IsIterableWithSize.iterableWithSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.junit.Assume.assumeThat;
 import static org.opencage.lindwurm.niotest.Utils.getSize;
 import static org.opencage.lindwurm.niotest.matcher.IteratorMatcher.isIn;
@@ -33,7 +24,7 @@ import static org.opencage.lindwurm.niotest.matcher.PathIsDirectory.isDirectory;
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2013, Stephan Pfab
+ * Copyright (c) 2006 - 2014, Stephan Pfab
  * All rights reserved.
  * <p/>
  * Redistribution and use in source and binary forms, with or without
@@ -151,8 +142,13 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
     }
 
     @Test( expected = NoSuchFileException.class )
-    public void testCreateDirectoryFail() throws IOException {
+    public void testCreateDirectoryWithoutExistingParantFails() throws IOException {
         Files.createDirectory( getPathPAB() );
+    }
+
+    @Test( expected = FileSystemException.class )
+    public void testCreateDirectoryWithInNoDirectoryFails() throws IOException {
+        Files.createDirectory( getPathPAf().resolve( nameStr[2]) );
     }
 
     @Test( expected = FileAlreadyExistsException.class )
@@ -344,8 +340,8 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
     @Test
     public void testCloseDirStreamInTheMiddleOfIteration() throws Exception{
         Path     file    = getPathPABf();
-        getPathPACf(); // 2 kids
-        getPathPADf(); // 3 kids
+        getPathPACf(); // 2nd kid
+        getPathPADf(); // 3rd kid
 
 
         try( DirectoryStream<Path> kids = Files.newDirectoryStream( file.getParent() ) ) {
@@ -361,6 +357,25 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
             assertThat( count, lessThan(3) );
         }
+    }
+
+    @Test
+    public void testReadBytesFromDirectoryThrows() throws IOException {
+        try {
+            Files.readAllBytes(getPathPAd());
+        } catch( Exception e ) {
+            // good
+            return;
+        }
+
+        fail( "reading directly from a dir should fail" );
+    }
+
+    @Test( expected = NoSuchFileException.class )
+    public void testNewDirectoryStreamFromNonExistingDirThrows() throws IOException {
+        try( DirectoryStream<Path> kids = Files.newDirectoryStream( getPathA() ) ) {
+        }
+
     }
 
 }
