@@ -52,7 +52,7 @@ public abstract class PathTest10PathWithContentIT extends PathTest9WrongProvider
 
     @Test
     public void testIsSameFileOnEqualPathElementsDifferentProvider() throws IOException {
-        assumeThat( FS, not( Is.is( FileSystems.getDefault() )));
+        assumeThat( FS, not( is( FileSystems.getDefault() )));
 
         assertThat( Files.isSameFile( getPathA(), FileSystems.getDefault().getPath( nameStr[0] )), is( false ) );
     }

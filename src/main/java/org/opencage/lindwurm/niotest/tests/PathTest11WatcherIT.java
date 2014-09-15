@@ -152,7 +152,7 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         watcherSetup(ENTRY_MODIFY);
         Files.write(toBeModified, CONTENT_OTHER);
 
-        Thread.sleep(20000);
+        Thread.sleep(20000);     // TODO
         assertThat( waitForWatchService().poll(), correctKey(toBeModified, ENTRY_MODIFY));
     }
 

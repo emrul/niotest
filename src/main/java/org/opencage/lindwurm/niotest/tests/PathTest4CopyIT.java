@@ -27,7 +27,7 @@ import static org.opencage.lindwurm.niotest.matcher.PathIsDirectory.isDirectory;
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2013, Stephan Pfab
+ * Copyright (c) 2006 - 2014, Stephan Pfab
  * All rights reserved.
  * <p/>
  * Redistribution and use in source and binary forms, with or without
@@ -127,7 +127,15 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         Files.copy( src, tgt );
         assertThat( src, exists() );
         assertEquals( beforeCopy, Files.getLastModifiedTime( src ) );
+    }
 
+    @Test
+    public void testModifyOriginalAfterCopyDoesNotChangeTarget() throws Exception {
+        copyMoveSetup();
+        Files.copy( src, tgt );
+        Files.write(src,CONTENT_OTHER);
+
+        assertThat( Files.readAllBytes(tgt), is(CONTENT));
     }
 
     @Test
@@ -227,22 +235,42 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         Files.move( getRoot(), getPathPB());
     }
 
-//    @Test( expected = ClassCastException.class )
-//    public void bugMoveRootThrowsClassCastException() throws IOException {
-//        Files.move( getRoot(), getPathPB());
-//    }
+    @Test
+    public void testMoveKeepsLastModifiedTime() throws IOException, InterruptedException {
+        Path src = getPathPABf();
+        Path tgt = getPathPB();
+        FileTime modi = Files.getLastModifiedTime(src);
+        Thread.sleep(2000);
 
-//    @Test
-//    public void testMoveSetsLastModifiedTime() throws IOException, InterruptedException {
-//        Path src = getPathPABf();
-//        Path tgt = getPathPB();
-//        FileTime modi = Files.getLastModifiedTime(src);
-//        Thread.sleep(2000);
-//
-//        Files.move(src,tgt);
-//
-//        assertThat( Files.getLastModifiedTime(tgt), greaterThan(modi));
-//    }
+        Files.move(src,tgt);
+
+        assertThat( Files.getLastModifiedTime(tgt), is(modi));
+    }
+
+
+    @Test
+    public void testMoveChangesModifiedTimeOfParent() throws IOException, InterruptedException {
+        Path src = getPathPABf();
+        Path tgt = getPathPB();
+        FileTime modi = Files.getLastModifiedTime(src.getParent());
+        Thread.sleep(2000);
+
+        Files.move(src,tgt);
+
+        assertThat( Files.getLastModifiedTime(src.getParent()), greaterThan(modi));
+    }
+
+    @Test
+    public void testMoveChangesModifiedTimeOfTargetsParent() throws IOException, InterruptedException {
+        Path src = getPathPABf();
+        Path tgt = getPathPB();
+        FileTime modi = Files.getLastModifiedTime(tgt.getParent());
+        Thread.sleep(2000);
+
+        Files.move(src,tgt);
+
+        assertThat( Files.getLastModifiedTime(tgt.getParent()), greaterThan(modi));
+    }
 
 
     @Test
@@ -283,6 +311,7 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
 
         assertThat( tgt, isDirectory() );
     }
+
 
     @Test( expected = DirectoryNotEmptyException.class )
     public void testCopyFileReplaceExistingDoesNotOverwriteExistingNonEmptyDir() throws Exception {

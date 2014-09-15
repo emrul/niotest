@@ -11,7 +11,7 @@
 
     <groupId>org.opencage.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.20.1.45</version>
+    <version>0.20.2.46</version>
 
     <repositories>
         <repository>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.opencage</groupId>
             <artifactId>kleinod</artifactId>
-            <version>0.18</version>
+            <version>0.18.1.16</version>
         </dependency>
 
         <dependency>
