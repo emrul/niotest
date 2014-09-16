@@ -217,10 +217,14 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
 
     @Test
     public void testMoveNonEmptyDir() throws IOException {
-        getPathPABf();
+        getPathPADf();
+        getPathPACf();     // 2nd child has found concurrent modification problems
+        Path deep = getPathPA().resolve( nameStr[0]).resolve( nameStr[0]);
+        Files.createDirectories( deep.getParent());
+        Files.write( deep, CONTENT ); // add a non empty dir child for good measure
         Path src = getPathPA();
         Files.move( src, getPathPB());
-        assertThat( getPathPBB(), exists());
+        assertThat(getPathPB().resolve(nameStr[0]).resolve(nameStr[0]), exists());
     }
 
     @Test( expected = IOException.class )
@@ -454,6 +458,11 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         FileTime modified = Files.readAttributes( parent, BasicFileAttributes.class ).creationTime();
 
         assertThat( "delete does modify creation time", modified, is( created ) );
+    }
+
+    @Test( expected = NoSuchFileException.class )
+    public void testDeleteNonExistingFileThrows() throws IOException {
+        Files.delete( getPathPA() );
     }
 
 //        // another parent of root problem
