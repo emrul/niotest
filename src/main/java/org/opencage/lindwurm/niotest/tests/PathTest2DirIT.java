@@ -124,6 +124,16 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         }
     }
 
+    @Test
+    public void testHHH() throws IOException {
+        Path dir = getPathPA();
+        Files.createDirectory( dir );
+
+        assertThat( Files.exists(dir), is(true));
+
+        Files.write(dir.resolve("foo"), CONTENT );
+    }
+
 
     @Test
     public void testNewDirectoryExists() throws IOException {
@@ -155,11 +165,6 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
     public void testCreateDirectoryRoot() throws IOException {
         Files.createDirectory( getRoot() );
     }
-
-//    @Test( expected = FileSystemException.class )
-//    public void bugCreateDirectoryRootThrowsWrongException() throws IOException {
-//        Files.createDirectory( getRoot() );
-//    }
 
     @Test
     public void testRootisADir() throws IOException {

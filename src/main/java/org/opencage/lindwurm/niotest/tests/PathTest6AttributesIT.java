@@ -383,13 +383,6 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
     }
 
 
-//    @Test
-//    public void testOpenChannel() throws IOException {
-//        FS.provider().newFileChannel( getPathPAf(), Collections.singleton( StandardOpenOption.READ) );
-//    }
-
-
-
 
 
 //
@@ -425,93 +418,6 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 //    }
 //
 //
-//    @Test( expected = UnsupportedOperationException.class )
-//    public void testNotWatchableThrowsUnsuportedOp() throws IOException {
-//        assumeTrue( !p.getCapabilities().isWatchable() );
-//
-//        p.readOnlyFileSystem.newWatchService();
-//
-//    }
-//
-//    @Test
-//    @Ignore
-//    public void testWatchADelete() throws Exception {
-//        assumeTrue( p.getCapabilities().isWatchable() );
-//
-//        final ConcurrentLinkedDeque<Path> dels = new ConcurrentLinkedDeque<>();
-//
-//        Path dir = p.getTmpDir();
-//        Path toBeDeleted = dir.resolve( "toDel" );
-//        Files.write( toBeDeleted, getBytes( "foo" ));
-//
-//        new Thread( new Watcher( dir, dels ) ).start();
-//
-//        System.out.println("t 1");
-//        Thread.sleep( 5000 );
-//        System.out.println( "t 2" );
-//
-//        Thread.sleep( 5000 );
-//        Files.delete( toBeDeleted );
-//
-//        System.out.println("t 3");
-//
-//
-//        Thread.sleep( 1000 );
-//
-//        System.out.println("t 4");
-//
-//
-//        assertEquals( "there should be a delete", 1, dels.size() );
-//
-//    }
-//
-//    private class Watcher implements Runnable {
-//        private final Path dir;
-//        private final ConcurrentLinkedDeque<Path> dels;
-//
-//        public Watcher( Path dir, ConcurrentLinkedDeque<Path> dels ) {
-//            this.dir = dir;
-//            this.dels = dels;
-//        }
-//
-//        @Override
-//        public void run() {
-//            try {
-//                WatchService watcher = dir.getFileSystem().newWatchService();
-//                dir.register(watcher, StandardWatchEventKinds.ENTRY_DELETE );
-//
-//                System.out.println("watcher is running. watching " + dir);
-//
-//                WatchKey watckKey = watcher.take();
-//
-//                System.out.println("watcher is running2");
-//
-//
-//                List<WatchEvent<?>> events = watckKey.pollEvents();
-//
-//                System.out.println("watcher is running3");
-//
-//                for (WatchEvent event : events) {
-//                    if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
-//                        System.out.println("Created: " + event.context().toString());
-//                    } else if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
-//                        System.out.println("Delete: " + event.context().toString());
-//                        dels.add( (Path) event.context() );
-//                    } else if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
-//                        System.out.println("Modify: " + event.context().toString());
-//                    } else {
-//                        System.out.println("other: " + event.context());
-//                    }
-//                }
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                System.out.println("Error: " + e.toString());
-//            }
-//        }
-//    }
-
-
 
 
 }

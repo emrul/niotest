@@ -1,5 +1,7 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
 
@@ -473,7 +475,61 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
 //    }
 
 
+    @Test
+    public void testRenameSourceIsNoLongerKid() throws IOException {
+        Path source = getPathPAf();
+        Path to = getPathPB();
 
+        Files.move(source, to);
+
+        try ( DirectoryStream<Path> kids = Files.newDirectoryStream(to.getParent())) {
+            assertThat( source, not(isIn(kids)));
+        }
+    }
+
+
+    @Test
+    public void testRenameTargetIsKid() throws IOException {
+        Path source = getPathPAf();
+        Path to = getPathPB();
+
+        Files.move(source, to);
+
+
+        try ( DirectoryStream<Path> kids = Files.newDirectoryStream(to.getParent())) {
+            assertThat( to, isIn( kids ));
+        }
+    }
+
+    @Test
+    public void testMoveToSibling() throws IOException {
+        Path source = getPathPABf();
+        Path to = getPathPAC().resolve(nameStr[1]);
+        Files.createDirectories( to.getParent());
+
+        Files.move(source, to);
+
+        try ( DirectoryStream<Path> kids = Files.newDirectoryStream(to.getParent())) {
+            assertThat( to, isIn( kids ));
+        }
+
+        assertThat( to, exists());
+    }
+
+
+    @Test( expected = NoSuchFileException.class )
+    public void testMoveToFileWithNonExistingParentThrows() throws IOException {
+        Path source = getPathPABf();
+        Path to = getPathPAC().resolve(nameStr[1]);
+
+        Files.move(source, to);
+
+        try ( DirectoryStream<Path> kids = Files.newDirectoryStream(to.getParent())) {
+            assertThat( to, isIn( kids ));
+        }
+
+        assertThat( to, exists());
+    }
 
 
 }
