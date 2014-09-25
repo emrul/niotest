@@ -62,6 +62,7 @@ public class JimFSTestIT extends PathTestIT {
                 bug("testReadUnsupportedAttributesThrows").
                 bug("testRegisterOtherPath").
                 bug("testIllegalCharsNull").
+                bug("testGetUnsupportedAttributeThrows").
                 bug("testNewFileSystemOfExistingThrows"); // needs env see below
 //                bug("testRegisterOtherPath").
 //                bug("testWatchAModify").

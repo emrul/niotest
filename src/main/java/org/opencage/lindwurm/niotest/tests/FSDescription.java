@@ -35,6 +35,7 @@ public class FSDescription implements FSCapabilities {
     private boolean principals = false;
 
     private boolean hasSizeLimitedFileSystem = false; // todo turn true when implemented
+    private boolean supportsPosixAttributes = false;
 
     FSDescription(PathTestIT setup) {
         this.setup = setup;
@@ -183,6 +184,11 @@ public class FSDescription implements FSCapabilities {
         return principals;
     }
 
+    @Override
+    public boolean supportsPosixAttributes() {
+        return supportsPosixAttributes;
+    }
+
     public static URI toURIWithRoot( FileSystem fs ) {
         return fs.getPath("").toAbsolutePath().getRoot().toUri();
     }
@@ -237,6 +243,11 @@ public class FSDescription implements FSCapabilities {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return this;
+    }
+
+    public FSDescription doesSupportPosixAttributes( boolean on ) {
+        supportsPosixAttributes = on;
         return this;
     }
 }

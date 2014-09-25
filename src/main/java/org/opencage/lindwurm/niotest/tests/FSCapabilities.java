@@ -52,4 +52,5 @@ public interface FSCapabilities {
     Collection<Character> getPathIllegalCharacters();
 
     boolean supportsPrincipals();
+    boolean supportsPosixAttributes();
 }

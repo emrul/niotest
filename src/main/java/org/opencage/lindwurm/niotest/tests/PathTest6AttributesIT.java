@@ -205,6 +205,29 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
         FS.provider().readAttributes( getDefaultPath(), "basic:duda" );
     }
 
+    @Test( expected = UnsupportedOperationException.class)
+    public void testSetUnsupportedAttributeThrows() throws IOException {
+        FS.provider().setAttribute( getPathPAf(), "whoaa:freeze", true );
+    }
+
+    //    * @throws  UnsupportedOperationException
+//    *          if the attribute view is not available
+//    * @throws  IllegalArgumentException
+//    *          if the attribute name is not specified or is not recognized
+    @Test( expected = UnsupportedOperationException.class)
+    public void testGetUnsupportedAttributeThrows() throws IOException {
+        Files.getAttribute( getPathPAf(), "whoaa:freeze" );
+    }
+//    * @throws  UnsupportedOperationException
+//    *          if the attribute view is not available
+//    * @throws  IllegalArgumentException
+//    *          if the attribute name is not specified or is not recognized
+    @Test( expected = IllegalArgumentException.class )
+    public void testGetUnsupportedAttributeThrows2() throws IOException {
+        Files.getAttribute( getPathPAf(), "basic:freeze" );
+    }
+
+
     @Test( expected = IllegalArgumentException.class )
     public void testReadAttributesOneUnknownAttributeThrows() throws IOException {
         FS.provider().readAttributes( getDefaultPath(), "basic:lastModifiedTime,duda" );
@@ -247,6 +270,7 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 //
 //        assertThat( attis.lastModifiedTime(), isCloseTo( past ) );
 //    }
+
 
 
     @Test( expected = IllegalArgumentException.class )
