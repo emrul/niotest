@@ -36,6 +36,7 @@ public class FSDescription implements FSCapabilities {
 
     private boolean hasSizeLimitedFileSystem = false; // todo turn true when implemented
     private boolean supportsPosixAttributes = false;
+    private Path otherRoot;
 
     FSDescription(PathTestIT setup) {
         this.setup = setup;
@@ -189,13 +190,24 @@ public class FSDescription implements FSCapabilities {
         return supportsPosixAttributes;
     }
 
+    @Override
+    public Path getOtherRoot() {
+        return otherRoot;
+    }
+
+    @Override
+    public boolean hasOtherRoot() {
+        return otherRoot != null;
+    }
+
     public static URI toURIWithRoot( FileSystem fs ) {
-        return fs.getPath("").toAbsolutePath().getRoot().toUri();
+        URI ret = fs.getPath("").toAbsolutePath().getRoot().toUri();
+        return ret;
     }
 
     public static URI toURIWithoutPath( FileSystem fs ) {
         Path root =  fs.getPath("").toAbsolutePath().getRoot();
-        return URI.create( Strings.withoutEnd( root.toUri().toString(), root.toString()));
+        return URI.create( Strings.withoutSuffix( root.toUri().toString(), root.toString()));
     }
 
     public FSDescription watcherSleepTime( long seconds ) {
@@ -223,6 +235,14 @@ public class FSDescription implements FSCapabilities {
     public FSDescription unix() {
         pathIllegalCharacters = Arrays.asList('\u0000');
         principals = true;
+        doesSupportPosixAttributes( true );
+        return this;
+    }
+
+    public FSDescription unix( boolean on ) {
+        if ( on ) {
+            return unix();
+        }
         return this;
     }
 
@@ -248,6 +268,11 @@ public class FSDescription implements FSCapabilities {
 
     public FSDescription doesSupportPosixAttributes( boolean on ) {
         supportsPosixAttributes = on;
+        return this;
+    }
+
+    public FSDescription otherRoot( Path path ) {
+        otherRoot = path;
         return this;
     }
 }

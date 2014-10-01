@@ -376,7 +376,7 @@ public abstract class PathTest1NoContentIT extends Setup {
     }
 
     @Test
-    public void testGetPathAndToStringAreOposites() throws Exception {
+    public void testGetPathAndToStringAreOpposites() throws Exception {
         assertEquals( getPathABC(), FS.getPath( getPathABC().toString() ));
 
         String str = nameStr[2] + getSeparator() + nameStr[3];
@@ -398,16 +398,18 @@ public abstract class PathTest1NoContentIT extends Setup {
         assertThat( FS.getPath( nameStr[2] ), relative() );
     }
 
-    @Test
-    public void testGetPathStartingWithRootStringIsAbsolute() throws Exception {
-        assertThat( FS.getPath( getSeparator() + getName(2)), absolute() );
-    }
+    // only for unix systems
+    // otherwise unclear what root looks like
+//    @Test
+//    public void testGetPathStartingWithRootStringIsAbsolute() throws Exception {
+//        assumeThat( capabilities.);
+//        assertThat( FS.getPath( getSeparator() + getName(2)), absolute() );
+//    }
 
     @Test
     public void testRelativize() {
         Path shrt = FS.getPath( nameStr[0] );
         Path lng  = FS.getPath( nameStr[0], nameStr[1], nameStr[2] );
-
 
         assertEquals( lng, shrt.resolve( shrt.relativize( lng ) ) );
     }
@@ -415,11 +417,10 @@ public abstract class PathTest1NoContentIT extends Setup {
     @Test
     public void testRelativizeAbsolute() {
         Path root   = getRoot();
-        Path lng    = FS.getPath( FS.getSeparator(), nameStr[0], nameStr[1], nameStr[2] );
+        Path lng    = root.resolve( nameStr[0] ).resolve( nameStr[1] ).resolve( nameStr[2] );
         Path lngRel = FS.getPath( nameStr[0], nameStr[1], nameStr[2] );
 
         assertEquals( lngRel, root.relativize( lng ) );
-
     }
 
     @Test
@@ -434,22 +435,31 @@ public abstract class PathTest1NoContentIT extends Setup {
 
 
     @Test( expected = IllegalArgumentException.class )
-    public void testRelativizeMixed() {
+    public void testRelativizeAbsToRel() {
         Path shrt = FS.getPath( nameStr[0] );
         Path lng  = FS.getPath( nameStr[0], nameStr[1], nameStr[2] ).toAbsolutePath();
-
 
         shrt.relativize( lng );
     }
 
     @Test( expected = IllegalArgumentException.class )
-    public void testRelativizeMixed2() {
+    public void testRelativizeRelToAbs() {
         Path shrt = FS.getPath( nameStr[0] ).toAbsolutePath();
         Path lng = FS.getPath( nameStr[0], nameStr[1], nameStr[2] );
 
-
         shrt.relativize( lng );
     }
+
+    @Test( expected = IllegalArgumentException.class)
+    public void testRelativizePathWithOtherRootFails() {
+        assumeThat( capabilities.hasOtherRoot(), is(true));
+
+        Path one = getRoot().resolve( nameStr[0]);
+        Path two = capabilities.getOtherRoot().resolve( nameStr[1] );
+
+        one.relativize(two);
+    }
+
 
 
     @Test
@@ -459,8 +469,6 @@ public abstract class PathTest1NoContentIT extends Setup {
 
         Path abs = FS.getPath( nameStr[0], nameStr[2] ).toAbsolutePath();
         assertEquals( abs, abs.resolve( nameStr[0] ).getParent() );
-
-
     }
 
     @Test

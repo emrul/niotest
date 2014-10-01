@@ -100,6 +100,7 @@ public abstract class PathTest5URIIT extends PathTest4CopyIT {
     @Test
     public void testGetExistingFileSystem() throws IOException {
 
+        System.out.println(capabilities.toURI().apply(FS));
         FileSystem fs = FS.provider().getFileSystem( capabilities.toURI().apply(FS) );
         assertThat( fs, is(FS) );
     }

@@ -6,7 +6,9 @@ import org.opencage.kleinod.paths.PathUtils;
 import org.opencage.lindwurm.niotest.tests.FSDescription;
 import org.opencage.lindwurm.niotest.tests.PathTestIT;
 
+import java.net.URI;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -50,18 +52,29 @@ public class DefaultFileSystemTestIT extends PathTestIT {
                 playground(playground).
                 fileStores(true).
                 notClosable().
-                lastAccessTime( false ). // OSX only ?
-                creationTime( false ).   // OSX only ?
+                lastAccessTime( false ).
+                creationTime( new OS().isWindows() ).    // OSX only ?
                 watcherSleepTime( 12000 ).
                 noSecondPlayground().
-                unix().
+                unix( new OS().isUnix()).
 
-                bug( "testCreateDirectoryRoot" ).
-                bug( "testGetIteratorOfClosedDirStream" ).
-                bug( "testWatchAModify").
-                bug( "testWatchATruncate").
-                bug( "testWatchSeveralEvents").
-                bug( "testWatchTwoModifiesOneKey");
+//                bug( "testCreateDirectoryRoot" ).
+                bug( "testGetIteratorOfClosedDirStream" )
+//                bug( "testWatchAModify").
+//                bug( "testWatchATruncate").
+//                bug( "testWatchSeveralEvents").
+//                bug( "testWatchTwoModifiesOneKey");
+        ;
+
+        if ( new OS().isWindows() ) {
+            description.otherRoot(Paths.get("G:")).
+                    fileSystemURI( (fs) -> {
+                        return URI.create(fs.provider().getScheme() + ":///");
+                    }).
+                    bug("testMovedWatchedDirCancelsKeys").
+                    bug("testEveryChannelWriteUpdatesLastModifiedTime");
+
+        }
 
         if ( new OS().isLinux()) {
             description.bug("testDeleteWatchedDirCancelsKeys").

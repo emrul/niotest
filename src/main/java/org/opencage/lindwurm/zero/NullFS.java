@@ -1,4 +1,4 @@
-package org.opencage.lindwurm.nul;
+package org.opencage.lindwurm.zero;
 
 import java.io.IOException;
 import java.nio.file.*;

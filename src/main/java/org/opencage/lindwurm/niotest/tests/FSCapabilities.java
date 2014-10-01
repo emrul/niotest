@@ -3,6 +3,7 @@ package org.opencage.lindwurm.niotest.tests;
 
 import java.net.URI;
 import java.nio.file.FileSystem;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -53,4 +54,8 @@ public interface FSCapabilities {
 
     boolean supportsPrincipals();
     boolean supportsPosixAttributes();
+
+    Path getOtherRoot();
+
+    boolean hasOtherRoot();
 }

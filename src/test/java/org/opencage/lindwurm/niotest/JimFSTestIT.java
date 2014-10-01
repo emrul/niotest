@@ -43,35 +43,27 @@ public class JimFSTestIT extends PathTestIT {
         describe().
                 playground(playground).
                 watcherSleepTime(7000).
-                lastAccessTime(false).
+                lastAccessTime( false).
                 fileStores(true).
                 secondPlayground(secondPlay).
                 closablePlayground(closablePlayground).
                 fileSystemURI(FSDescription::toURIWithoutPath).
-                sizeLimitedPlayground( sizeLimitedPlay ).
+                sizeLimitedPlayground( sizeLimitedPlay )
+        .
 
                 bug("testCopyToClosedFS").
                 bug("testClosedFSGetFileStore").
                 bug("testAppendAndReadThrows").
                 bug("testCloseDirStreamInTheMiddleOfIteration").
-//                bug("testGetExistingFileSystem").
-//                bug("testGetFileSystemOtherURI").
                 bug("testGetIteratorOfClosedDirStream").
                 bug("testIsSameFileOfDifferentPathNonExistingFile2Throws").
                 bug("testIsSameFileOfDifferentPathNonExistingFileThrows").
                 bug("testReadUnsupportedAttributesThrows").
-                bug("testRegisterOtherPath").
-                bug("testIllegalCharsNull").
+                bug("testSetUnsupportedAttributeThrows").
                 bug("testGetUnsupportedAttributeThrows").
+                bug("testRegisterOtherPath").
+                bug( "testGetFileSystemOtherURI").
                 bug("testNewFileSystemOfExistingThrows"); // needs env see below
-//                bug("testRegisterOtherPath").
-//                bug("testWatchAModify").
-//
-//                // fixed but not released
-//                bug( "testFileStoreUnallocatedSpaceIsSmallerUsableSpace").
-//                bug( "testPathFileStoreGrowingFileLowersUsableSpace")
-
-
     }
 
     @Test( expected = FileSystemAlreadyExistsException.class )

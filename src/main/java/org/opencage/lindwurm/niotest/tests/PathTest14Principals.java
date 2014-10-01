@@ -25,23 +25,5 @@ public abstract class PathTest14Principals extends PathTest13FileStoreIT {
     }
 
 
-    @Test
-    public void testDefaultOwnerisFoundInLookpupService() throws IOException {
-        assumeThat( capabilities.supportsPrincipals(), is(true));
-        // expect no throw
-        //System.out.println(Files.readAttributes(getDefaultPath(), PosixFileAttributes.class).owner());
-
-        UserPrincipal owner = Files.readAttributes(getDefaultPath(), PosixFileAttributes.class).owner();
-
-        assertThat( owner, is(FS.getUserPrincipalLookupService().lookupPrincipalByName(owner.getName())));
-    }
-
-    @Test
-    public void testOwnerByTwoMethods() throws IOException {
-        assumeThat( capabilities.supportsPrincipals(), is(true));
-
-        assertThat( Files.getOwner( getDefaultPath()),
-                    is(Files.readAttributes(getDefaultPath(), PosixFileAttributes.class).owner()));
-    }
 
 }

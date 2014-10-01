@@ -2,7 +2,13 @@ package org.opencage.lindwurm.niotest.tests;
 
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.UserPrincipal;
+
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 
 /**
@@ -11,11 +17,25 @@ import static org.junit.Assume.assumeThat;
 public abstract class PathTest16PosixIT extends PathTest15LimitedFileStoreIT  {
 
     @Test
-    public void testGetOwnerAttribute() {
+    public void testDefaultOwnerIsFoundInLookpupService() throws IOException {
+        assumeThat( capabilities.supportsPrincipals(), is(true));
+        assumeThat( capabilities.supportsPosixAttributes(), is(true));
+        // expect no throw
+        //System.out.println(Files.readAttributes(getDefaultPath(), PosixFileAttributes.class).owner());
+
+        UserPrincipal owner = Files.readAttributes(getDefaultPath(), PosixFileAttributes.class).owner();
+
+        assertThat( owner, is(FS.getUserPrincipalLookupService().lookupPrincipalByName(owner.getName())));
+    }
+
+    @Test
+    public void testOwnerByTwoMethods() throws IOException {
+        assumeThat( capabilities.supportsPrincipals(), is(true));
         assumeThat( capabilities.supportsPosixAttributes(), is(true));
 
-        // oops check principals
-
+        assertThat( Files.getOwner( getDefaultPath()),
+                is(Files.readAttributes(getDefaultPath(), PosixFileAttributes.class).owner()));
     }
+
 
 }
