@@ -43,11 +43,17 @@ public class FSDescription implements FSCapabilities {
     }
 
     public FSDescription playground(Path path) {
+        if ( !path.isAbsolute()) {
+            throw new IllegalArgumentException("need absolute path");
+        }
         setup.setPlay( path );
         return this;
     }
 
     public FSDescription secondPlayground(Path path) {
+        if ( !path.isAbsolute()) {
+            throw new IllegalArgumentException("need absolute path");
+        }
         setup.play2 = path;
         if ( path == null ) {
             has2ndFileSystem = false;
@@ -273,6 +279,11 @@ public class FSDescription implements FSCapabilities {
 
     public FSDescription otherRoot( Path path ) {
         otherRoot = path;
+        return this;
+    }
+
+    public FSDescription alternativeNames( String... alt ) {
+        setup.nameStrCase = alt;
         return this;
     }
 }

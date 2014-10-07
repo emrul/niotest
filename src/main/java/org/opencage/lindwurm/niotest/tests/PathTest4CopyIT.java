@@ -1,5 +1,6 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import com.sun.xml.internal.ws.wsdl.writer.document.soap12.SOAPOperation;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
@@ -473,6 +474,27 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
 //    public void testDeleteRoot() throws IOException {
 //        Files.delete( getRoot() );
 //    }
+
+
+    @Test
+    public void testDeleteRecreate() throws IOException {
+        Path path = getPathPABf();
+
+        Files.delete(path);
+        System.out.println(path);
+
+        Files.write( path, CONTENT, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+    }
+
+    @Test
+    public void testDeletsdfdseRecreate() throws IOException {
+        Path path = getPathPABf();
+
+//        Files.delete(path);
+        System.out.println(path);
+
+        Files.write( path, CONTENT, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+    }
 
 
     @Test

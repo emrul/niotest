@@ -68,7 +68,7 @@ public class JimFSTestIT extends PathTestIT {
 
     @Test( expected = FileSystemAlreadyExistsException.class )
     public void testJimFSNewFileSystemOfExistingThrows() throws IOException {
-        URI uriThisFS = URI.create( Strings.withoutEnd(getRoot().toUri().toString(), getRoot().toString()));
+        URI uriThisFS = URI.create( Strings.withoutSuffix(getRoot().toUri().toString(), getRoot().toString()));
         Map<String, Object > env = new HashMap<>();
         env.put("config", Configuration.unix());
         FS.provider().newFileSystem(  uriThisFS, env );

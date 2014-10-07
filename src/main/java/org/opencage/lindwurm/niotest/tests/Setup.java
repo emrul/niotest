@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
+import static org.opencage.kleinod.text.Strings.getBytes;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -54,7 +55,8 @@ public abstract class Setup {
     protected static byte[] CONTENT50;
 
     public FileSystem FS;
-    public static String[]   nameStr = {"aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii", "jjj", "kkk"};
+    public String[]   nameStr = {"aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii", "jjj", "kkk"};
+    public String[]   nameStrCase;
     private int       kidCount;
 
     protected Map<String, String> notSupported = new HashMap<>();
@@ -71,21 +73,17 @@ public abstract class Setup {
 
     @BeforeClass
     public static void beforeClass3() {
-        try {
-            CONTENT = "hi there".getBytes( "UTF-8" );
-            CONTENT_OTHER = "what's up, huh, huh".getBytes( "UTF-8" );
+        CONTENT = getBytes("hi there" );
+        CONTENT_OTHER = getBytes( "what's up, huh, huh" );
 
-            CONTENT20k = new byte[20000];
-            for ( int i = 0; i < 20000; i++ ) {
-                CONTENT20k[i] = (byte) (i);
-            }
+        CONTENT20k = new byte[20000];
+        for ( int i = 0; i < 20000; i++ ) {
+            CONTENT20k[i] = (byte) (i);
+        }
 
-            CONTENT50 = new byte[50];
-            for ( int i = 0; i < 50; i++ ) {
-                CONTENT50[i] = (byte) (i);
-            }
-        } catch( UnsupportedEncodingException e ) {
-            throw new IllegalStateException( "huh" );
+        CONTENT50 = new byte[50];
+        for ( int i = 0; i < 50; i++ ) {
+            CONTENT50[i] = (byte) (i);
         }
     }
 
