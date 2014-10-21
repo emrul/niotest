@@ -117,7 +117,7 @@ public abstract class PathTest17WindowsPathIT extends PathTest16PosixIT {
 
     @Test
     public void testWindowsImpliedRootComponentResolvesNot() {
-        assertThat(FS.getPath("\\foo").resolve("C:duh"), is(FS.getPath("C:\\duh")));
+        assertThat(FS.getPath("\\foo").resolve("C:duh"), is(FS.getPath("C:duh")));
     }
 
     @Test
