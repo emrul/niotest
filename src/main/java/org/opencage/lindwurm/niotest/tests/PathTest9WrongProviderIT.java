@@ -1,5 +1,6 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.opencage.kleinod.paths.PathUtils;
 
@@ -68,11 +69,6 @@ public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
     public void testCheckAccessOtherProvider() throws IOException {
         FS.provider().checkAccess( getOther() );
     }
-
-//    @Test( expected = IllegalArgumentException.class )
-//    public void bugCheckAccessOtherProviderThrowsWrongException() throws IOException {
-//        FS.provider().checkAccess( getOther() );
-//    }
 
     @Test( expected = ProviderMismatchException.class )
     public void testCopyOtherProviderFrom() throws IOException {
@@ -200,6 +196,11 @@ public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
         assumeThat( capabilities.hasSymbolicLinks(), is(true) );
 
         FS.provider().readSymbolicLink( getOther() );
+    }
+
+    @Test( expected = ProviderMismatchException.class )
+    public void testResolveWithPathFromOtherProvider() throws IOException {
+        assertThat(getPathB().resolve(getOther()), is(getOther()));
     }
 
 }

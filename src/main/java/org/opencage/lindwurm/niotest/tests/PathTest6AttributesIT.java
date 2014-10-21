@@ -382,8 +382,6 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
     @Test
     public void testReadAttributesViewFutureExistingFile() throws IOException {
-        assumeThat( message(), possible(), is(true) );
-
         BasicFileAttributeView view =  FS.provider().getFileAttributeView( getPathPA(), BasicFileAttributeView.class );
 
         getPathPAf();

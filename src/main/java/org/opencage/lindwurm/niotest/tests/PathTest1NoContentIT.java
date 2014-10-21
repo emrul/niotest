@@ -1,12 +1,10 @@
 package org.opencage.lindwurm.niotest.tests;
 
-import org.hamcrest.Matchers;
 import org.hamcrest.core.IsNull;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -18,17 +16,15 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 import static org.junit.Assume.assumeTrue;
-import static org.opencage.lindwurm.niotest.matcher.Matches.matches;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.absolute;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.relative;
 import static org.opencage.lindwurm.niotest.matcher.PathEndsWith.endsWith;
-import static org.opencage.lindwurm.niotest.matcher.PathIsDirectory.isDirectory;
 import static org.opencage.lindwurm.niotest.matcher.PathStartsWith.startsWith;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2013, Stephan Pfab
+ * Copyright (c) 2006 - 2014, Stephan Pfab
  * All rights reserved.
  * <p/>
  * Redistribution and use in source and binary forms, with or without
@@ -267,7 +263,7 @@ public abstract class PathTest1NoContentIT extends Setup {
 
 
     @Test
-    public void testResolveOfAbosluteIsAbsolute() throws Exception {
+    public void testResolveOfAbsoluteIsAbsolute() throws Exception {
         assertThat( getPathRAB().resolve( nameStr[0] ), absolute() );
     }
 
@@ -377,7 +373,9 @@ public abstract class PathTest1NoContentIT extends Setup {
 
     @Test
     public void testGetPathAndToStringAreOpposites() throws Exception {
-        assertEquals( getPathABC(), FS.getPath( getPathABC().toString() ));
+
+        assertThat( FS.getPath( getPathABC().toString() ), is(getPathABC()));
+//        assertEquals( getPathABC(), FS.getPath( getPathABC().toString() ));
 
         String str = nameStr[2] + getSeparator() + nameStr[3];
 
@@ -465,7 +463,7 @@ public abstract class PathTest1NoContentIT extends Setup {
     @Test
     public void testGetParent() {
         Path rel = FS.getPath( nameStr[0] );
-        assertThat( rel.getParent(), IsNull.nullValue() );
+        assertThat( rel.getParent(), nullValue() );
 
         Path abs = FS.getPath( nameStr[0], nameStr[2] ).toAbsolutePath();
         assertEquals( abs, abs.resolve( nameStr[0] ).getParent() );
@@ -751,22 +749,20 @@ public abstract class PathTest1NoContentIT extends Setup {
 
     // only tests class Files
     @Test
-    public void testNonExistingRealtivePathIsNotAFile() throws IOException {
+    public void testNonExistingRelativePathIsNotAFile() throws IOException {
         assertThat( Files.isRegularFile( getPathA() ), is(false));
     }
 
     @Test
-    public void testIllegalCharsNull() {
+    public void testIllegalCharsInPathThrows() {
 
         for ( Character ill : capabilities.getPathIllegalCharacters() ) {
-            boolean thrown = false;
             try {
                 FS.getPath("" + ill);
+                assertThat( "illegal character allowed" + ill , is(""));
             } catch ( InvalidPathException e ) {
-                thrown = true;
             }
 
-            assertThat( "illegal character allowed" + ill , thrown, is(true));
         }
     }
 
@@ -779,5 +775,16 @@ public abstract class PathTest1NoContentIT extends Setup {
         }
 
     }
+
+    @Test( expected = NullPointerException.class )
+    public void testResolveNull() throws IOException {
+        getPathPA().resolve((String)null);
+    }
+
+    @Test( expected = NullPointerException.class )
+    public void testNullPath() {
+        FS.getPath(null);
+    }
+
 
 }

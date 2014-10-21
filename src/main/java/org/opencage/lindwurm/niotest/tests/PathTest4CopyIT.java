@@ -1,8 +1,5 @@
 package org.opencage.lindwurm.niotest.tests;
 
-import com.sun.xml.internal.ws.wsdl.writer.document.soap12.SOAPOperation;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
 
@@ -14,12 +11,9 @@ import java.nio.file.attribute.FileTime;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.hamcrest.collection.IsIterableWithSize.iterableWithSize;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeThat;
@@ -487,14 +481,24 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
     }
 
     @Test
-    public void testDeletsdfdseRecreate() throws IOException {
+    public void testDeleteIfExistsRecreate() throws IOException {
         Path path = getPathPABf();
 
-//        Files.delete(path);
+        Files.deleteIfExists(path);
         System.out.println(path);
 
-        Files.write( path, CONTENT, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+        Files.write( path, CONTENT, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING );
     }
+
+//    @Test
+//    public void testDeletsdfdseRecreate() throws IOException {
+//        Path path = getPathPABf();
+//
+////        Files.delete(path);
+//        System.out.println(path);
+//
+//        Files.write( path, CONTENT, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+//    }
 
 
     @Test

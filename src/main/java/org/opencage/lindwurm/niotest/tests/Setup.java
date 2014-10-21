@@ -89,7 +89,7 @@ public abstract class Setup {
 
     @Before
     public void filter() {
-        assumeThat( message(), possible(), is(testMethodName.getMethodName().startsWith("test")) );
+        assumeThat( message(), possible(), is( true )); //testMethodName.getMethodName().startsWith("test")) );
     }
 
 
@@ -112,7 +112,18 @@ public abstract class Setup {
     }
 
     protected boolean possible() {
-        return !notSupported.containsKey( testMethodName.getMethodName() );
+
+        String name = testMethodName.getMethodName();
+
+        if ( notSupported.containsKey( name )) {
+            return false;
+        }
+
+        if ( name.startsWith("testWindows")) {
+            return capabilities.isWindows();
+        }
+
+        return true;
     }
 
 

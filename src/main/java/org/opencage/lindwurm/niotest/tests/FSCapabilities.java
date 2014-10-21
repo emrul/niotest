@@ -58,4 +58,8 @@ public interface FSCapabilities {
     Path getOtherRoot();
 
     boolean hasOtherRoot();
+
+    boolean isWindows();
+
+    boolean canSeeLocalUNCShares( FileSystem fs );
 }

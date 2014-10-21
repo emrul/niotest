@@ -37,6 +37,9 @@ public class FSDescription implements FSCapabilities {
     private boolean hasSizeLimitedFileSystem = false; // todo turn true when implemented
     private boolean supportsPosixAttributes = false;
     private Path otherRoot;
+    private boolean windows = false;
+    private boolean canSeeLocalUNCSharesSet;
+    private boolean canSeeLocalUNCShares;
 
     FSDescription(PathTestIT setup) {
         this.setup = setup;
@@ -206,6 +209,25 @@ public class FSDescription implements FSCapabilities {
         return otherRoot != null;
     }
 
+    @Override
+    public boolean isWindows() {
+        return windows;
+    }
+
+    @Override
+    public boolean canSeeLocalUNCShares(FileSystem fs) {
+        if ( !isWindows() ) {
+            return false;
+        }
+
+        if ( !canSeeLocalUNCSharesSet ) {
+            canSeeLocalUNCShares = Files.exists( fs.getPath( "\\\\localhost\\C$"));
+            canSeeLocalUNCSharesSet = true;
+        }
+
+        return canSeeLocalUNCShares;
+    }
+
     public static URI toURIWithRoot( FileSystem fs ) {
         URI ret = fs.getPath("").toAbsolutePath().getRoot().toUri();
         return ret;
@@ -252,8 +274,9 @@ public class FSDescription implements FSCapabilities {
         return this;
     }
 
-    public void pathIllegalCharacters(Collection<Character> getPathIllegalCharacters) {
+    public FSDescription pathIllegalCharacters(Collection<Character> getPathIllegalCharacters) {
         this.pathIllegalCharacters = getPathIllegalCharacters;
+        return this;
     }
 
     public FSDescription principals( boolean p ) {
@@ -284,6 +307,11 @@ public class FSDescription implements FSCapabilities {
 
     public FSDescription alternativeNames( String... alt ) {
         setup.nameStrCase = alt;
+        return this;
+    }
+
+    public FSDescription windows( boolean on ) {
+        this.windows = on;
         return this;
     }
 }

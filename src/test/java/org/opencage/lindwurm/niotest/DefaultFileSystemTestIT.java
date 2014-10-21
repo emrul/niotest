@@ -57,6 +57,7 @@ public class DefaultFileSystemTestIT extends PathTestIT {
                 watcherSleepTime( 12000 ).
                 noSecondPlayground().
                 unix( new OS().isUnix()).
+                windows( new OS().isWindows() ).
 
 //                bug( "testCreateDirectoryRoot" ).
                 bug( "testGetIteratorOfClosedDirStream" )

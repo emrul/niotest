@@ -119,6 +119,7 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
         assertThat( out, is( CONTENT_OTHER ) );
     }
 
+
     @Test
     public void testRWBytes() throws IOException {
         Path target = getPathPA();
@@ -610,8 +611,6 @@ public abstract class PathTest3FileIT extends PathTest2DirIT {
 
     @Test
     public void testWriteBeyondFileSize() throws IOException {
-        assumeThat( message(), possible(), CoreMatchers.is( true ) );
-
         Path file = getPathPAf();
         try( SeekableByteChannel out = FS.provider().newByteChannel( file, Collections.singleton(WRITE) )) {
             out.position( 100 );
