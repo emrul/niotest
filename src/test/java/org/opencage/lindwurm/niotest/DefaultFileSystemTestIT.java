@@ -58,24 +58,23 @@ public class DefaultFileSystemTestIT extends PathTestIT {
                 noSecondPlayground().
                 unix( new OS().isUnix()).
                 windows( new OS().isWindows() ).
-
-//                bug( "testCreateDirectoryRoot" ).
                 bug( "testGetIteratorOfClosedDirStream" )
-//                bug( "testWatchAModify").
-//                bug( "testWatchATruncate").
-//                bug( "testWatchSeveralEvents").
-//                bug( "testWatchTwoModifiesOneKey");
         ;
 
         if ( new OS().isWindows() ) {
             description.otherRoot(Paths.get("G:")).
-                    fileSystemURI( (fs) -> {
-                        return URI.create(fs.provider().getScheme() + ":///");
-                    }).
+                    fileSystemURI( (fs) -> URI.create(fs.provider().getScheme() + ":///")).
                     alternativeNames( "aAa", "BBB", "CCc", "DdD", "EEE", "FFF", "GGG", "HHH", "III", "JJJ", "KKK").
                     bug("testMovedWatchedDirCancelsKeys").
                     bug("testEveryChannelWriteUpdatesLastModifiedTime");
 
+        } else {
+            description.
+                bug( "testCreateDirectoryRoot" ).
+                bug( "testWatchSeveralEvents").
+                bug( "testWatchAModify").
+                bug( "testWatchATruncate").
+                bug( "testWatchTwoModifiesOneKey");
         }
 
         if ( new OS().isLinux()) {
