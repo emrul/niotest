@@ -99,8 +99,6 @@ public abstract class PathTest5URIIT extends PathTest4CopyIT {
 
     @Test
     public void testGetExistingFileSystem() throws IOException {
-
-        System.out.println(capabilities.toURI().apply(FS));
         FileSystem fs = FS.provider().getFileSystem( capabilities.toURI().apply(FS) );
         assertThat( fs, is(FS) );
     }
@@ -118,8 +116,26 @@ public abstract class PathTest5URIIT extends PathTest4CopyIT {
         assertThat( uri, notNullValue() );
 
         Path back = Paths.get(uri);
-        assertEquals(path, back);
+        assertThat(back, is(path));
     }
 
+    @Test
+    public void testPathWithWitespaceToUri() {
+        Path path = getPathRAB().resolve("z z");
+        URI uri = path.toUri();
+
+        assertThat( uri, notNullValue() );
+    }
+
+    @Test
+    public void testPathWithWitespaceToUriAndBack() {
+        Path path = getPathRAB().resolve("z z");
+        URI uri = path.toUri();
+
+        assertThat( uri, notNullValue() );
+
+        Path back = Paths.get(uri);
+        assertThat(back, is(path));
+    }
 
 }

@@ -227,10 +227,10 @@ public abstract class PathTest17WindowsPathIT extends PathTest16PosixIT {
         assertThat(FS.getPath("\\\\mach\\C$").getRoot(), is(FS.getPath("\\\\mach\\C$\\")));
     }
 
+    // TODO check whether UNC is case sensitive
 //    @Test
 //    public void testWindowsUNCCase() throws IOException {
-//        System.out.println(FS.getPath("\\\\duH\\C$"));
-////        assertThat(FS.getPath("\\\\duH\\C$").getRoot(), is(FS.getPath("\\\\mach\\C$\\")));
+////        assertThat(FS.getPath("\\\\duH\\C$").getRoot(), is(FS.getPath("\\\\duh\\C$\\")));
 //    }
 
 
@@ -243,15 +243,8 @@ public abstract class PathTest17WindowsPathIT extends PathTest16PosixIT {
         Path file = getPathPAf();
         Path unc = FS.getPath( "\\\\localhost\\C$" + file.toString().substring(2));
 
-        System.out.println(unc);
-
         assertThat( Files.readAllBytes( unc ), is( CONTENT ));
 
-        try( DirectoryStream<Path> st = Files.newDirectoryStream(unc.getParent().getParent().getParent())) {
-            for ( Path kid : st ) {
-                System.out.println(kid);
-            }
-        }
     }
 
    // TODO machine name \\machiname\C$
@@ -260,7 +253,7 @@ public abstract class PathTest17WindowsPathIT extends PathTest16PosixIT {
     // no long unc in default
 //    @Test
 //    public void testFuh() {
-//        System.out.println(FS.getPath("\\\\?\\UNC\\localhosr\\C$"));
+//        FS.getPath("\\\\?\\UNC\\localhosr\\C$"));
 //    }
 
 

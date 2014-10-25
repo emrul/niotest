@@ -1,5 +1,6 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.opencage.kleinod.paths.Filess;
 import org.opencage.kleinod.text.Strings;
 
 import java.io.IOException;
@@ -287,11 +288,7 @@ public class FSDescription implements FSCapabilities {
     public FSDescription sizeLimitedPlayground( Path limitedPlayground ) {
         hasSizeLimitedFileSystem = true;
         setup.sizeLimitedPlayground = limitedPlayground;
-        try {
-            Files.createDirectories( limitedPlayground );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Filess.createDirectories(limitedPlayground);
         return this;
     }
 

@@ -122,23 +122,9 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
         Files.createDirectory( dir );
 
         try( DirectoryStream<Path> kids = Files.newDirectoryStream( dir.getParent() ) ) {
-            for ( Path kd : kids ) {
-                System.out.println(kd);
-            }
-            //assertThat( dir, isIn(kids) );
+            assertThat( dir, isIn(kids) );
         }
     }
-
-//    @Test
-//    public void testHHH() throws IOException {
-//        Path dir = getPathPA();
-//        Files.createDirectory( dir );
-//
-//        assertThat( Files.exists(dir), is(true));
-//
-//        Files.write(dir.resolve("foo"), CONTENT );
-//    }
-
 
     @Test
     public void testNewDirectoryExists() throws IOException {

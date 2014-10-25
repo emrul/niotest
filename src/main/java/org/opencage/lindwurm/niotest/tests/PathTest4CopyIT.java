@@ -473,32 +473,17 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
     @Test
     public void testDeleteRecreate() throws IOException {
         Path path = getPathPABf();
-
         Files.delete(path);
-        System.out.println(path);
-
         Files.write( path, CONTENT, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
     }
 
+    // check that no intenal stuff is left laying around
     @Test
     public void testDeleteIfExistsRecreate() throws IOException {
         Path path = getPathPABf();
-
         Files.deleteIfExists(path);
-        System.out.println(path);
-
         Files.write( path, CONTENT, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING );
     }
-
-//    @Test
-//    public void testDeletsdfdseRecreate() throws IOException {
-//        Path path = getPathPABf();
-//
-////        Files.delete(path);
-//        System.out.println(path);
-//
-//        Files.write( path, CONTENT, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
-//    }
 
 
     @Test

@@ -20,8 +20,6 @@ public abstract class PathTest16PosixIT extends PathTest15LimitedFileStoreIT  {
     public void testDefaultOwnerIsFoundInLookpupService() throws IOException {
         assumeThat( capabilities.supportsPrincipals(), is(true));
         assumeThat( capabilities.supportsPosixAttributes(), is(true));
-        // expect no throw
-        //System.out.println(Files.readAttributes(getDefaultPath(), PosixFileAttributes.class).owner());
 
         UserPrincipal owner = Files.readAttributes(getDefaultPath(), PosixFileAttributes.class).owner();
 

@@ -388,58 +388,11 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
         view.readAttributes();
     }
 
-//    @Test( expected = NoSuchFileException.class )
-//    public void bugReadAttributesViewFutureExistingFileThrows() throws IOException {
-//        assumeThat( message(), possible(), is(false) );
-//
-//        BasicFileAttributeView view =  FS.provider().getFileAttributeView( getPathPA(), BasicFileAttributeView.class );
-//
-//        getPathPAf();
-//        view.readAttributes();
-//    }
-
 
     @Test( expected = NoSuchFileException.class )
     public void testReadAttributesFromNonExsitingFile() throws IOException {
         Files.readAttributes( getPathPA(), BasicFileAttributes.class );
     }
-
-
-
-
-//
-//    @Test
-//    public void testCopyResultHatCreationTime() throws Exception {
-//
-//        //define a folder root
-//        Path myDir = FileSystems.getDefault().getPath( "/Users/stephan/tmp/foo" );//p.getTmpDir("");
-//
-//        try {
-//            WatchService watcher = myDir.getFileSystem().newWatchService();
-//            myDir.register(watcher, StandardWatchEventKinds.ENTRY_CREATE,
-//                    StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
-//
-//            WatchKey watckKey = watcher.take();
-//
-//            List<WatchEvent<?>> events = watckKey.pollEvents();
-//            for (WatchEvent event : events) {
-//                if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
-//                    System.out.println("Created: " + event.context().toString());
-//                } else if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
-//                    System.out.println("Delete: " + event.context().toString());
-//                } else if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
-//                    System.out.println("Modify: " + event.context().toString());
-//                } else {
-//                    System.out.println("other: " + event.context());
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            System.out.println("Error: " + e.toString());
-//        }
-//    }
-//
-//
 
 
 }

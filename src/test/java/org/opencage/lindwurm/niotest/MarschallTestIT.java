@@ -49,11 +49,6 @@ public class MarschallTestIT extends PathTestIT {
     public static void setUp() throws IOException {
         playground = getOrCreate( "marschall" ).getPath( "play" ).toAbsolutePath();
         playground2 = getOrCreate("marschallother").getPath("play").toAbsolutePath();
-
-
-//        String suf = ImmuDate.now().toStringFSFriendly();
-//        System.out.println(suf);
-//        setClosablePlay(getOrCreate("marschallClose" + suf).getPath("play").toAbsolutePath());
     }
 
     public MarschallTestIT() throws IOException {
