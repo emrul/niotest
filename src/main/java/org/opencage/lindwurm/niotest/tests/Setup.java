@@ -119,8 +119,24 @@ public abstract class Setup {
             return false;
         }
 
-        if ( name.startsWith("testWindows")) {
-            return capabilities.isWindows();
+        if ( name.contains("Windows") && !capabilities.isWindows()){
+            return false;
+        }
+
+        if ( name.contains("HardLink") && !capabilities.hasLinks()) {
+            return false;
+        }
+
+        if ( name.contains("MaxFilename") && capabilities.getMaxFilenameLength() < 0 ) {
+            return false;
+        }
+
+        if ( name.contains("IllegalFilename") && capabilities.getIllegalFilenames().isEmpty()) {
+            return false;
+        }
+
+        if ( name.contains("FileChannel") && !capabilities.supportsFileChannels()) {
+            return false;
         }
 
         return true;
@@ -185,6 +201,27 @@ public abstract class Setup {
     public Path getPathPAC() throws IOException {
         return emptyDir().resolve( nameStr[0] ).resolve(nameStr[2]);
     }
+
+    public Path getPathPLongFileName() throws IOException {
+        String name = nameStr[0];
+
+        while ( name.length() < capabilities.getMaxFilenameLength() ) {
+            name += name;
+        }
+
+        return getPathP().resolve(name.substring(0, capabilities.getMaxFilenameLength()));
+    }
+
+    public Path getPathPTooLongFileName() throws IOException {
+        String name = nameStr[0];
+
+        while ( name.length() < (capabilities.getMaxFilenameLength() + 1)) {
+            name += name;
+        }
+
+        return getPathP().resolve(name.substring(0, (capabilities.getMaxFilenameLength() + 1) ));
+    }
+
 
     public Path getPathPAf() throws IOException {
         Path ret = emptyDir().resolve( nameStr[0] );

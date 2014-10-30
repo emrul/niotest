@@ -762,7 +762,6 @@ public abstract class PathTest1NoContentIT extends Setup {
                 assertThat( "illegal character allowed" + ill , is(""));
             } catch ( InvalidPathException e ) {
             }
-
         }
     }
 

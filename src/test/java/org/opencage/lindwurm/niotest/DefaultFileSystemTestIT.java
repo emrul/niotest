@@ -56,6 +56,7 @@ public class DefaultFileSystemTestIT extends PathTestIT {
                 creationTime( new OS().isWindows() ).    // OSX only ?
                 watcherSleepTime( 12000 ).
                 noSecondPlayground().
+                doesSupportsFileChannels().
                 unix( new OS().isUnix()).
                 windows( new OS().isWindows() ).
                 bug( "testGetIteratorOfClosedDirStream" )
@@ -65,6 +66,7 @@ public class DefaultFileSystemTestIT extends PathTestIT {
             description.otherRoot(Paths.get("G:")).
                     fileSystemURI( (fs) -> URI.create(fs.provider().getScheme() + ":///")).
                     alternativeNames( "aAa", "BBB", "CCc", "DdD", "EEE", "FFF", "GGG", "HHH", "III", "JJJ", "KKK").
+                    pathIllegalCharacters( '|', '?', '<', '>', ':', '*', '|').
                     bug("testMovedWatchedDirCancelsKeys").
                     bug("testEveryChannelWriteUpdatesLastModifiedTime");
 

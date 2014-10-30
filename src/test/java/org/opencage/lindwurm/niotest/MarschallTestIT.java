@@ -60,6 +60,7 @@ public class MarschallTestIT extends PathTestIT {
                 notClosable().
                 doesNotSupportWatchService().
                 secondPlayground( playground2 ).
+                setMaxFilenameLength(-1).
 
         bug( "testCreateDirectoryRoot" ).
         bug( "testIsSameFileOnEqualPathElementsDifferentProvider" ).

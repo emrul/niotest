@@ -1,6 +1,8 @@
 package org.opencage.lindwurm.niotest.tests;
 
 
+import org.opencage.kleinod.errors.Runnnable;
+
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
@@ -48,9 +50,8 @@ public interface FSCapabilities {
     boolean supportsFileStores();
     boolean has2ndFileSystem();
     boolean hasSizeLimitedFileSystem();
-    Runnable shake();
+    Runnnable shake();
     Function<FileSystem,URI> toURI();
-    Collection<Character> getPathIllegalCharacters();
 
     boolean supportsPrincipals();
     boolean supportsPosixAttributes();
@@ -62,4 +63,10 @@ public interface FSCapabilities {
     boolean isWindows();
 
     boolean canSeeLocalUNCShares( FileSystem fs );
+
+    int                   getMaxFilenameLength();
+    Collection<Character> getPathIllegalCharacters();
+    Collection<String>    getIllegalFilenames();
+
+    boolean supportsFileChannels();
 }

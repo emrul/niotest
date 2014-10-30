@@ -48,8 +48,10 @@ public class JimFSTestIT extends PathTestIT {
                 secondPlayground(secondPlay).
                 closablePlayground(closablePlayground).
                 fileSystemURI(FSDescription::toURIWithoutPath).
-                sizeLimitedPlayground( sizeLimitedPlay )
-        .
+                sizeLimitedPlayground( sizeLimitedPlay ).
+                setMaxFilenameLength(-1).
+
+                bug("testWatchTwoModifiesOneKey").
 
                 bug("testCopyToClosedFS").
                 bug("testClosedFSGetFileStore").
@@ -62,7 +64,7 @@ public class JimFSTestIT extends PathTestIT {
                 bug("testSetUnsupportedAttributeThrows").
                 bug("testGetUnsupportedAttributeThrows").
                 bug("testRegisterOtherPath").
-                bug( "testGetFileSystemOtherURI").
+                bug("testGetFileSystemOtherURI").
                 bug("testNewFileSystemOfExistingThrows"); // needs env see below
     }
 

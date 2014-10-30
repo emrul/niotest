@@ -486,6 +486,7 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
     }
 
 
+
     @Test
     public void testRenameSourceIsNoLongerKid() throws IOException {
         Path source = getPathPAf();

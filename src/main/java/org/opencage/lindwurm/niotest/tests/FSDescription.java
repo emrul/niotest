@@ -1,5 +1,6 @@
 package org.opencage.lindwurm.niotest.tests;
 
+import org.opencage.kleinod.errors.Runnnable;
 import org.opencage.kleinod.paths.Filess;
 import org.opencage.kleinod.text.Strings;
 
@@ -8,9 +9,7 @@ import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -30,7 +29,7 @@ public class FSDescription implements FSCapabilities {
     private boolean supportsWatchService = true;
     private boolean has2ndFileSystem = true;
     private boolean filestores = false;
-    private Runnable shake = () -> {};
+    private Runnnable shake = () -> {};
     private Function<FileSystem, URI> toURI = FSDescription::toURIWithRoot;
     private Collection<Character> pathIllegalCharacters = Collections.emptyList();
     private boolean principals = false;
@@ -41,6 +40,9 @@ public class FSDescription implements FSCapabilities {
     private boolean windows = false;
     private boolean canSeeLocalUNCSharesSet;
     private boolean canSeeLocalUNCShares;
+    private int maxFilenameLength = 255;
+    private List<String> illegalFilenames = new ArrayList<>();
+    private boolean fileChannels = false;
 
     FSDescription(PathTestIT setup) {
         this.setup = setup;
@@ -155,7 +157,7 @@ public class FSDescription implements FSCapabilities {
         return this;
     }
 
-    public FSDescription shake( Runnable f ) {
+    public FSDescription shake( Runnnable f ) {
         this.shake = f;
         return this;
     }
@@ -176,7 +178,7 @@ public class FSDescription implements FSCapabilities {
     }
 
     @Override
-    public Runnable shake() {
+    public Runnnable shake() {
         return shake;
     }
 
@@ -188,6 +190,16 @@ public class FSDescription implements FSCapabilities {
     @Override
     public Collection<Character> getPathIllegalCharacters() {
         return pathIllegalCharacters;
+    }
+
+    @Override
+    public Collection<String> getIllegalFilenames() {
+        return illegalFilenames;
+    }
+
+    @Override
+    public boolean supportsFileChannels() {
+        return fileChannels;
     }
 
     @Override
@@ -227,6 +239,11 @@ public class FSDescription implements FSCapabilities {
         }
 
         return canSeeLocalUNCShares;
+    }
+
+    @Override
+    public int getMaxFilenameLength() {
+        return maxFilenameLength;
     }
 
     public static URI toURIWithRoot( FileSystem fs ) {
@@ -275,8 +292,8 @@ public class FSDescription implements FSCapabilities {
         return this;
     }
 
-    public FSDescription pathIllegalCharacters(Collection<Character> getPathIllegalCharacters) {
-        this.pathIllegalCharacters = getPathIllegalCharacters;
+    public FSDescription pathIllegalCharacters( Character ... getPathIllegalCharacters) {
+        this.pathIllegalCharacters = Arrays.asList(getPathIllegalCharacters);
         return this;
     }
 
@@ -309,6 +326,25 @@ public class FSDescription implements FSCapabilities {
 
     public FSDescription windows( boolean on ) {
         this.windows = on;
+
+        setIllegalFilenames( "nul", "com" ); // todo more
+        pathIllegalCharacters(':', '\\', '/', '|', '"');
+
+        return this;
+    }
+
+    public FSDescription setMaxFilenameLength(int maxFilenameLength) {
+        this.maxFilenameLength = maxFilenameLength;
+        return this;
+    }
+
+    public FSDescription setIllegalFilenames( String ... ill ) {
+        this.illegalFilenames = Arrays.asList( ill );
+        return this;
+    }
+
+    public FSDescription doesSupportsFileChannels() {
+        this.fileChannels = true;
         return this;
     }
 }

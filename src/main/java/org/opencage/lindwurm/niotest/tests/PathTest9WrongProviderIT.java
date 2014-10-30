@@ -113,11 +113,10 @@ public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
     }
 
     @Test( expected = ProviderMismatchException.class )
-    public void testCreateLinkOtherProvider() throws IOException {
-        assumeThat( capabilities.hasLinks(), is(true) );
-
+    public void testHardLinkToDifferentProvider() throws IOException {
         FS.provider().createLink( getOther(), getOther() );
     }
+
 
     @Test( expected = ProviderMismatchException.class )
     public void testCreateSymbolicLinkOtherProvider() throws IOException {
@@ -202,5 +201,6 @@ public abstract class PathTest9WrongProviderIT extends PathTest8ThreadSafeIT {
     public void testResolveWithPathFromOtherProvider() throws IOException {
         assertThat(getPathB().resolve(getOther()), is(getOther()));
     }
+
 
 }

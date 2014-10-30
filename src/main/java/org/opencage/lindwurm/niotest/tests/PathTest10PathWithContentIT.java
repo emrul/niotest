@@ -14,6 +14,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
+import static org.opencage.kleinod.text.Strings.getBytes;
 import static org.opencage.lindwurm.niotest.matcher.PathAbsolute.absolute;
 import static org.opencage.lindwurm.niotest.matcher.PathExists.exists;
 
@@ -257,6 +258,97 @@ public abstract class PathTest10PathWithContentIT extends PathTest9WrongProvider
     public void testToRealpathOfNonExistingFileThrows() throws Exception {
         getPathPAB().toRealPath();
     }
+
+
+    @Test
+    public void testMaxFilenameHasNoEffectOfPathConstruction() throws IOException {
+        getPathPTooLongFileName();
+    }
+
+    @Test
+    public void testMaxFilenameWorks() throws IOException {
+        Path loong = getPathPLongFileName();
+        Files.createDirectories( loong.getParent() );
+        Files.write( loong, CONTENT);
+    }
+
+
+    @Test( expected = FileSystemException.class )
+    public void testMaxFilenameWriteTooLongThrows() throws IOException {
+        Path loong = getPathPTooLongFileName();
+        Files.createDirectories( loong.getParent() );
+        Files.write( loong, CONTENT);
+    }
+
+    @Test
+    public void testMaxFilenameDirWorks() throws IOException {
+        Path loong = getPathPLongFileName();
+        Files.createDirectories( loong );
+    }
+
+
+    @Test( expected = FileSystemException.class )
+    public void testMaxFilenameDirTooLongThrows() throws IOException {
+        Path loong = getPathPTooLongFileName();
+        Files.createDirectories( loong );
+    }
+
+    @Test
+    public void testMaxFilenameCopyWorks() throws IOException {
+        Path loong = getPathPLongFileName();
+        Files.copy( getPathPABf(), loong );
+    }
+
+
+    @Test( expected = FileSystemException.class )
+    public void testMaxFilenameCopyTooLongThrows() throws IOException {
+        Path loong = getPathPTooLongFileName();
+        Files.copy( getPathPABf(), loong );
+    }
+
+    @Test
+    public void testMaxFilenameHardLinkWorks() throws IOException {
+        Path loong = getPathPLongFileName();
+        Files.createLink( loong, getPathPABf() );
+    }
+
+
+    @Test( expected = FileSystemException.class )
+    public void testMaxFilenameHardLinkTooLongThrows() throws IOException {
+        Path loong = getPathPTooLongFileName();
+        Files.createLink( loong, getPathPABf() );
+    }
+
+    @Test
+    public void testMaxFilenameMoveWorks() throws IOException {
+        Path loong = getPathPLongFileName();
+        Files.move( getPathPABf(), loong );
+    }
+
+
+    @Test( expected = FileSystemException.class )
+    public void testMaxFilenameMoveTooLongThrows() throws IOException {
+        Path loong = getPathPTooLongFileName();
+        Files.move( getPathPABf(), loong );
+    }
+
+    // todo needs more understanding, e.g. nul throws, com not
+//    @Test
+//    public void testWriteToIllegalFilenameThrows() throws IOException {
+//        getPathPAd();
+//        for ( String ill : capabilities.getIllegalFilenames()) {
+//            try {
+//                Files.write( getPathPA().resolve( ill), CONTENT );
+//            } catch (IOException e) {
+//                continue;
+//            }
+//
+//            assertThat( "was allowed to write to illegal filename " + ill, false, is(true) );
+//        }
+//    }
+
+
+
 
 //    @Test
 //    public void testNewByteChannelUnnormalizedPath() throws IOException {
