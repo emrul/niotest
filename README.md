@@ -8,24 +8,10 @@ Niotest is a framework for testing java 7 nio2 based virtual filesystem as speci
 
 #### Maven:
 
-    <repositories>
-        <repository>
-            <id>opencage-releases</id>
-                <url>https://raw.github.com/openCage/mavenrepo/master/releases</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-
     <dependency>
-        <groupId>org.opencage.lindwurm</groupId>
+        <groupId>de.pfabulist.lindwurm</groupId>
         <artifactId>niotest</artifactId>
-        <version>0.20.2.46</version>
+        <version>0.24.0.59</version>
     </dependency>
 
 #### Use
@@ -169,17 +155,5 @@ No. There are topics not covered in niotest yet. There are also areas that are h
 * eventual consistency filesystems (e.g. an amazon s3 filesystem)
 
 The setup will have to be redesigned to handle these types.	
-
-
-
-
-
-
-
-
-
-
-
-
 
 
