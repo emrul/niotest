@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.paths.PathUtils;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
 
@@ -220,6 +221,7 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
         Files.createDirectories( deep.getParent());
         Files.write( deep, CONTENT ); // add a non empty dir child for good measure
         Path src = getPathPA();
+
         Files.move( src, getPathPB());
         assertThat(getPathPB().resolve(nameStr[0]).resolve(nameStr[0]), exists());
     }
