@@ -57,6 +57,7 @@ public class MarschallTestIT extends PathTestIT {
                 playground( playground ).
                 fileStores(true).
                 noLinks().
+                noSymLinks().
                 notClosable().
                 doesNotSupportWatchService().
                 secondPlayground( playground2 ).

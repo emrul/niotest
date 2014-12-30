@@ -26,7 +26,7 @@ package de.pfabulist.lindwurm.niotest.tests;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public abstract class PathTestIT extends PathTest19HardLinksIT {
+public abstract class PathTestIT extends PathTest20SymLinksIT {
 
     public FSDescription describe() {
 

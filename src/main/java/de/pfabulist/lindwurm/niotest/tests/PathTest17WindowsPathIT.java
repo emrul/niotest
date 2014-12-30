@@ -181,6 +181,24 @@ public abstract class PathTest17WindowsPathIT extends PathTest16PosixIT {
     }
 
     @Test
+    public void testWindowsNormalizeDoesNotAddC() throws IOException {
+
+        Path one = getPathPABf();
+        Path two = FS.getPath( one.toString().substring(2));
+
+        assertThat( two.normalize().toString().startsWith("C:"), is(false));
+    }
+
+    @Test
+    public void testWindowsToRealPathAddsC() throws IOException {
+
+        Path one = getPathPABf();
+        Path two = FS.getPath( one.toString().substring(2));
+
+        assertThat( two.toRealPath().toString().startsWith("C:"), is(true));
+    }
+
+    @Test
     public void testWindowsIsSameFileShowsImpliedRootComponentIsC() throws IOException {
 
         Path one = getPathPABf();

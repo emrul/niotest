@@ -68,6 +68,7 @@ public class DefaultFileSystemTestIT extends PathTestIT {
                     fileSystemURI( (fs) -> URI.create(fs.provider().getScheme() + ":///")).
                     alternativeNames( "aAa", "BBB", "CCc", "DdD", "EEE", "FFF", "GGG", "HHH", "III", "JJJ", "KKK").
                     pathIllegalCharacters( '|', '?', '<', '>', ':', '*', '|').
+                    noSymLinks().
                     bug("testMovedWatchedDirCancelsKeys").
                     bug("testEveryChannelWriteUpdatesLastModifiedTime");
 

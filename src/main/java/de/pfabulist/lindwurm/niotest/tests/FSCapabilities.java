@@ -68,4 +68,6 @@ public interface FSCapabilities {
     Collection<String>    getIllegalFilenames();
 
     boolean supportsFileChannels();
+
+    boolean supportsForeignSymLinks();
 }

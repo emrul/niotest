@@ -61,15 +61,22 @@ public class JimFSTestIT extends PathTestIT {
         describe().
                 playground(playground).
                 doesNotSupportWatchService(). //watcherSleepTime(10000).
-                lastAccessTime( false).
+                lastAccessTime(false).
                 fileStores(true).
                 secondPlayground(secondPlay).
                 closablePlayground(closablePlayground).
                 fileSystemURI(FSDescription::toURIWithoutPath).
-                sizeLimitedPlayground( sizeLimitedPlay ).
+                sizeLimitedPlayground(sizeLimitedPlay).
                 setMaxFilenameLength(-1).
+                doesNotSupporForeignSymLinks().
 
                 bug("testWatchTwoModifiesOneKey").
+
+                bug( "testSymLinkToParent" ).
+                bug("testSymLinkComplexLoop").
+                bug( "testHardLinkToSymLinkIsSymLink" ).
+                bug( "testHardLinkToSymLinkDeleteSym" ).
+                bug( "testModifyHardLinkToSymLink" ).
 
                 bug("testCopyToClosedFS").
                 bug("testClosedFSGetFileStore").

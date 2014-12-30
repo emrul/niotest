@@ -65,6 +65,7 @@ public class FSDescription implements FSCapabilities {
     private int maxFilenameLength = 255;
     private List<String> illegalFilenames = new ArrayList<>();
     private boolean fileChannels = false;
+    private boolean supportsForeignSymLinks = true;
 
     FSDescription(PathTestIT setup) {
         this.setup = setup;
@@ -225,6 +226,11 @@ public class FSDescription implements FSCapabilities {
     }
 
     @Override
+    public boolean supportsForeignSymLinks() {
+        return supportsForeignSymLinks;
+    }
+
+    @Override
     public boolean supportsPrincipals() {
         return principals;
     }
@@ -367,6 +373,11 @@ public class FSDescription implements FSCapabilities {
 
     public FSDescription doesSupportsFileChannels() {
         this.fileChannels = true;
+        return this;
+    }
+
+    public FSDescription doesNotSupporForeignSymLinks() {
+        this.supportsForeignSymLinks = false;
         return this;
     }
 }

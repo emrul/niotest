@@ -47,15 +47,11 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
 
     @Test
     public void testFileStoreIterable() {
-        assumeThat( capabilities.supportsFileStores(), is(true));
-
         assertThat(FS.getFileStores(), not( emptyIterable()));
     }
 
     @Test
     public void testFileStoresHaveAName() {
-        assumeThat( capabilities.supportsFileStores(), is(true));
-
         for (FileStore store : FS.getFileStores() ) {
             assertThat(store.name(), notNullValue());
         }
@@ -63,8 +59,6 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
 
     @Test
     public void testFileStoresHaveAType() {
-        assumeThat( capabilities.supportsFileStores(), is(true));
-
         for (FileStore store : FS.getFileStores() ) {
             assertThat(store.type(), notNullValue());
         }
@@ -72,8 +66,6 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
 
     @Test
     public void testFileStoreTotalSpaceIsNonNegative() throws IOException {
-        assumeThat( capabilities.supportsFileStores(), is(true));
-
         for (FileStore store : FS.getFileStores() ) {
             assertThat(store.getTotalSpace(), greaterThanOrEqualTo(0L));
         }
@@ -81,8 +73,6 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
 
     @Test
     public void testFileStoreUsableSpaceIsSmallerThanTotal() throws IOException {
-        assumeThat( capabilities.supportsFileStores(), is(true));
-
         for (FileStore store : FS.getFileStores() ) {
             assertThat(store.getTotalSpace(), greaterThanOrEqualTo(store.getUsableSpace()));
         }
@@ -90,9 +80,6 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
 
     @Test
     public void testFileStoreUnallocatedSpaceIsSmallerUsableSpace() throws IOException {
-        assumeThat( capabilities.supportsFileStores(), is(true));
-
-
         for (FileStore store : FS.getFileStores() ) {
             assertThat( store.getUnallocatedSpace(), greaterThanOrEqualTo(store.getUsableSpace()));
         }
@@ -100,8 +87,6 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
 
     @Test
     public void testPathFileStoreIsOneOfGeneralOnes() throws IOException {
-        assumeThat( capabilities.supportsFileStores(), is(true));
-
         assertThat(FS.getFileStores(), hasItem(FS.provider().getFileStore(getPathPAf())));
     }
 
@@ -122,8 +107,6 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
 
     @Test
     public void testPathFileStoreGrowingFileLowersUsableSpace() throws IOException {
-        assumeThat( capabilities.supportsFileStores(), is(true));
-
         Path      file = getPathPAf();
         FileStore store = FS.provider().getFileStore(file);
         long      before = store.getUnallocatedSpace();
@@ -135,8 +118,6 @@ public abstract class PathTest13FileStoreIT extends PathTest12DifferentFS {
 
     @Test
     public void testFileStoreShowsThatBasicFileAttributeViewIsSupported() throws IOException {
-        assumeThat( capabilities.supportsFileStores(), is(true));
-
         FileStore store = FS.provider().getFileStore( getDefaultPath() );
 
         Assert.assertThat(store.supportsFileAttributeView(BasicFileAttributeView.class), CoreMatchers.is(true));

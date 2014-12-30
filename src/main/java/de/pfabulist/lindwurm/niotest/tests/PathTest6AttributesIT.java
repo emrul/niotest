@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Test;
 
@@ -147,7 +148,7 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
     }
 
     @Test
-    public void testGetLastModifiedViewAllMethodsDeliverSame() throws IOException {
+    public void testGetLastModifiedAllMethodsDeliverSame() throws IOException {
 
         Path path = getPathPAf();
 
@@ -160,6 +161,15 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
         assertThat( last1, is(last2));
         assertThat( last2, is(last3));
         assertThat( last3, is(last0));
+    }
+
+    @Test
+    public void testGetLastModifiedViaStringOfRelativePath() throws IOException {
+
+        Path path = getPathPAf();
+
+        assertThat( (FileTime) FS.provider().readAttributes( getDefaultPath().toAbsolutePath().relativize(path), "basic:lastModifiedTime" ).get( "lastModifiedTime" ),
+                    is( (FileTime) FS.provider().readAttributes( path, "basic:lastModifiedTime" ).get( "lastModifiedTime" )));
     }
 
     @Test
@@ -359,12 +369,12 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
     }
 
     @Test( expected = NoSuchFileException.class )
-    public void testGetAttributeFromNonExsitingFile() throws IOException {
+    public void testGetAttributeFromNonExistingFile() throws IOException {
         Files.getLastModifiedTime( getPathPA() );
     }
 
     @Test( expected = NoSuchFileException.class )
-    public void testReadAttributesByStringFromNonExsitingFile() throws IOException {
+    public void testReadAttributesByStringFromNonExistingFile() throws IOException {
         Files.readAttributes( getPathPA(), "basic:size" );
     }
 
@@ -389,9 +399,16 @@ public abstract class PathTest6AttributesIT extends PathTest5URIIT {
 
 
     @Test( expected = NoSuchFileException.class )
-    public void testReadAttributesFromNonExsitingFile() throws IOException {
+    public void testReadAttributesFromNonExistingFile() throws IOException {
         Files.readAttributes( getPathPA(), BasicFileAttributes.class );
     }
 
+    @Test
+    public void testFileKeyIsId() throws IOException {
+        assumeThat( Files.readAttributes(getPathPABf(), BasicFileAttributes.class).fileKey(), notNullValue() );
+
+        assertThat(Files.readAttributes(getPathPABf(), "basic:fileKey"),
+                is(not(Files.readAttributes(getPathPACf(), "basic:fileKey"))));
+    }
 
 }

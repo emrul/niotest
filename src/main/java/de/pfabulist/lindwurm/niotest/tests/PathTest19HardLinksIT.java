@@ -4,8 +4,10 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -114,7 +116,58 @@ public abstract class PathTest19HardLinksIT extends PathTest18FileChannelsIT {
         Files.createLink(link, orig);
     }
 
+    @Test( expected = FileSystemException.class)
+    public void testHardLinkToDirThrows() throws IOException {
+        Path orig = getPathPAd();
+        Path link = getPathPB();
+
+        Files.createLink(link, orig);
+    }
 
 
+    @Test
+    public void testHardLinkToHardLink() throws IOException {
+        Path orig = getPathPABf();
+        Path link = getPathPAC();
+        Path link2 = getPathPA().resolve(nameStr[0]);
+
+        Files.createLink(link, orig);
+        Files.createLink(link2, link);
+
+        assertThat( link2, exists());
+    }
+
+    @Test
+    public void test2ndHardLink() throws IOException {
+        Path orig = getPathPABf();
+        Path link = getPathPAC();
+        Path link2 = getPathPA().resolve(nameStr[0]);
+
+        Files.createLink(link, orig);
+        Files.createLink(link2, orig);
+
+        assertThat( link2, exists());
+    }
+
+    @Test
+    public void testIsSameFileWithHardLink() throws IOException {
+        Path orig = getPathPABf();
+        Path link = getPathPAC();
+        Files.createLink(link, orig);
+
+        assertThat( Files.isSameFile( link, orig ), is(true));
+    }
+
+    @Test
+    public void testHardLinkHasSameFileKey() throws IOException {
+        Path orig = getPathPABf();
+        Path link = getPathPAC();
+        Files.createLink(link, orig);
+
+        Object fk1 = Files.readAttributes( orig, BasicFileAttributes.class ).fileKey();
+        Object fk2 = Files.readAttributes( link, BasicFileAttributes.class ).fileKey();
+
+        assertThat( fk1, is(fk2));
+    }
 
 }

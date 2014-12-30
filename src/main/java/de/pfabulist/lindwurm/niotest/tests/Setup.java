@@ -13,7 +13,9 @@ import java.nio.file.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
+import static de.pfabulist.kleinod.errors.Unchecked.runtime;
 import static de.pfabulist.kleinod.text.Strings.getBytes;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -49,6 +51,7 @@ import static org.junit.Assume.assumeThat;
 public abstract class Setup {
 
     private Path play;
+    private Path foreignRoot;
     private Boolean dontDelete;
 
     protected static byte[] CONTENT;
@@ -67,11 +70,12 @@ public abstract class Setup {
 
     protected static OpenOption[] standardOpen = { StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE };
 
+    private Function<String,String> getName = s -> s;
 
     @Rule
     public TestName testMethodName = new TestName();
-    public Path sizeLimitedPlayground;
 
+    public Path sizeLimitedPlayground;
 
     @BeforeClass
     public static void beforeClass3() {
@@ -142,6 +146,18 @@ public abstract class Setup {
         }
 
         if ( name.contains("ClosedFS") && !capabilities.isClosable()) {
+            return false;
+        }
+
+        if ( name.contains("SymLink") && !capabilities.hasSymbolicLinks()) {
+            return false;
+        }
+
+        if ( name.contains("ForeignSymLink") && !capabilities.supportsForeignSymLinks()) {
+            return false;
+        }
+
+        if ( name.contains("FileStore") && !capabilities.supportsFileStores()) {
             return false;
         }
 
@@ -393,5 +409,28 @@ public abstract class Setup {
 //        Setup.play2 = play2;
 //    }
 
+    public Path getForeignPathP() {
+        if ( FS.equals(FileSystems.getDefault())) {
+            throw new UnsupportedOperationException();
+        }
 
+        if ( foreignRoot == null ) {
+            foreignRoot = PathUtils.getTmpDir("niotestforeign");
+        }
+
+        Path ret = foreignRoot.resolve( testMethodName.getMethodName() );
+
+        try {
+            Files.createDirectories(ret);
+            return ret;
+        } catch (IOException e) {
+            throw runtime(e);
+        }
+
+    }
+
+
+    public String getName( String str ) {
+        return getName.apply( str);
+    }
 }
