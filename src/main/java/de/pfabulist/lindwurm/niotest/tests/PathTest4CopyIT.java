@@ -1,6 +1,5 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import de.pfabulist.kleinod.paths.PathUtils;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
 
@@ -303,7 +302,7 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
 
     @Test
     public void testCopyDirReplaceExistingOverwritesFile() throws Exception {
-        // that's a surprise, todo bug ?
+        // that's a surprise, todo bugs ?
 
         Path tgt = getPathPA();
         Files.write( tgt, CONTENT, standardOpen );
@@ -338,8 +337,8 @@ public abstract class PathTest4CopyIT extends PathTest3FileIT {
     // todo: is that really supposed to work, loop danger
 //    @Test( expected = FileSystemException.class )
 //    public void testCopyIntoItself() throws IOException {
-//        Path src = getPathPABf();
-//        Files.copy(src.getParent(), getPathPAC());
+//        Path srcFile = getPathPABf();
+//        Files.copy(srcFile.getParent(), getPathPAC());
 //    }
 
     @Test

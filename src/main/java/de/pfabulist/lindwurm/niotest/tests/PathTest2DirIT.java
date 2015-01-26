@@ -13,6 +13,8 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
+import static de.pfabulist.lindwurm.niotest.matcher.ExceptionMatcher.throwsException;
+import static de.pfabulist.lindwurm.niotest.matcher.PathIsDirectory.isDirectory;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
@@ -56,7 +58,7 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testDefaultIsDir() throws Exception {
-        assertThat( getDefaultPath(), PathIsDirectory.isDirectory() );
+        assertThat( getDefaultPath(), isDirectory() );
     }
 
 
@@ -70,12 +72,12 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
 
 
-    @Test( expected = IllegalStateException.class )
+    @Test
     public void testIteratorCanOnlyBeCalledOnceOnDirStream() throws IOException {
 
         try( DirectoryStream<Path> stream = Files.newDirectoryStream( getPathPAd()) ) {
             stream.iterator();
-            stream.iterator();
+            assertThat( stream::iterator, throwsException( IllegalStateException.class ));
         }
     }
 
@@ -159,7 +161,7 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testRootisADir() throws IOException {
-        assertThat( getRoot(), PathIsDirectory.isDirectory() );
+        assertThat( getRoot(), isDirectory() );
     }
 
     @Test
@@ -170,12 +172,12 @@ public abstract class PathTest2DirIT extends PathTest1NoContentIT {
 
     @Test
     public void testNonExistingAbsolutePathIsNotADirectory() throws IOException {
-        assertThat( getPathPA(), Matchers.not(PathIsDirectory.isDirectory()) );
+        assertThat( getPathPA(), Matchers.not(isDirectory()) );
     }
 
     @Test
     public void testNonExistingRelativePathIsNotADirectory() throws IOException {
-        assertThat( getPathA(), Matchers.not(PathIsDirectory.isDirectory()) );
+        assertThat( getPathA(), Matchers.not(isDirectory()) );
     }
 
 

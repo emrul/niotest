@@ -70,4 +70,7 @@ public interface FSCapabilities {
     boolean supportsFileChannels();
 
     boolean supportsForeignSymLinks();
+    
+    int getWatcherSleepTime();
+
 }

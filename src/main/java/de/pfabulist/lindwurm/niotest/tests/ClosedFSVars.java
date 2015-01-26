@@ -36,8 +36,8 @@ public class ClosedFSVars {
 
     public FileSystem            fs;
     public Path                  play;
-    public Path                  pathAf;
-    public Path                  pathBd;
+    public Path fileA;
+    public Path dirB;
     public Path                  pathCf;
     public SeekableByteChannel   readChannel;
     public URI                   uri;

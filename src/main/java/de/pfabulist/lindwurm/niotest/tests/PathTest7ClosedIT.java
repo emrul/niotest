@@ -225,12 +225,12 @@ public abstract class PathTest7ClosedIT extends PathTest6AttributesIT {
 
         closed.provider = closed.fs.provider();
 
-        closed.pathAf = closed.play.resolve( nameStr[0] );
-        closed.pathBd = closed.play.resolve( nameStr[1] );
+        closed.fileA = closed.play.resolve( nameStr[0] );
+        closed.dirB = closed.play.resolve( nameStr[1] );
 
         Files.createDirectories(closed.play);
-        Files.write( closed.pathAf, CONTENT, standardOpen );
-        closed.provider.createDirectory(closed.pathBd);
+        Files.write( closed.fileA, CONTENT, standardOpen );
+        closed.provider.createDirectory(closed.dirB);
 
 
         Path closedCf = closed.play.resolve( nameStr[2] );
@@ -257,12 +257,12 @@ public abstract class PathTest7ClosedIT extends PathTest6AttributesIT {
 
     public Path getClosedAf() throws IOException {
         getClosedFS();
-        return closed.pathAf;
+        return closed.fileA;
     }
 
     public Path getClosedBd() throws IOException {
         getClosedFS();
-        return closed.pathBd;
+        return closed.dirB;
     }
 
     public URI getClosedURI() throws IOException {

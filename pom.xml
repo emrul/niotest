@@ -33,7 +33,7 @@
 
     <groupId>de.pfabulist.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.25.0.67</version>
+    <version>0.26.0.69</version>
 
     <name>niotest</name>
     <description>A test suit for java 7 nio2 based virtual filesystems</description>
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>de.pfabulist</groupId>
             <artifactId>kleinod</artifactId>
-            <version>0.23.0.34</version>
+            <version>0.23.1.35</version>
         </dependency>
 
         <dependency>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>com.github.marschall</groupId>
             <artifactId>memoryfilesystem</artifactId>
-            <version>0.5.4</version>
+            <version>0.6.4</version>
             <scope>test</scope>
         </dependency>
 
@@ -104,6 +104,15 @@
             <scope>test</scope>
         </dependency>
 
+        <!--todo need 0.2.0-->
+        <dependency>
+            <groupId>com.github.marschall</groupId>
+            <artifactId>junit-lambda</artifactId>
+            <version>0.1.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--todo extra testing project-->
         <!--<dependency>-->
             <!--<groupId>de.weltraumschaf</groupId>-->
             <!--<artifactId>jvfs</artifactId>-->
@@ -122,20 +131,14 @@
 
     </dependencies>
 
-    <!--<build>-->
-        <!--<plugins>-->
-            <!--<plugin>-->
-                <!--<groupId>org.eluder.coveralls</groupId>-->
-                <!--<artifactId>coveralls-maven-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--<repoToken>3p4cMPBwcCVy730ljFqp9L0qRd7X9E3UE</repoToken>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-
-        <!--</plugins>-->
-    <!--</build>-->
-
-
-
-
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludedGroups>de.pfabulist.lindwurm.niotest.testsn.SlowTest</excludedGroups>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

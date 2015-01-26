@@ -1,6 +1,6 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import de.pfabulist.kleinod.paths.PathUtils;
+import de.pfabulist.kleinod.paths.Pathss;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -17,6 +17,7 @@ import java.util.function.Function;
 
 import static de.pfabulist.kleinod.errors.Unchecked.runtime;
 import static de.pfabulist.kleinod.text.Strings.getBytes;
+import static java.nio.file.StandardOpenOption.CREATE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -67,8 +68,7 @@ public abstract class Setup {
     protected Map<String, String> notSupported = new HashMap<>();
 
     public FSCapabilities capabilities;
-
-    protected static OpenOption[] standardOpen = { StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE };
+    protected static OpenOption[] standardOpen = { CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE };
 
     private Function<String,String> getName = s -> s;
 
@@ -399,7 +399,7 @@ public abstract class Setup {
 
     public Path getOther() throws IOException {
         if ( FS.equals(FileSystems.getDefault())) {
-            return PathUtils.getOrCreate(URI.create("null:/"), Collections.EMPTY_MAP).getPath("/");
+            return Pathss.getOrCreate(URI.create("null:/"), Collections.EMPTY_MAP).getPath("/");
         }
 
         return FileSystems.getDefault().getPath("foo");
@@ -415,7 +415,7 @@ public abstract class Setup {
         }
 
         if ( foreignRoot == null ) {
-            foreignRoot = PathUtils.getTmpDir("niotestforeign");
+            foreignRoot = Pathss.getTmpDir("niotestforeign");
         }
 
         Path ret = foreignRoot.resolve( testMethodName.getMethodName() );

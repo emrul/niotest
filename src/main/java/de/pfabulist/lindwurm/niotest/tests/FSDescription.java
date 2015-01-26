@@ -43,12 +43,12 @@ public class FSDescription implements FSCapabilities {
 
     private boolean closable = true;
     private boolean hasLinks = true;
-    private boolean hasSymbolicLinks = true;
+    boolean hasSymbolicLinks = true;
     private boolean hasAsynchronousFileChannels = true;
     private boolean hasFileChannels = true;
     private boolean supportsCreationTime = true;
     private boolean supportsLastAccessTime = true;
-    private boolean supportsWatchService = true;
+    boolean supportsWatchService = true;
     private boolean has2ndFileSystem = true;
     private boolean filestores = false;
     private Runnnable shake = () -> {};
@@ -65,7 +65,11 @@ public class FSDescription implements FSCapabilities {
     private int maxFilenameLength = 255;
     private List<String> illegalFilenames = new ArrayList<>();
     private boolean fileChannels = false;
-    private boolean supportsForeignSymLinks = true;
+    boolean supportsForeignSymLinks = true;
+    public boolean hasDirSymLinks = true;
+    public boolean delayedSymLinkLoopChecking = false;
+    public boolean immediateSymLinkLoopChecking = true;
+    int watcherSleepTime = 1200;
 
     FSDescription(PathTestIT setup) {
         this.setup = setup;
@@ -155,9 +159,35 @@ public class FSDescription implements FSCapabilities {
         return supportsWatchService;
     }
 
-    public FSDescription doesNotSupportWatchService() {
-        this.supportsWatchService = false;
-        return this;
+    public static class WatchServiceBuilder {
+
+
+        private final FSDescription fsDescription;
+
+        public WatchServiceBuilder(FSDescription fsDescription) {
+            this.fsDescription = fsDescription;
+        }
+
+        public FSDescription no() {
+            fsDescription.supportsWatchService = false;
+            return fsDescription;
+        }
+
+        public FSDescription yes() {
+            fsDescription.supportsWatchService = true;
+            return fsDescription;
+        }
+
+        public WatchServiceBuilder sleepTime( int seconds ) {
+            fsDescription.watcherSleepTime = seconds;
+            return this;
+        }
+
+
+    }
+    
+    public WatchServiceBuilder watchService() {
+        return new WatchServiceBuilder( this ) ;
     }
 
     public FSDescription noLinks() {
@@ -231,6 +261,11 @@ public class FSDescription implements FSCapabilities {
     }
 
     @Override
+    public int getWatcherSleepTime() {
+        return watcherSleepTime;
+    }
+
+    @Override
     public boolean supportsPrincipals() {
         return principals;
     }
@@ -283,12 +318,6 @@ public class FSDescription implements FSCapabilities {
         Path root =  fs.getPath("").toAbsolutePath().getRoot();
         return URI.create( Strings.withoutSuffix(root.toUri().toString(), root.toString()));
     }
-
-    public FSDescription watcherSleepTime( long seconds ) {
-        this.setup.watcherSleep = seconds;
-        return this;
-    }
-
 
     public FSDescription bug(String method) {
         this.setup.notSupported.put( method, "" );
@@ -371,13 +400,17 @@ public class FSDescription implements FSCapabilities {
         return this;
     }
 
-    public FSDescription doesSupportsFileChannels() {
-        this.fileChannels = true;
+    public FSDescription fileChannels( boolean val ) {
+        this.fileChannels = val;
         return this;
     }
 
     public FSDescription doesNotSupporForeignSymLinks() {
         this.supportsForeignSymLinks = false;
         return this;
+    }
+    
+    public SymLinkDescriptionBuilder symLinks() {
+        return new SymLinkDescriptionBuilder( this );
     }
 }

@@ -56,6 +56,6 @@ public class SylvainjugeMemoryFSTestIT { //extends PathTestIT {
 //                notClosable().
 //                noLinks().
 //                noSymLinks().
-//                doesNotSupportWatchService();
+//                watchService();
     //}
 }

@@ -33,7 +33,7 @@
 //                playground( playground ).
 //                noSecondPlayground(). //secondPlayground( playground2 ).
 //                notClosable().
-//                doesNotSupportWatchService();
+//                watchService();
 //    }
 //
 //}

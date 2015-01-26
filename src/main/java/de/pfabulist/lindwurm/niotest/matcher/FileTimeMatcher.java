@@ -54,7 +54,7 @@ public class FileTimeMatcher extends TypeSafeMatcher<FileTime> {
     }
 
     @Factory
-    public static <T> Matcher<FileTime> isCloseTo( FileTime other ) {
+    public static Matcher<FileTime> isCloseTo( FileTime other ) {
         return new FileTimeMatcher( other );
     }
 

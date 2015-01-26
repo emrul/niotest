@@ -125,7 +125,7 @@ If many WatchService tests fail it might be the default time of 1s to wait for e
 
 #### Why are there differences in the outcome of calls of valid jsr-203 filesystems ?
 
-The JSR-203 API declares may topics as optional some as filesystem dependent. It is also vague at times. Most filesystem have bugs in edge cases which rarly matter (e.g. the default implementation). 
+The JSR-203 API declares many topics as optional some as filesystem dependent. It is also vague at times. Most filesystem have bugs in edge cases which rarly matter (e.g. the default implementation). 
 
 
 #### Why are there failed tests after a niotest version upgrade ?
@@ -153,6 +153,7 @@ No. There are topics not covered in niotest yet. There are also areas that are h
 
 * Readonly filessystems
 * eventual consistency filesystems (e.g. an amazon s3 filesystem)
+* filesystem where common javamethod names are not valid filenames (used in insolating tests)
 
 The setup will have to be redesigned to handle these types.	
 

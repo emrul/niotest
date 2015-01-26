@@ -60,8 +60,6 @@ import static org.junit.Assume.assumeThat;
 public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 
 
-    private WatchService watchService;
-
     @Test(expected = ProviderMismatchException.class)
     public void testRegisterOtherPath() throws Exception {
         assumeThat( capabilities.supportsWatchService(), is(true));
@@ -346,13 +344,13 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
 //
 //        Path tgt = getPathPA();
 //        Files.write( tgt, CONTENT, standardOpen );
-//        Path src = getPathPB();
-//        Files.createDirectories( src );
+//        Path srcFile = getPathPB();
+//        Files.createDirectories( srcFile );
 //
 //        new Thread(new Watcher(tgt.getParent(), que, ENTRY_MODIFY )).start();
 //        Thread.sleep(2000);
 //
-//        Files.copy( src, tgt, StandardCopyOption.REPLACE_EXISTING );
+//        Files.copy( srcFile, tgt, StandardCopyOption.REPLACE_EXISTING );
 //
 //        Thread.sleep(getWatcherSleep());
 //        assertThat(que.size(), is(1));
@@ -607,5 +605,8 @@ public abstract class PathTest11WatcherIT extends PathTest10PathWithContentIT {
         watchService = FS.newWatchService();
         return createPathW().register(watchService, kinds);
     }
+
+    private WatchService watchService;
+
 
 }

@@ -384,7 +384,7 @@ public abstract class PathTest1NoContentIT extends Setup {
         assertEquals( str, FS.getPath( str ).toString() );
     }
 
-    // todo
+    // todo only for FS without rootcompoments i.e. unix not windows
 //    @Test
 //    public void testGetPathOfSeparatorCreatesRoot() throws Exception {
 //        assumeTrue( p.getCapabilities().rootIsSeparator());
