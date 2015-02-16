@@ -668,7 +668,6 @@ public abstract class Tests03File extends Tests02Dir {
         }
     }
 
-    // TODO windows only
     @Test( expected = FileSystemException.class )
     public void testReadChannelOfDir() throws IOException {
         try( SeekableByteChannel channel =  FS.provider().newByteChannel( dirTA(), Sets.asSet(READ) )) {

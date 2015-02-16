@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.niotest.testsn;
 
+import de.pfabulist.kleinod.collection.Sets;
 import de.pfabulist.kleinod.paths.Filess;
 import de.pfabulist.lindwurm.niotest.testsn.setup.AllCapabilitiesBuilder;
 import de.pfabulist.lindwurm.niotest.testsn.setup.Capa;
@@ -7,15 +8,21 @@ import de.pfabulist.lindwurm.niotest.testsn.setup.DetailBuilder;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.channels.ByteChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
+import java.util.Set;
 
 import static de.pfabulist.kleinod.errors.Unchecked.runtime;
 import static de.pfabulist.lindwurm.niotest.matcher.PathExists.exists;
 import static de.pfabulist.lindwurm.niotest.matcher.PathIsDirectory.isDirectory;
+import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.nio.file.StandardOpenOption.READ;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
@@ -139,7 +146,7 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
         System.out.println(link());
         System.out.println(targetDir());
         System.out.println( unnorm.toRealPath());
-        System.out.println( unnorm.toRealPath(LinkOption.NOFOLLOW_LINKS));
+        System.out.println( unnorm.toRealPath(NOFOLLOW_LINKS));
         System.out.println( link().getParent().resolve(nameB()).toRealPath());
     }
 
@@ -214,6 +221,15 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
         Files.createSymbolicLink( symLink(), targetFile() );
         Files.delete(symLink());
         assertThat( targetFile(), exists());
+        assertThat( symLink(), not(exists()));
+    }
+
+    @Test
+    public void testDeleteSymLinkDoesNotDeleteTargetNonEmptyDirCase() throws IOException {
+        Files.createSymbolicLink( symLink(), targetDir() );
+        Files.write( symLink().resolve("kid"), CONTENT );
+        Files.delete(symLink());
+        assertThat( symLink(), not(exists()));
     }
 
     @Test
@@ -273,39 +289,25 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
     @Test
     public void testHardLinkToSymLink() throws IOException {
         Files.createSymbolicLink( symLink(), targetFile());
-        Files.createLink( symLink2(),symLink() );
-        assertThat( Files.readAllBytes( symLink2()), is(CONTENT));
+        Files.createLink( hardLink(), symLink() );
+        assertThat( Files.readAllBytes( hardLink()), is(CONTENT));
     }
 
     @Test
-    public void testHardLinkToSymLinkIsSymLink() throws IOException {
+    public void testHardLinkToSymLinkIsNotASymLink() throws IOException {
         Files.createSymbolicLink( symLink(), targetFile());
-        Files.createLink( symLink2(),symLink() );
-        assertThat( Files.isSymbolicLink( symLink2()), is( true ));
+        Files.createLink( hardLink(), symLink() );
+        assertThat( Files.isSymbolicLink( hardLink()), is( false ));
     }
 
     @Test
-    public void testHardLinkToSymLinkDeleteSym() throws IOException {
-        Files.createSymbolicLink( symLink(), targetFile());
-        Files.createLink(symLink2(), symLink());
-        assertThat(Files.isSymbolicLink(symLink2()), is(true));
+    public void testHardLinkToSymLinkDeleteSymLeavesHardLinkUntouched() throws IOException {
+        Files.createSymbolicLink(symLink(), targetFile());
+        Files.createLink(hardLink(), symLink());
 
         Files.delete( symLink() );
 
-        Files.write( symLink2(), CONTENT_OTHER );
-        assertThat( Files.readAllBytes( targetFile() ), is( CONTENT_OTHER ));
-        assertThat(Files.isSymbolicLink( symLink2()), is(true));
-    }
-
-    @Test
-    public void testModifyHardLinkToSymLink() throws IOException {
-        Files.createSymbolicLink( symLink(), targetFile());
-        Files.createLink(symLink2(), symLink());
-        assertThat(Files.isSymbolicLink(symLink2()), is(true));
-
-        Files.write(symLink2(), CONTENT_OTHER);
-        assertThat(Files.readAllBytes(targetFile()), is(CONTENT_OTHER));
-        assertThat(Files.isSymbolicLink(symLink2()), is(true));
+        assertThat( Files.readAllBytes(hardLink()), is( CONTENT ));
     }
 
 //    @Test( expected = FileSystemException.class )
@@ -329,10 +331,47 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
     }
 
     @Test
-    public void testBrokenSymLinkExists() throws IOException {
-        Files.createSymbolicLink( symLink(), targetFile() );
-        Files.delete( targetFile() );
-        Files.exists( symLink() );
+    public void testBrokenSymLinkNotExists() throws IOException {
+        Files.createSymbolicLink( symLink(), absTA() );
+        assertThat( symLink(), not(exists()));
+    }
+
+    @Test
+    public void testBrokenSymLinkNoFollowLinkExists() throws IOException {
+        Files.createSymbolicLink( symLink(), absTA());
+        assertThat( Files.exists( symLink(), LinkOption.NOFOLLOW_LINKS ), is(true));
+    }
+
+    @Test
+    public void testBrokenSymLinkThrowsOnIsSymlink() throws IOException {
+        Files.createSymbolicLink( symLink(), absTA());
+        assertThat( Files.isSymbolicLink( symLink() ), is( true ) );
+    }
+
+    @Test
+    public void testBrokenSymLinkGetAttisNoFollowLinkDoesWorks() throws IOException {
+        Files.createSymbolicLink( symLink(), absTA());
+        BasicFileAttributes aa = Files.readAttributes( symLink(), BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS );
+        assertThat( aa.isSymbolicLink(), is(true));
+    }
+
+    @Test( expected = NoSuchFileException.class )
+    public void testBrokenSymLinkDoesNotTestForSymlinkAttribute() throws IOException {
+        Files.createSymbolicLink(symLink(), absTA());
+        Files.readAttributes( symLink(), BasicFileAttributes.class);
+    }
+
+//    @Test
+//    public void testBrokenSymLinkDoesNotTeastForSymlinkAttribute() throws IOException {
+//        Files.createSymbolicLink(symLink(), absTA());
+//        System.out.println( Files.readSymbolicLink( symLink()));
+//    }
+
+
+    @Test
+    public void testDeleteBrokenSymLink() throws IOException {
+        Files.createSymbolicLink(symLink(), absTA());
+        Files.delete( symLink());
     }
 
     @Test
@@ -353,7 +392,7 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
         Files.createSymbolicLink( symLink(), targetFile() );
 
         FileTime orig     = Files.readAttributes( symLink(), BasicFileAttributes.class).creationTime();
-        FileTime linkTime = Files.readAttributes( symLink(), BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS).creationTime();
+        FileTime linkTime = Files.readAttributes( symLink(), BasicFileAttributes.class, NOFOLLOW_LINKS).creationTime();
 
         assertThat( linkTime, greaterThan( orig ));
     }
@@ -430,11 +469,12 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
     }
 
 
-    @Test
-    public void testSymLinkToOtherProviderExists() throws IOException {
-        Files.createSymbolicLink( symLink(), otherProviderTargetFile() );
-        assertThat( symLink(), exists());
-    }
+    // no otherproviderlinks
+//    @Test
+//    public void testSymLinkToOtherProviderExists() throws IOException {
+//        Files.createSymbolicLink( symLink(), otherProviderTargetFile() );
+//        assertThat( symLink(), exists());
+//    }
 
     @Test
     public void testDoubleSymLinkExists() throws IOException {
@@ -489,40 +529,44 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
         Files.createSymbolicLink( symLink(), targetDir() );
         Files.createSymbolicLink( linkKid(), fileTAB());
 
-        assertThat( (FileTime)Files.readAttributes( linkKid(), "basic:lastModifiedTime", LinkOption.NOFOLLOW_LINKS).get("lastModifiedTime"),
+        assertThat( (FileTime)Files.readAttributes( linkKid(), "basic:lastModifiedTime", NOFOLLOW_LINKS).get("lastModifiedTime"),
                     greaterThan((FileTime) Files.readAttributes(fileTAB(), "basic:lastModifiedTime").get("lastModifiedTime")));
 
     }
 
-    @Test
-    public void testReadFromSymLinkToOtherProvider() throws IOException {
-        Files.createSymbolicLink( symLink(), otherProviderTargetFile() );
-        assertThat( Files.readAllBytes( symLink()), is(CONTENT));
-    }
+    // no otherproviderlinks
+//    @Test
+//    public void testReadFromSymLinkToOtherProvider() throws IOException {
+//        Files.createSymbolicLink( symLink(), otherProviderTargetFile() );
+//        assertThat( Files.readAllBytes( symLink()), is(CONTENT));
+//    }
 
-    @Test
-    public void testGetSymLinkToOtherProviderTarget() throws IOException {
-        Files.createSymbolicLink( symLink(), otherProviderTargetFile() );
-        assertThat( Files.readSymbolicLink( symLink()), is(otherProviderTargetFile()));
-    }
+    // no otherproviderlinks
+//    @Test
+//    public void testGetSymLinkToOtherProviderTarget() throws IOException {
+//        Files.createSymbolicLink( symLink(), otherProviderTargetFile() );
+//        assertThat( Files.readSymbolicLink( symLink()), is(otherProviderTargetFile()));
+//    }
 
-    @Test
-    public void testGetDirStreamFromSymLinkToOtherProvider() throws IOException {
-        Files.createSymbolicLink(symLink(), otherProviderTargetDir());
+    // no otherproviderlinks
+//    @Test
+//    public void testGetDirStreamFromSymLinkToOtherProvider() throws IOException {
+//        Files.createSymbolicLink(symLink(), otherProviderTargetDir());
+//
+//        try ( DirectoryStream<Path> stream = Files.newDirectoryStream( symLink())) {
+//            for ( Path kid : stream ) {
+//                assertThat( Files.readAllBytes( kid), is(CONTENT));
+//            }
+//        }
+//    }
 
-        try ( DirectoryStream<Path> stream = Files.newDirectoryStream( symLink())) {
-            for ( Path kid : stream ) {
-                assertThat( Files.readAllBytes( kid), is(CONTENT));
-            }
-        }
-    }
-
-    @Test
-    public void testIsSameFileSymLinkToOtherProvider() throws IOException {
-        Files.createSymbolicLink( symLink(), otherProviderTargetFile() );
-        Files.createSymbolicLink( symLink2(), otherProviderTargetFile() );
-        assertThat( Files.isSameFile( symLink(), symLink2()), is( true ));
-    }
+    // no otherproviderlinks
+//    @Test
+//    public void testIsSameFileSymLinkToOtherProvider() throws IOException {
+//        Files.createSymbolicLink( symLink(), otherProviderTargetFile() );
+//        Files.createSymbolicLink( symLink2(), otherProviderTargetFile() );
+//        assertThat( Files.isSameFile( symLink(), symLink2()), is( true ));
+//    }
 
     @Test
     public void testSymLinkChanges() throws IOException {
@@ -534,13 +578,14 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
         assertThat( symLink(), isDirectory() );
     }
 
-    @Test
-    public void testMoveToDeepSymLinkToOtherProvider() throws IOException {
-        Files.createSymbolicLink(symLink(), otherProviderTargetDir());
-        Files.move(fileTAB(), linkKid());
-
-        assertThat( Files.readAllBytes(linkKid()), is(CONTENT_OTHER));
-    }
+    // no otherproviderlinks
+//    @Test
+//    public void testMoveToDeepSymLinkToOtherProvider() throws IOException {
+//        Files.createSymbolicLink(symLink(), otherProviderTargetDir());
+//        Files.move(fileTAB(), linkKid());
+//
+//        assertThat( Files.readAllBytes(linkKid()), is(CONTENT_OTHER));
+//    }
 
 //    // todo more tests with rel links
 //    @Test
@@ -556,25 +601,133 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
     @Test
     public void testRelSymLinkIsRelativeToLink() throws IOException {
         Files.createSymbolicLink(symLink(), FS.getPath("..").resolve(nameA()));
-        Files.write( symLink().getParent().resolve( nameA()), CONTENT_OTHER);
-        
-        assertThat( Files.readAllBytes( symLink()), is(CONTENT_OTHER));
+        Files.write(symLink().getParent().getParent().resolve(nameA()), CONTENT_OTHER);
+        assertThat(Files.readAllBytes(symLink()), is(CONTENT_OTHER));
         //assertThat( Files.isSameFile( symLink(), symLink().getParent().resolve( nameA())), is(true));
     }
 
     @Test
-    public void testMoveARelSymLink() throws IOException {
-        fileTA();
-        Files.createSymbolicLink(symLink(), FS.getPath("..").resolve(nameA()));
-        System.out.println(Files.readSymbolicLink(symLink()));
-        Files.move(symLink(), absTB());
-        System.out.println(Files.readSymbolicLink(absTB()));
-        System.out.println(Files.readSymbolicLink(absTB()).toAbsolutePath());
+    public void testMoveARelSymLink2() throws IOException {
+        Files.createSymbolicLink( symLink(), FS.getPath("..").resolve(nameA()));
+        Path to = dirTB().resolve(nameB());
+        Files.move( symLink(), to);
+        Files.write( to, CONTENT );
+        assertThat(Files.isSameFile( to, absTA()), is(true));
+    }
 
-        assertThat( Files.readSymbolicLink(absTB()).toAbsolutePath(), is(absTA()));
+//    //Todo
+//    @Test
+//    public void testMoveSymLinkLeavesNormalPath() throws IOException {
+//        Files.createSymbolicLink( dirTB().resolve(nameB()), FS.getPath("..").resolve(nameA()));
+//
+//        Files.write( symLink(), CONTENT );
+//    }
+
+
+//    @Test
+//    public void testCreateSymlinkWithLastModifiedTime() throws IOException {
+//        Files.createSymbolicLink( symLink(), absTA(), new FileAttribute<FileTime>() {
+//            @Override
+//            public String name() {
+//                return "basic:lastModifiedTime";
+//            }
+//
+//            @Override
+//            public FileTime value() {
+//                return FileTime.fromMillis( 1 );
+//            }
+//        } );
+//
+//        System.out.println( Files.getLastModifiedTime( symLink(), LinkOption.NOFOLLOW_LINKS ));
+//    }
+
+    @Test
+    public void testMoveSymLinkDoesNotChangeLastModifiedTime() throws IOException {
+        Files.createSymbolicLink( symLink(), fileTA() );
+        FileTime before = Files.getLastModifiedTime( symLink(), LinkOption.NOFOLLOW_LINKS );
+        waitForAttribute();
+        Files.move( symLink(), absTB() );
+        assertThat( Files.getLastModifiedTime( absTB(), LinkOption.NOFOLLOW_LINKS ), is(before));
+    }
+
+    @Test
+    public void testMoveARelSymLink() throws IOException {
+        Files.createSymbolicLink( symLink(), relA());
+        Files.move( symLink(), absTB());
+        Files.write( absTB(), CONTENT );
+
+        assertThat( Files.isSameFile( absTB(), absTA()), is(true));
+    }
+
+    @Test
+    public void testMoveReplaceExistingToSymLink() throws IOException {
+        Files.createSymbolicLink(symLink(), targetFile());
+        Files.move( fileTA(), symLink(), StandardCopyOption.REPLACE_EXISTING );
+        assertThat( Files.isSymbolicLink( symLink()), is(false));
+    }
+
+    @Test
+    public void testUnnormalizedDeepSymLinkFollowsLinkBeforeNormalization() throws IOException {
+        Path sym = dirTA().resolve("link");
+        Files.createSymbolicLink( sym, dirTBB());
+
+        Files.write( dirTA().resolve( nameC()), CONTENT);
+        Files.write( dirTB().resolve( nameC()), CONTENT_OTHER);
+
+        assertThat( Files.isSameFile( sym.resolve("..").resolve(nameC()), dirTB().resolve( nameC())), is(true));
+    }
+
+    @Test
+    public void testSymLinkToUnnormalizedRelPath() throws IOException {
+        Files.createSymbolicLink( symLink(), FS.getPath( nameA() ).resolve( ".." ) );
+        Files.createSymbolicLink( symLink().getParent().resolve( nameA() ), targetFile() );
+
+        System.out.println( symLink().toRealPath());
+        System.out.println( targetFile().getParent().toRealPath());
+        assertThat( Files.isSameFile( symLink(), targetFile().getParent() ), is( true ) );
 
     }
-    
+
+    @Test
+    public void testGetFileStoreOfSymLink() throws IOException {
+        Files.createSymbolicLink( symLink(), targetFile() );
+        assertThat( Files.getFileStore( symLink() ), is( Files.getFileStore( targetFile() ) ) );
+    }
+
+    @Test( expected = NoSuchFileException.class )
+    public void testGetFileStoreOfBrokenSymLink() throws IOException {
+        Files.createSymbolicLink( symLink(), absTA() );
+        Files.getFileStore( symLink() );
+    }
+
+    @Test( expected = FileAlreadyExistsException.class )
+    public void testCreateDirAtSymLinkThrows() throws IOException {
+        Files.createSymbolicLink( symLink(), absTA());
+        Files.createDirectory( symLink() );
+    }
+
+    @Test( expected = FileAlreadyExistsException.class )
+    public void testCreateHardLinkAtSymLinkThrows() throws IOException {
+        Files.createSymbolicLink( symLink(), absTA());
+        Files.createLink( symLink(), targetFile() );
+    }
+
+
+//    @Test
+//    public void testUnnormalizedDeepSymLinkFollowsLinkBeforeNormalizationButNotWithNoFollowLink() throws IOException {
+//        Path sym = dirTA().resolve("link");
+//        Files.createSymbolicLink( sym, dirTBB());
+//
+//        Files.write( dirTA().resolve( nameC()), CONTENT);
+//        Files.write(dirTB().resolve(nameC()), CONTENT_OTHER);
+//
+////        assertThat( Files.isSameFile( sym.resolve("..").resolve(nameC()), dirTB().resolve( nameC())), is(true));
+//
+//
+//        try ( SeekableByteChannel ch = FS.provider().newByteChannel(sym.resolve("..").resolve(nameC()), dirTB().resolve(nameC()), Sets.asSet(NOFOLLOW_LINKS))
+//        assertThat(Files.readAllBytes(sym.resolve("..").resolve(nameC()), dirTB().resolve( nameC()), ))
+//    }
+
     // todo watch,
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -654,6 +807,10 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
     }
     protected Path symLink2() {
         return symLinkSpace().resolve("link2");
+    }
+
+    protected Path hardLink() {
+        return symLinkSpace().resolve("hardLink");
     }
 
 

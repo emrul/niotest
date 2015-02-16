@@ -87,9 +87,10 @@ public class CapBuilder00 {
                     capa.addFeature("CaseRemembering", false );
                     capa.addFeature("UNC", false);
                     capa.addFeature("RootComponent", false);
+                    capa.addFeature("ReadChannelOfDir", false);
                     break;
                 case EXT2:
-                    capa.attributes.put( "maxFilenameLength", 255 );
+                    capa.attributes.put("maxFilenameLength", 255 );
                     capa.addFeature("Unix", true);
                     capa.addFeature("Windows", false);
                     capa.addFeature( "Posix", true );
@@ -97,6 +98,7 @@ public class CapBuilder00 {
                     capa.addFeature("CaseRemembering", false );
                     capa.addFeature("UNC", false);
                     capa.addFeature("RootComponent", false);
+                    capa.addFeature("ReadChannelOfDir", false);
                     break;
             }
         }

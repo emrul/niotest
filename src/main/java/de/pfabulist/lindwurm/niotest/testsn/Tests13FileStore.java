@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributeView;
 
@@ -74,6 +75,11 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     @Test
     public void testFileStoreIterable() {
         assertThat(FS.getFileStores(), not( emptyIterable()));
+    }
+
+    @Test( expected = NoSuchFileException.class )
+    public void testGetFileStoreOfNonExistent() throws IOException {
+        Files.getFileStore( absTA());
     }
 
     @Test

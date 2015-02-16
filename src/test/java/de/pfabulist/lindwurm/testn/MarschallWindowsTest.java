@@ -36,7 +36,7 @@ import static de.pfabulist.lindwurm.niotest.testsn.setup.CapBuilder00.typ;
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * **** END LICENSE BLOCK ****
 */
-public class MarschallWindowsTests extends AllTests {
+public class MarschallWindowsTest extends AllTests {
    
     private static Capa capa;
 
@@ -44,15 +44,16 @@ public class MarschallWindowsTests extends AllTests {
     @BeforeClass
     public static void before() throws IOException {
 
-        capa = typ(NTFS).rootComponent( false ).unc( false ).yes().
-                playground(MemoryFileSystemBuilder.newWindows().build("marschall").getPath("play").toAbsolutePath()).
-                time().lastAccessTime(false).yes().
+        capa = typ( NTFS ).rootComponent( false ).unc( false ).yes().
+                playground( MemoryFileSystemBuilder.newWindows().build( "marschall" ).getPath( "play" ).toAbsolutePath() ).
+                time().lastAccessTime( false ).yes().
                 pathConstraints().no().
                 closeable().no().
                 hardlinks().no().
-                symlinks().toOtherProviders( false ).toDirs( false ).relativeTargets(false).yes().
+                symlinks().toDirs( false ).yes().
                 watchService().no().
-                bug("testAppendAndReadThrows").
+                bugScheme( "RelSymLink" ).
+                bug( "testAppendAndReadThrows" ).
                 bug("testEveryChannelWriteUpdatesLastModifiedTime").
                 bug("testGetNameOfDefaultPathIsItself").
                 bug("testPathMatcherKnowsGlob").
@@ -63,10 +64,13 @@ public class MarschallWindowsTests extends AllTests {
                 bug("testUnsupportedAttributeViewReturnsNull").
                 bug("testIsSameFileOfDifferentPathNonExistingFileIsNot").
                 bug( "testIsSameFileOfDifferentPathNonExistingFile2IsNot").
-                bug("testCopyToSymLink").
-                nitpick("testIsSameFileOtherProvider", "strange anyway").
+                bug( "testCopyToSymLink").
+                bug( "testSymLinkToUnnormalizedRelPath" ).
                 bug("testIsSameFileOtherProvider2").
-                bug("testIsSameFileOnEqualPathElementsOtherProvider").
+                bug( "testIsSameFileOnEqualPathElementsOtherProvider" ).
+                bug( "testGetFileStoreOfNonExistent" ).
+                bug( "testGetFileStoreOfBrokenSymLink" ).
+                nitpick( "testIsSameFileOtherProvider", "strange anyway").
                 nitpick("testGetPathOtherURI", "different exception").
                 nitpick("testRegisterOnClosedWatchService", "different exception").
                 build();
@@ -98,7 +102,7 @@ public class MarschallWindowsTests extends AllTests {
     }
 
 
-    public MarschallWindowsTests() {
+    public MarschallWindowsTest() {
         super(capa);
     }
 }

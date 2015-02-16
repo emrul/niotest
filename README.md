@@ -1,4 +1,4 @@
-niotest  [![Build Status](https://travis-ci.org/openCage/niotest.svg?branch=master)](https://travis-ci.org/openCage/niotest) (unit test)[![Coverage Status](https://coveralls.io/repos/openCage/niotest/badge.png)](https://coveralls.io/r/openCage/niotest)
+niotest  [![Build Status](https://travis-ci.org/openCage/niotest.svg?branch=master)](https://travis-ci.org/openCage/niotest)
                                                                                                                                        1
 =======
 
@@ -13,6 +13,10 @@ Niotest is a framework for testing java 7 nio2 based virtual filesystem as speci
         <artifactId>niotest</artifactId>
         <version>0.24.0.59</version>
     </dependency>
+
+
+- [ ] use tasklist
+- [x] fast test
 
 #### Use
 

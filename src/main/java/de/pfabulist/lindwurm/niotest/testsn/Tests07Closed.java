@@ -257,9 +257,11 @@ public abstract class Tests07Closed extends Tests06Attributes {
 
         capa.closedFSVars.dirStream = Files.newDirectoryStream( capa.closedFSVars.play );
 
-//        if ( capabilities.supportsWatchService() ) {
-//            capa.closedFSVars.watchService = capa.closedFSVars.fs.newWatchService();
-//        }
+        try {
+            capa.closedFSVars.watchService = capa.closedFSVars.fs.newWatchService();
+        } catch( IOException e ) {
+            // no watchservice provided
+        }
 
         capa.closedFSVars.fs.close();
 

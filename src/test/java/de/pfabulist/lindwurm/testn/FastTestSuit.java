@@ -34,6 +34,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Categories.class)
 @Categories.ExcludeCategory( SlowTest.class )
-@Suite.SuiteClasses( { DefTests.class, JimTest.class, MarschallWindowsTests.class })
+@Suite.SuiteClasses( { DefTest.class, JimTest.class, MarschallWindowsTest.class })
 public class FastTestSuit {
 }

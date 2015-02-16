@@ -113,6 +113,11 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     @Test
+    public void testIsSameFileWithSpecialUnnormalizedPath() throws IOException {
+        assertThat(FS.provider().isSameFile( fileTAB(), fileTAB().resolve("..").resolve(nameB())), is(true));
+    }
+
+    @Test
     public void testIsSameFileWithRelativePath() throws IOException {
         assertThat(FS.provider().isSameFile( fileTAB(), relativize(fileTAB())), is(true));
     }
@@ -254,19 +259,19 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     @Test
-    public void testToRealpathOfUnnormalizedResturnsAnNormalizedPath() throws Exception {
+    public void testToRealPathOfUnnormalizedResturnsAnNormalizedPath() throws Exception {
         Path real = unnormalize( fileTAB()).toRealPath();
         assertThat( real.normalize(), is(real));
     }
 
 
     @Test
-    public void testToRealpathOfUnnormalizedIsSamePath() throws Exception {
+    public void testToRealPathOfUnnormalizedIsSamePath() throws Exception {
         assertThat( FS.provider().isSameFile( unnormalize(fileTAB()).toRealPath(), fileTAB() ), is(true));
     }
 
     @Test( expected = NoSuchFileException.class )
-    public void testToRealpathOfNonExistingFileThrows() throws Exception {
+    public void testToRealPathOfNonExistingFileThrows() throws Exception {
         absTAB().toRealPath();
     }
 
@@ -409,7 +414,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 //    }
 
     public Path unnormalize( Path path ) {
-        return path.resolve( ".." ).resolve( path.getFileName() );
+        return path.getParent().resolve( ".." ).resolve( path.getParent().getFileName() ).resolve(path.getFileName());
     }
 
     public Path absTLongFilename()  {

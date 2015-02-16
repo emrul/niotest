@@ -42,19 +42,23 @@ public class JimTest extends AllTests {
     @BeforeClass
     public static void before() {
         capa = typ(EXT2).yes().
-                playground(Jimfs.newFileSystem(Configuration.unix().toBuilder().setAttributeViews("basic", "owner", "posix", "unix").build()).getPath("/play")).
-                time().lastAccessTime(false).yes().
-                closeable().playground(Jimfs.newFileSystem(Configuration.unix().toBuilder().setAttributeViews("basic", "owner", "posix", "unix").build()).getPath("/play")).yes().
+                playground( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/play" ) ).
+                time().lastAccessTime( false ).yes().
+                closeable().playground( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/play" ) ).yes().
                 pathConstraints().noMaxFilenameLength().yes().
-                symlinks().toOtherProviders(false).relativeTargets(false).yes().
-                watchService().delay(5500).yes().
-                bugScheme("UnsupportedAttributeThrows").
-                bugScheme("Unnormalized").
-                bugScheme( "HardLinkToSymLink" ). // todo
-                bug("testCloseDirStreamInTheMiddleOfIteration").
+                //symlinks().toOtherProviders(false).relativeTargets(false).yes().
+                watchService().delay( 5500 ).yes().
+                bugScheme( "UnsupportedAttributeThrows" ).
+                bug( "testCloseDirStreamInTheMiddleOfIteration" ).
                 bug("testClosedFSGetFileStore").
                 bug( "testCopySymLinkToItself").
                 bug( "testCopyBrokenSymLinkToItself").
+                bug( "testMoveARelSymLink").
+                bug( "testMoveARelSymLink2").
+                bug( "testIsSameFileWithSpecialUnnormalizedPath" ).
+                bug( "testSymLinkToUnnormalizedRelPath" ).
+                bug( "testGetFileStoreOfNonExistent" ).
+                bug( "testGetFileStoreOfBrokenSymLink" ).
                 nitpick( "testRegisterWatchServiceOfClosedFS", "different exception" ).
                 nitpick("testAppendAndReadThrows", "IllegalArg instead Unsupported").
                 build();

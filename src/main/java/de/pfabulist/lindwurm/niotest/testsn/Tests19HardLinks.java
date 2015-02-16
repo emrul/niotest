@@ -174,6 +174,20 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
         assertThat( fk1, is(fk2));
     }
 
+    @Test
+    public void testHardLinkToRelative() throws IOException {
+        Files.createLink( link(), relativize( orig() ) );
+        assertThat( Files.isSameFile( link(), orig() ), is( true ) );
+    }
+
+    @Test
+    public void testMoveHardLinkToReldoesNotMoveTarget() throws IOException {
+        Files.createLink( link(), relativize( orig() ) );
+        Files.move( link(), dirTB().resolve( nameC() ) );
+        assertThat( Files.isSameFile( dirTB().resolve( nameC() ), orig() ), is( true ) );
+
+    }
+
     /*
      * ----------------------------------------------------------------------------
      */

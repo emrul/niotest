@@ -119,7 +119,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         assertThat( getWatchService().take(), correctKey(toBeDeleted, ENTRY_DELETE));
     }
 
-    @Test( timeout = 10000 )
+    @Test( timeout = 30000 )
     @Category( SlowTest.class )
     public void testWatchADeletePollWithTimeOut() throws Exception {
         Path toBeDeleted = watchedFileA();
@@ -129,7 +129,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         assertThat( waitForWatchService().poll( 1000, TimeUnit.MILLISECONDS), correctKey(toBeDeleted, ENTRY_DELETE));
     }
 
-    @Test( timeout = 10000 )
+    @Test( timeout = 30000 )
     @Category( SlowTest.class )
     public void testWatchPollWithTimeoutTimesOut() throws Exception {
         watcherSetup(ENTRY_DELETE);
@@ -483,9 +483,9 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         WatchKey key = dir.register( watcher, ENTRY_CREATE );
 
         Files.move( dir, absTB());
-        watchServicePoll();
+        waitForWatchService();
 
-        assertThat(key.isValid(), is(false));
+        assertThat( key.isValid(), is(false));
     }
 
     @Test

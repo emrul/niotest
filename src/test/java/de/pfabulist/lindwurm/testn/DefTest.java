@@ -38,7 +38,7 @@ import static de.pfabulist.lindwurm.niotest.testsn.setup.CapBuilder00.typ;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public class DefTests extends AllTests {
+public class DefTest extends AllTests {
 
     private static Capa capa;
 
@@ -48,18 +48,26 @@ public class DefTests extends AllTests {
         OS os = new OS();
 
         capa = typ( os.isWindows() ? NTFS : CapBuilder00.FSType.EXT2 ).yes().
-                playground(Pathss.getTmpDir("DefaultFileSystemTest")).
-                time().lastAccessTime(!os.isWindows()).yes().
+                playground( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
+                time().lastAccessTime( false ).creationTime( !os.isUnix() ).yes().
                 closeable().no().
-                otherProviderPlayground(Jimfs.newFileSystem(Configuration.unix().toBuilder().setAttributeViews("basic", "owner", "posix", "unix").build()).getPath("/other")).
-                symlinks().onOff(!os.isWindows()). // privilege problem
-                bug("testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows()).
-                bug("testIsSameFileOfDifferentPathNonExistingFileIsNot").
+                otherProviderPlayground( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
+                symlinks().onOff( !os.isWindows() ). // privilege problem
+                watchService().delay( 12000 ).yes().
+                bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
+                bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot").
                 bug( "testIsSameFileOfDifferentPathNonExistingFile2IsNot").
                 bug( "testDeleteWatchedDirCancelsKeys" ).
+                bug( "testWatchTwoModifiesOneKey", os.isUnix() ).
+                bug( "testWatchSeveralEventsInOneDir", os.isUnix() ).
+                bug( "testWatchAModify", os.isUnix() ).
+                bug( "testWatchATruncate", os.isUnix() ).
                 bug( "testDeleteWatchedDirCancelsKeys" ).
-                bug( "testDeleteWatchedDirCancelsKeys" ).
-                nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
+                bug( "testIsSameFileWithSpecialUnnormalizedPath", os.isUnix()).
+                bug( "testCopySymLinkToItself", os.isUnix() ).
+                bug( "testCopyBrokenSymLinkToItself", os.isUnix() ).
+                bug( "testSymLinkToUnnormalizedRelPath" ).
+                nitpick("testIsSameFileOtherProvider", "strange anyway" ).
                 build();
         }
                 
@@ -80,7 +88,7 @@ public class DefTests extends AllTests {
 
 
 
-    public DefTests() {
+    public DefTest() {
         super( capa );
     }
 

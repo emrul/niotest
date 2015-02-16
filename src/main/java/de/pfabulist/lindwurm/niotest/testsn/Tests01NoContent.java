@@ -433,7 +433,13 @@ public abstract class Tests01NoContent extends Setup {
         Path abs    = absABC();
         Path defAbs = pathDefault().toAbsolutePath();
 
-        MatcherAssert.assertThat(defAbs.relativize(abs).toAbsolutePath().normalize(), is(abs));
+        assertThat( defAbs.relativize(abs).toAbsolutePath().normalize(), is(abs));
+    }
+
+
+    @Test
+    public void testUnnormalizedBasedOnFile() {
+        assertThat( absABC().resolve("..").resolve( nameC()).normalize(), is(absABC()));
     }
 
 
@@ -550,6 +556,25 @@ public abstract class Tests01NoContent extends Setup {
         Path path = relABC().resolve("..").resolve( nameC() );
         assertThat(path.normalize().normalize(), is(path.normalize()));
     }
+
+    @Test
+    public void testNormlizeParentOfRoot() {
+        assertThat( defaultRoot().resolve("..").normalize(), is( defaultRoot()));
+    }
+
+    @Test
+    public void testNormalizeRelativePath() {
+        Path rel = FS.getPath( "..").resolve( nameA() );
+        assertThat( rel.normalize(), is(rel));
+    }
+
+    @Test
+    public void testNormalizeRelativePathEmptyHm() {
+        Path rel = FS.getPath( nameA()).resolve( ".." );
+        assertThat( rel.normalize(), is(pathDefault()));
+    }
+
+
 
     @Test
     public void testPathIterator() {
@@ -733,13 +758,13 @@ public abstract class Tests01NoContent extends Setup {
     // only tests class Files
     @Test
     public void testNonExistingAbsolutePathIsNotAFile() throws IOException {
-        MatcherAssert.assertThat(Files.isRegularFile(relAB()), is(false));
+        assertThat(Files.isRegularFile( relAB()), is(false));
     }
 
     // only tests class Files
     @Test
     public void testNonExistingRelativePathIsNotAFile() throws IOException {
-        MatcherAssert.assertThat(Files.isRegularFile(relA()), is(false));
+        assertThat( Files.isRegularFile( relA()), is(false));
     }
 
     // todo

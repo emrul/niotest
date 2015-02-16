@@ -446,6 +446,12 @@ public abstract class Tests02Dir extends Tests01NoContent {
         return ret;
     }
 
+    public Path dirTBB() {
+        Path ret = absTB().resolve(nameB());
+        Filess.createDirectories( ret );
+        return ret;
+    }
+
     public Path dirTB() {
         Path ret = absTB();
         Filess.createDirectories( ret );
