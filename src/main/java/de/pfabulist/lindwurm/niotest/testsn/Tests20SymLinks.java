@@ -293,12 +293,13 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
         assertThat( Files.readAllBytes( hardLink()), is(CONTENT));
     }
 
-    @Test
-    public void testHardLinkToSymLinkIsNotASymLink() throws IOException {
-        Files.createSymbolicLink( symLink(), targetFile());
-        Files.createLink( hardLink(), symLink() );
-        assertThat( Files.isSymbolicLink( hardLink()), is( false ));
-    }
+    // todo: it is not clear what the result should be
+    // @Test
+    // public void testHardLinkToSymLinkIsNotASymLink() throws IOException {
+    //     Files.createSymbolicLink( symLink(), targetFile());
+    //     Files.createLink( hardLink(), symLink() );
+    //     assertThat( Files.isSymbolicLink( hardLink()), is( false ));
+    // }
 
     @Test
     public void testHardLinkToSymLinkDeleteSymLeavesHardLinkUntouched() throws IOException {
@@ -682,8 +683,8 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
         Files.createSymbolicLink( symLink(), FS.getPath( nameA() ).resolve( ".." ) );
         Files.createSymbolicLink( symLink().getParent().resolve( nameA() ), targetFile() );
 
-        System.out.println( symLink().toRealPath());
-        System.out.println( targetFile().getParent().toRealPath());
+        // System.out.println( symLink().toRealPath());
+        // System.out.println( targetFile().getParent().toRealPath());
         assertThat( Files.isSameFile( symLink(), targetFile().getParent() ), is( true ) );
 
     }
