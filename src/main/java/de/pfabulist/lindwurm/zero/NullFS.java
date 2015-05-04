@@ -50,17 +50,16 @@ public class NullFS extends FileSystem {
 
     @Override
     public void close() throws IOException {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public boolean isOpen() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public boolean isReadOnly() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
@@ -70,17 +69,17 @@ public class NullFS extends FileSystem {
 
     @Override
     public Iterable<Path> getRootDirectories() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public Iterable<FileStore> getFileStores() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public Set<String> supportedFileAttributeViews() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
@@ -89,11 +88,11 @@ public class NullFS extends FileSystem {
             throw new IllegalArgumentException();
         }
 
-        if ( first.equals("")) {
+        if ( "".equals( first ) ) {
             return dflt;
         }
 
-        if ( first.equals("/")) {
+        if ( "/".equals( first ) ) {
             return root;
         }
 

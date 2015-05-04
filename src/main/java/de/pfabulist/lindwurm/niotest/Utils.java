@@ -1,11 +1,15 @@
 package de.pfabulist.lindwurm.niotest;
 
+import de.pfabulist.unchecked.Filess;
+
+import java.nio.file.Path;
+
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2014, Stephan Pfab
+ * Copyright (c) 2006 - 2015, Stephan Pfab
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * * Redistributions of source code must retain the above copyright
@@ -13,7 +17,7 @@ package de.pfabulist.lindwurm.niotest;
  * * Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- *
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -28,11 +32,37 @@ package de.pfabulist.lindwurm.niotest;
  */
 public class Utils {
 
-    public static <E> int getSize(Iterable<E> it) {
+    private Utils() {}
+
+    public static <E> int getSize( Iterable<E> it ) {
         int size = 0;
-        for (E e : it ) {
+        for( E e : it ) { // NOSONAR
             size++;
         }
         return size;
+    }
+
+    public static Path createFile( Path root, byte[] content, String one, String... names ) {
+        Path ret = root.resolve( one );
+        for( String name : names ) {
+            ret = ret.resolve( name );
+        }
+
+        Filess.createDirectories( ret.getParent() );
+        Filess.write( ret, content );
+
+        return ret;
+
+    }
+
+    public static Path createDir( Path root, String one, String... names ) {
+        Path ret = root.resolve( one );
+        for( String name : names ) {
+            ret = ret.resolve( name );
+        }
+
+        Filess.createDirectories( ret );
+
+        return ret;
     }
 }

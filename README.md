@@ -11,15 +11,42 @@ Niotest is a framework for testing java 7 nio2 based virtual filesystem as speci
     <dependency>
         <groupId>de.pfabulist.lindwurm</groupId>
         <artifactId>niotest</artifactId>
-        <version>0.26.1.70</version>
+        <version>0.28</version>
     </dependency>
 
 ### Design
 
-Describe a filesystem once to let niotest run all the tests. Every can be run independent and in parallel.
+Describe a filesystem once to let niotest run all the tests. Every test can be run independent and in parallel.
 
 
 ### Use
 
 See examples in test. eg. DefTest or JimFsTest
+
+### Details (documentation for upcoming 1.0 release)
+
+#### Getting Started
+
+To use niotest create class extending Alltests and describe your nio filesystem 
+
+    public class MyFSTest extends AllTests {
+        
+        private static FSDescription descr;
+
+        public MyFSTest() {
+            super( descr );
+        }
+
+        @BeforeClass
+        public static void before() {
+            descr = new FSDescription();
+        }
+    }
+
+If you run this niotest will complain that it needs a playground, i.e. a root folder in your Filesystem.
+You either point it to a writable directory where niotest can create files and directories or you describe some 
+existing readonly objects.
+ 
+ 
+
 

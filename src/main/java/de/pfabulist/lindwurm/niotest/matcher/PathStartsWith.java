@@ -62,12 +62,12 @@ public class PathStartsWith extends TypeSafeMatcher<Path> {
     }
 
     @Factory
-    public static <T> Matcher<Path> startsWith( Path start ) {
+    public static Matcher<Path> startsWith( Path start ) {
         return new PathStartsWith( start );
     }
 
     @Factory
-    public static <T> Matcher<Path> startsWith( String start ) {
+    public static Matcher<Path> startsWith( String start ) {
         return new PathStartsWith( start );
     }
 }

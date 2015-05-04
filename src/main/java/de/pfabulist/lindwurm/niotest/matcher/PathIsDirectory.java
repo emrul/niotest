@@ -13,7 +13,7 @@ import java.nio.file.Path;
  * BSD License (2 clause)
  * Copyright (c) 2006 - 2014, Stephan Pfab
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * * Redistributions of source code must retain the above copyright
@@ -21,7 +21,7 @@ import java.nio.file.Path;
  * * Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- *
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -53,12 +53,12 @@ public class PathIsDirectory extends TypeSafeMatcher<Path> {
     }
 
     @Factory
-    public static <T> Matcher<Path> isDirectory() {
+    public static Matcher<Path> isDirectory() {
         return new PathIsDirectory( true );
     }
 
     @Factory
-    public static <T> Matcher<Path> isNotDirectory() {
+    public static Matcher<Path> isNotDirectory() {
         return new PathIsDirectory( false );
     }
 

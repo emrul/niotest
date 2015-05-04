@@ -1,22 +1,36 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import de.pfabulist.kleinod.errors.Runnnable;
-import de.pfabulist.kleinod.paths.Filess;
-import de.pfabulist.kleinod.text.Strings;
+import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
+import de.pfabulist.lindwurm.niotest.tests.topics.Topic;
+import org.junit.rules.TestName;
 
 import java.net.URI;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.function.Function;
+import java.nio.file.WatchService;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.spi.FileSystemProvider;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import static de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescriptionBuilder.attributeBuilding;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2014, Stephan Pfab
+ * Copyright (c) 2006 - 2015, Stephan Pfab
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * * Redistributions of source code must retain the above copyright
@@ -24,7 +38,7 @@ import java.util.function.Function;
  * * Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- *
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -37,380 +51,139 @@ import java.util.function.Function;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public class FSDescription implements FSCapabilities {
 
-    private final PathTestIT setup;
+public class FSDescription {
 
-    private boolean closable = true;
-    private boolean hasLinks = true;
-    boolean hasSymbolicLinks = true;
-    private boolean hasAsynchronousFileChannels = true;
-    private boolean hasFileChannels = true;
-    private boolean supportsCreationTime = true;
-    private boolean supportsLastAccessTime = true;
-    boolean supportsWatchService = true;
-    private boolean has2ndFileSystem = true;
-    private boolean filestores = false;
-    private Runnnable shake = () -> {};
-    private Function<FileSystem, URI> toURI = FSDescription::toURIWithRoot;
-    private Collection<Character> pathIllegalCharacters = Collections.emptyList();
-    private boolean principals = false;
+    private final List<Class<? extends Topic>> notProvidedTopics = new ArrayList<>();
+    public final Map<String, Object> props = new HashMap<>();
+    private final Set<String> bugs = new HashSet<>();
+    private final Set<String> bugSchemes = new HashSet<>();
 
-    private boolean hasSizeLimitedFileSystem = false; // todo turn true when implemented
-    private boolean supportsPosixAttributes = false;
-    private Path otherRoot;
-    private boolean windows = false;
-    private boolean canSeeLocalUNCSharesSet;
-    private boolean canSeeLocalUNCShares;
-    private int maxFilenameLength = 255;
-    private List<String> illegalFilenames = new ArrayList<>();
-    private boolean fileChannels = false;
-    boolean supportsForeignSymLinks = true;
-    public boolean hasDirSymLinks = true;
-    public boolean delayedSymLinkLoopChecking = false;
-    public boolean immediateSymLinkLoopChecking = true;
-    int watcherSleepTime = 1200;
+    public ClosedFSVars closedFSVars;
+    public Path otherProviderPlayground;
 
-    FSDescription(PathTestIT setup) {
-        this.setup = setup;
+    private Set<String> usedBugs = new HashSet<>();
+    private Set<String> usedSchemes = new HashSet<>();
+    public final List<AttributeDescription> attributeDescriptions = new ArrayList<>();
+
+    public FSDescription() {
+        attributeDescriptions.add( attributeBuilding( Basic.class, "basic", BasicFileAttributeView.class, BasicFileAttributes.class ).
+                addAttribute( "lastModifiedTime", BasicFileAttributes::lastModifiedTime ).
+                addAttribute( "creationTime", BasicFileAttributes::creationTime ).
+                addAttribute( "size", BasicFileAttributes::size ).
+                addAttribute( "lastAccessTime", BasicFileAttributes::lastAccessTime ).
+                addAttribute( "isDirectory", BasicFileAttributes::isDirectory ).
+                addAttribute( "isSymbolicLink", BasicFileAttributes::isSymbolicLink ).
+                addAttribute( "isOther", BasicFileAttributes::isOther ).
+                build());
     }
 
-    public FSDescription playground(Path path) {
-        if ( !path.isAbsolute()) {
-            throw new IllegalArgumentException("need absolute path");
-        }
-        setup.setPlay( path );
-        return this;
-    }
+    public <T> T get( Class<T> klass, String key ) {
+        Object val = props.get( key );
 
-    public FSDescription secondPlayground(Path path) {
-        if ( !path.isAbsolute()) {
-            throw new IllegalArgumentException("need absolute path");
-        }
-        setup.play2 = path;
-        if ( path == null ) {
-            has2ndFileSystem = false;
-        }
-        return this;
-    }
-
-    public FSDescription noSecondPlayground() {
-        has2ndFileSystem = false;
-        return this;
-    }
-
-
-
-    public FSDescription notClosable() {
-        closable = false;
-        return this;
-    }
-
-    public FSDescription fileStores(boolean fs) {
-        filestores = fs;
-        return this;
-    }
-
-    public FSDescription lastAccessTime( boolean la) {
-        supportsLastAccessTime = la;
-        return this;
-    }
-
-    @Override
-    public boolean isClosable() {
-        return closable;
-    }
-
-    public boolean hasLinks() {
-        return hasLinks;
-    }
-
-    public boolean hasSymbolicLinks() {
-        return hasSymbolicLinks;
-    }
-
-    public boolean hasAsynchronousFileChannels() {
-        return hasAsynchronousFileChannels;
-    }
-
-    public boolean hasFileChannels() {
-        return hasFileChannels;
-    }
-
-    public boolean supportsCreationTime() {
-        return supportsCreationTime;
-    }
-
-    public FSDescription creationTime( boolean ct ) {
-        this.supportsCreationTime = ct;
-        return this;
-    }
-
-    public boolean supportsLastAccessTime() {
-        return supportsLastAccessTime;
-    }
-
-    public FSDescription lastAccessTime() {
-        this.supportsLastAccessTime = false;
-        return this;
-    }
-
-    public boolean supportsWatchService() {
-        return supportsWatchService;
-    }
-
-    public static class WatchServiceBuilder {
-
-
-        private final FSDescription fsDescription;
-
-        public WatchServiceBuilder(FSDescription fsDescription) {
-            this.fsDescription = fsDescription;
+        if ( val == null ) {
+            throw new IllegalStateException( "niotest error: no value for " + key );
         }
 
-        public FSDescription no() {
-            fsDescription.supportsWatchService = false;
-            return fsDescription;
+        if ( val.getClass().isAssignableFrom( klass )) {
+            throw new IllegalStateException( "niotest error: wrong class for: " + key + " expected: " + klass + " got: " + val.getClass());
         }
 
-        public FSDescription yes() {
-            fsDescription.supportsWatchService = true;
-            return fsDescription;
+        return klass.cast( val );
+    }
+
+    public int getInt( String key ) {
+        Object ret = props.get( key );
+        if ( ret == null ) {
+            return 0;
         }
 
-        public WatchServiceBuilder sleepTime( int seconds ) {
-            fsDescription.watcherSleepTime = seconds;
-            return this;
+        return (Integer)ret;
+    }
+
+    public FSDescription addTopic( Class<? extends Topic> clazz ) {
+        notProvidedTopics.remove( clazz );
+        return this;
+    }
+
+    public FSDescription removeTopic( Class<? extends Topic> clazz ) {
+        notProvidedTopics.add( clazz );
+        return this;
+    }
+
+    public boolean provides( Class<?> clazz ) {
+        //boolean foo = notProvidedTopics.stream().findFirst( t -> clazz.isAssignableFrom( t )).isPresent();
+        return !notProvidedTopics.contains( clazz );
+    }
+
+    public Object get( String key ) {
+        return props.get( key );
+    }
+
+    public boolean isBug( TestName testMethodName ) {
+        return bugs.contains( testMethodName.getMethodName() ) ||
+               bugSchemes.stream().anyMatch( scheme -> testMethodName.getMethodName().contains( scheme ) );
+
+    }
+
+    public void addBug( String name ) {
+        bugs.add( name );
+    }
+
+    public void addBugScheme( String scheme ) {
+        bugSchemes.add( scheme );
+    }
+
+    public void markHits( TestName testMethodName ) {
+        Optional<String> found = bugs.stream().filter( name -> name.equals( testMethodName.getMethodName() ) ).findFirst();
+
+        if ( found.isPresent() ) {
+            usedBugs.add( found.get() );
+            return;
         }
 
+        Optional<String> usedScheme =  bugSchemes.stream().filter( scheme -> testMethodName.getMethodName().contains( scheme ) ).findFirst();
 
-    }
-    
-    public WatchServiceBuilder watchService() {
-        return new WatchServiceBuilder( this ) ;
-    }
-
-    public FSDescription noLinks() {
-        this.hasLinks = false;
-        return this;
+        if ( usedScheme.isPresent()) {
+            usedSchemes.add( usedScheme.get());
+        }
     }
 
-    public FSDescription noSymLinks() {
-        this.hasSymbolicLinks = false;
-        return this;
-    }
-
-    public FSDescription noAsynchronousFileChannels() {
-        this.hasAsynchronousFileChannels = false;
-        return this;
-    }
-
-    public FSDescription noFileChannels() {
-        this.hasFileChannels = false;
-        return this;
-    }
-
-    public FSDescription shake( Runnnable f ) {
-        this.shake = f;
-        return this;
-    }
-
-
-    public boolean supportsFileStores() {
-        return filestores;
-    }
-
-    @Override
-    public boolean has2ndFileSystem() {
-        return has2ndFileSystem;
-    }
-
-    @Override
-    public boolean hasSizeLimitedFileSystem() {
-        return hasSizeLimitedFileSystem;
-    }
-
-    @Override
-    public Runnnable shake() {
-        return shake;
-    }
-
-    @Override
-    public Function<FileSystem,URI> toURI() {
-        return toURI;
-    }
-
-    @Override
-    public Collection<Character> getPathIllegalCharacters() {
-        return pathIllegalCharacters;
-    }
-
-    @Override
-    public Collection<String> getIllegalFilenames() {
-        return illegalFilenames;
-    }
-
-    @Override
-    public boolean supportsFileChannels() {
-        return fileChannels;
-    }
-
-    @Override
-    public boolean supportsForeignSymLinks() {
-        return supportsForeignSymLinks;
-    }
-
-    @Override
-    public int getWatcherSleepTime() {
-        return watcherSleepTime;
-    }
-
-    @Override
-    public boolean supportsPrincipals() {
-        return principals;
-    }
-
-    @Override
-    public boolean supportsPosixAttributes() {
-        return supportsPosixAttributes;
-    }
-
-    @Override
-    public Path getOtherRoot() {
-        return otherRoot;
-    }
-
-    @Override
-    public boolean hasOtherRoot() {
-        return otherRoot != null;
-    }
-
-    @Override
-    public boolean isWindows() {
-        return windows;
-    }
-
-    @Override
-    public boolean canSeeLocalUNCShares(FileSystem fs) {
-        if ( !isWindows() ) {
-            return false;
+    public void printUnused() {
+        for ( String bug : bugs ) {
+            if ( !usedBugs.contains( bug )) {
+                System.out.println( "not found method called " + bug );
+            }
         }
 
-        if ( !canSeeLocalUNCSharesSet ) {
-            canSeeLocalUNCShares = Files.exists( fs.getPath( "\\\\localhost\\C$"));
-            canSeeLocalUNCSharesSet = true;
+        for ( String scheme : bugSchemes ) {
+            if ( !usedSchemes.contains( scheme )) {
+                System.out.println( "bug scheme did not apply :  " + scheme );
+            }
         }
-
-        return canSeeLocalUNCShares;
     }
 
-    @Override
-    public int getMaxFilenameLength() {
-        return maxFilenameLength;
-    }
+    public Stream<AttributeDescription> getAttributeDescriptions() {
+        return attributeDescriptions.stream().filter( ad -> !notProvidedTopics.contains( ad.getTopic()) );
 
-    public static URI toURIWithRoot( FileSystem fs ) {
-        URI ret = fs.getPath("").toAbsolutePath().getRoot().toUri();
-        return ret;
-    }
-
-    public static URI toURIWithoutPath( FileSystem fs ) {
-        Path root =  fs.getPath("").toAbsolutePath().getRoot();
-        return URI.create( Strings.withoutSuffix(root.toUri().toString(), root.toString()));
-    }
-
-    public FSDescription bug(String method) {
-        this.setup.notSupported.put( method, "" );
-        return this;
-    }
-
-    public FSDescription closablePlayground(ClosedFSVars closedVars) {
-        this.setup.setClosablePlay( closedVars );
-        return this;
     }
 
 
-    public FSDescription fileSystemURI( Function<FileSystem,URI> func ) {
-        toURI = func;
-        return this;
-    }
+    public static class ClosedFSVars {
 
-    public FSDescription unix() {
-        pathIllegalCharacters = Arrays.asList('\u0000');
-        principals = true;
-        doesSupportPosixAttributes( true );
-        return this;
-    }
+        public FileSystem fs;
+        public Path                  play;
+        public Path fileA;
+        public Path dirB;
+        public Path                  pathCf;
+        public SeekableByteChannel readChannel;
+        public URI uri;
+        public DirectoryStream<Path> dirStream;
+        public WatchService watchService;
+        public FileSystemProvider provider;
 
-    public FSDescription unix( boolean on ) {
-        if ( on ) {
-            return unix();
+        public ClosedFSVars(Path play) {
+            this.play = play;
         }
-        return this;
-    }
-
-    public FSDescription pathIllegalCharacters( Character ... getPathIllegalCharacters) {
-        this.pathIllegalCharacters = Arrays.asList(getPathIllegalCharacters);
-        return this;
-    }
-
-    public FSDescription principals( boolean p ) {
-        principals = p;
-        return this;
-    }
-
-    public FSDescription sizeLimitedPlayground( Path limitedPlayground ) {
-        hasSizeLimitedFileSystem = true;
-        setup.sizeLimitedPlayground = limitedPlayground;
-        Filess.createDirectories(limitedPlayground);
-        return this;
-    }
-
-    public FSDescription doesSupportPosixAttributes( boolean on ) {
-        supportsPosixAttributes = on;
-        return this;
-    }
-
-    public FSDescription otherRoot( Path path ) {
-        otherRoot = path;
-        return this;
-    }
-
-    public FSDescription alternativeNames( String... alt ) {
-        setup.nameStrCase = alt;
-        return this;
-    }
-
-    public FSDescription windows( boolean on ) {
-        this.windows = on;
-
-        setIllegalFilenames( "nul", "com" ); // todo more
-        pathIllegalCharacters(':', /*'\\', '/', */ '|', '"');
-
-        return this;
-    }
-
-    public FSDescription setMaxFilenameLength(int maxFilenameLength) {
-        this.maxFilenameLength = maxFilenameLength;
-        return this;
-    }
-
-    public FSDescription setIllegalFilenames( String ... ill ) {
-        this.illegalFilenames = Arrays.asList( ill );
-        return this;
-    }
-
-    public FSDescription fileChannels( boolean val ) {
-        this.fileChannels = val;
-        return this;
-    }
-
-    public FSDescription doesNotSupporForeignSymLinks() {
-        this.supportsForeignSymLinks = false;
-        return this;
-    }
-    
-    public SymLinkDescriptionBuilder symLinks() {
-        return new SymLinkDescriptionBuilder( this );
     }
 }

@@ -11,9 +11,9 @@ import java.nio.file.WatchEvent;
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2014, Stephan Pfab
+ * Copyright (c) 2006 - 2015, Stephan Pfab
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * * Redistributions of source code must retain the above copyright
@@ -21,7 +21,7 @@ import java.nio.file.WatchEvent;
  * * Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- *
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -34,18 +34,18 @@ import java.nio.file.WatchEvent;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public class WatchEventMatcher extends TypeSafeMatcher<WatchEvent>  {
+public class WatchEventMatcher extends TypeSafeMatcher<WatchEvent> {
     private final Path file;
     private final WatchEvent.Kind<Path> kind;
 
-    public WatchEventMatcher(Path file, WatchEvent.Kind<Path> kind) {
+    public WatchEventMatcher( Path file, WatchEvent.Kind<Path> kind ) {
         this.file = file.getFileName();
         this.kind = kind;
     }
 
     @Override
-    protected boolean matchesSafely(WatchEvent event) {
-        if ( !file.equals(event.context())) {
+    protected boolean matchesSafely( WatchEvent event ) {
+        if( !file.equals( event.context() ) ) {
             return false;
         }
 
@@ -53,15 +53,14 @@ public class WatchEventMatcher extends TypeSafeMatcher<WatchEvent>  {
     }
 
     @Override
-    public void describeTo(Description description) {
-
+    public void describeTo( Description description ) {
+        description.appendText( "watch file event"  );
     }
 
     @Factory
-    public static <T> Matcher<WatchEvent> isEvent( Path file, WatchEvent.Kind<Path> kind ) {
+    public static Matcher<WatchEvent> isEvent( Path file, WatchEvent.Kind<Path> kind ) {
         return new WatchEventMatcher( file, kind );
     }
-
 
     @Override
     public String toString() {

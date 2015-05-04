@@ -62,12 +62,12 @@ public class PathEndsWith extends TypeSafeMatcher<Path> {
     }
 
     @Factory
-    public static <T> Matcher<Path> endsWith( Path end ) {
+    public static Matcher<Path> endsWith( Path end ) {
         return new PathEndsWith( end );
     }
 
     @Factory
-    public static <T> Matcher<Path> endsWith( String end ) {
+    public static Matcher<Path> endsWith( String end ) {
         return new PathEndsWith( end );
     }
 }

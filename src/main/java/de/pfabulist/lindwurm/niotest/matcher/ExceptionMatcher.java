@@ -1,19 +1,16 @@
 package de.pfabulist.lindwurm.niotest.matcher;
 
-import de.pfabulist.kleinod.collection.P;
-import de.pfabulist.kleinod.errors.RunnableE;
-import de.pfabulist.kleinod.errors.Runnnable;
+import de.pfabulist.unchecked.functiontypes.RunnableE;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import java.nio.file.attribute.FileTime;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2014, Stephan Pfab
+ * Copyright (c) 2006 - 2015, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +33,7 @@ import java.nio.file.attribute.FileTime;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-public class ExceptionMatcher extends TypeSafeMatcher<RunnableE<Exception>> {
+public class ExceptionMatcher<T extends Exception> extends TypeSafeMatcher<RunnableE<T>> {
 
     private final Class<Exception> exp;
 
@@ -50,10 +47,10 @@ public class ExceptionMatcher extends TypeSafeMatcher<RunnableE<Exception>> {
     }
 
     @Override
-    protected boolean matchesSafely( RunnableE<Exception> f ) {
+    protected boolean matchesSafely( RunnableE<T> f ) {
         try {
-            f.run();
-        } catch ( Exception e ) {
+            f.run();  // NOSONAR
+        } catch ( Exception e ) { // NOSONAR
             if ( exp.isAssignableFrom( e.getClass() )) {
                 return true;
             }
@@ -62,7 +59,7 @@ public class ExceptionMatcher extends TypeSafeMatcher<RunnableE<Exception>> {
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo( Description description ) {
         description.appendText( "lambda does not throw expected exception " + exp.getName() );
     }
 

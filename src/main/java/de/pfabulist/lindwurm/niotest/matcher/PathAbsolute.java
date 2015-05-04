@@ -52,12 +52,12 @@ public class PathAbsolute extends TypeSafeMatcher<Path> {
     }
 
     @Factory
-    public static <T> Matcher<Path> absolute() {
+    public static Matcher<Path> absolute() {
         return new PathAbsolute( true );
     }
 
     @Factory
-    public static <T> Matcher<Path> relative() {
+    public static Matcher<Path> relative() {
         return new PathAbsolute( false );
     }
 

@@ -46,7 +46,7 @@ public class PathExists extends TypeSafeMatcher<Path> {
     }
 
     @Factory
-    public static <T> Matcher<Path> exists() {
+    public static Matcher<Path> exists() {
         return new PathExists();
     }
 
