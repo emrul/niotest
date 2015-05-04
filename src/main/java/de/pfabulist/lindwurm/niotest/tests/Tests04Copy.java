@@ -1,6 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.kleinod.collection.Sets;
+import de.pfabulist.lindwurm.niotest.tests.topics.CreationTime;
 import de.pfabulist.unchecked.Filess;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.Copy;
@@ -374,7 +375,7 @@ public abstract class Tests04Copy extends Tests03File {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Delete.class } )
+    @Category( { SlowTest.class, Writable.class, Delete.class, Attributes.class } )
     public void testDeleteFileChangesParentsModificationTime() throws IOException, InterruptedException {
         FileTime modified = Files.getLastModifiedTime( fileTAB().getParent() );
         waitForAttribute();
@@ -383,7 +384,7 @@ public abstract class Tests04Copy extends Tests03File {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Delete.class } )
+    @Category( { SlowTest.class, Writable.class, Delete.class, Attributes.class, CreationTime.class } )
     public void testDeleteFileDoesNotChangeParentCreationTime() throws IOException, InterruptedException {
         Path file = fileTAB();
         Path parent = file.getParent();
@@ -394,7 +395,7 @@ public abstract class Tests04Copy extends Tests03File {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Delete.class } )
+    @Category( { SlowTest.class, Writable.class, Delete.class, Attributes.class } )
     public void testDeleteDirChangesParentsModificationTime() throws IOException, InterruptedException {
         FileTime modified = Files.getLastModifiedTime( dirTAB().getParent() );
         waitForAttribute();

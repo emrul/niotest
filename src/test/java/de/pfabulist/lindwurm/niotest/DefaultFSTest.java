@@ -82,6 +82,7 @@ public class DefaultFSTest extends AllTests {
                     bug( "testCopySymLinkToItself", os.isUnix() ).
                     bug( "testCopyBrokenSymLinkToItself", os.isUnix() ).
                     bug( "testSymLinkToUnnormalizedRelPath" ).
+                    bug( "testMovedWatchedDirCancelsKeys" ).
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                     done();
         }
