@@ -70,6 +70,7 @@ public class JimTest extends AllTests {
                 bug( "testGetFileStoreOfBrokenSymLink" ).
                 bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
                 bug( "testWatchAModify" ).
+                bug( "testWatchSeveralEventsInOneDir" ).
                 nitpick( "testReadChannelOfDir", "who cares" ).
                 nitpick( "testRegisterWatchServiceOfClosedFS", "different exception" ).
                 nitpick("testAppendAndReadThrows", "IllegalArg instead Unsupported").

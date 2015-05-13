@@ -3,6 +3,8 @@ package de.pfabulist.lindwurm.niotest.tests;
 import de.pfabulist.kleinod.collection.Sets;
 import de.pfabulist.lindwurm.niotest.tests.topics.Closable;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileChannel;
+import de.pfabulist.lindwurm.niotest.tests.topics.Move;
+import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -141,19 +143,19 @@ public abstract class Tests07Closed extends Tests06Attributes {
     }
 
     @Test( expected = ClosedFileSystemException.class )
-    @Category( Closable.class )
+    @Category({ Closable.class, Writable.class })
     public void testCopyFromClosedFS() throws IOException {
         getClosedFSProvider().copy( getClosedFileA(), dirTA() );
     }
 
     @Test( expected = ClosedFileSystemException.class )
-    @Category( Closable.class )
+    @Category({ Closable.class, Writable.class })
     public void testCopyToClosedFS() throws IOException {
         getClosedFSProvider().copy( fileTA(), getClosedFileA() );
     }
 
     @Test( expected = ClosedFileSystemException.class )
-    @Category( Closable.class )
+    @Category({ Closable.class, Writable.class, Move.class })
     public void testMoveToClosedFS() throws IOException {
         getClosedFSProvider().move( fileTA(), getClosedFileA() );
     }

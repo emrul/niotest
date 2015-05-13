@@ -3,8 +3,10 @@ package de.pfabulist.lindwurm.niotest.tests;
 import de.pfabulist.kleinod.collection.Ref;
 import de.pfabulist.kleinod.collection.Sets;
 import de.pfabulist.lindwurm.niotest.tests.topics.Closable;
+import de.pfabulist.lindwurm.niotest.tests.topics.Delete;
 import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
 import de.pfabulist.lindwurm.niotest.tests.topics.Watchable;
+import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -66,43 +68,8 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         super( capa );
     }
 
-//    public static class CapaBuilder11 extends CapaBuilder10 {
-//
-//        public static class WatchBuilder extends DetailBuilder {
-//            public WatchBuilder(AllCapabilitiesBuilder builder) {
-//                super(builder);
-//                capa.attributes.put(WATCH_DELAY, 2000 );
-//            }
-//
-//            public WatchBuilder delay( int millis ) {
-//                capa.attributes.put(WATCH_DELAY, millis );
-//                return this;
-//            }
-//
-//            @Override
-//            public AllCapabilitiesBuilder onOff(boolean val) {
-//                capa.addFeature( "Watch", val );
-//                return builder;
-//            }
-//        }
-//
-//        public WatchBuilder watchService() {
-//            return new WatchBuilder((AllCapabilitiesBuilder) this);
-//        }
-//    }
-
-    //    @Test(expected = ProviderMismatchException.class)
-//    public void testRegisterOtherPath() throws Exception {
-//        assumeThat( capabilities.supportsWatchService(), is(true));
-//
-//        WatchService ws = otherProviderAbsA().getFileSystem().newWatchService();
-//
-//        getPathPABf().register(ws, ENTRY_DELETE);
-//    }
-//
-//
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class, Delete.class } )
     public void testWatchADelete() throws Exception {
         Path toBeDeleted = watchedFileA();
         watcherSetup( ENTRY_DELETE );
@@ -114,7 +81,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test( timeout = 20000 )
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class, Delete.class } )
     public void testWatchADeleteTake() throws Exception {
         Path toBeDeleted = watchedFileA();
         watcherSetup( ENTRY_DELETE );
@@ -124,7 +91,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test( timeout = 30000 )
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class, Delete.class } )
     public void testWatchADeletePollWithTimeOut() throws Exception {
         Path toBeDeleted = watchedFileA();
         watcherSetup( ENTRY_DELETE );
@@ -201,7 +168,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchForOtherEventCatchesNothing() throws Exception {
         Path toBeModified = watchedFileA();
         watcherSetup( ENTRY_CREATE );

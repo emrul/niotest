@@ -76,7 +76,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     @Test( expected = NoSuchFileException.class )
     @Category( FileStores.class )
     public void testGetFileStoreOfNonExistent() throws IOException {
-        Files.getFileStore( absTA());
+        Files.getFileStore( getNonExistingPath());
     }
 
     @Test

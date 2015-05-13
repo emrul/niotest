@@ -1,5 +1,8 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.lindwurm.niotest.tests.topics.Delete;
+import de.pfabulist.lindwurm.niotest.tests.topics.Move;
+import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import de.pfabulist.unchecked.Filess;
 import de.pfabulist.lindwurm.niotest.tests.topics.HardLink;
 import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
@@ -49,43 +52,17 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
 
     public Tests19HardLinks( FSDescription capa ) {
         super( capa );
-//        attributes.put( "HardLink", capabilities::hasHardLinks );
-//        attributes.put( "HardLinkToDir", capabilities::hasHardLinksToDirs );
     }
 
-//    public static class CapaBuilder19 extends CapaBuilder18 {
-//
-//        public HardLinkBuilder hardlinks() {
-//            return new HardLinkBuilder((AllCapabilitiesBuilder)this);
-//        }
-//
-//        public static class HardLinkBuilder extends DetailBuilder {
-//            public HardLinkBuilder(AllCapabilitiesBuilder builder) {
-//                super(builder);
-//            }
-//
-//            public HardLinkBuilder toDirs( boolean cond ) {
-//                capa.addFeature( "HardLinkToDir", cond );
-//                return this;
-//            }
-//
-//            @Override
-//            public AllCapabilitiesBuilder onOff(boolean val) {
-//                capa.addFeature( "HardLink", val );
-//                return builder;
-//            }
-//        }
-//    }
-
     @Test
-    @Category( { HardLink.class } )
+    @Category( { HardLink.class, Writable.class } )
     public void testHardLinkCreate() throws IOException {
         Files.createLink( link(), orig() );
         assertThat( link(), exists() );
     }
 
     @Test
-    @Category( { HardLink.class } )
+    @Category( { HardLink.class, Writable.class } )
     public void testHardLinkChangeOneChangesTheOther() throws IOException {
         Files.createLink( link(), orig() );
         Files.write( link(), CONTENT_OTHER );
@@ -93,7 +70,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     }
 
     @Test
-    @Category( { HardLink.class } )
+    @Category( { HardLink.class, Writable.class, Delete.class } )
     public void testHardLinkDeleteOrigDoesNotAffectTheOther() throws IOException {
         Files.createLink( link(), orig() );
         Files.delete( orig() );
@@ -101,7 +78,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     }
 
     @Test
-    @Category( { HardLink.class } )
+    @Category( { HardLink.class, Writable.class, Delete.class } )
     public void testHardLinkDeleteLinkDoesNotAffectTheOther() throws IOException {
         Files.createLink( link(), orig() );
         Files.delete( link() );
@@ -109,7 +86,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     }
 
     @Test
-    @Category( { SlowTest.class, HardLink.class } )
+    @Category( { SlowTest.class, HardLink.class, Writable.class } )
     public void testHardLinkModifyOneModifiedDateOfOtherChanged() throws IOException, InterruptedException {
         Files.createLink( link(), orig() );
         FileTime before = Files.getLastModifiedTime( orig() );
@@ -120,13 +97,13 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     }
 
     @Test( expected = FileAlreadyExistsException.class )
-    @Category( { HardLink.class } )
+    @Category( { HardLink.class, Writable.class } )
     public void testHardLinkToExistingFileThrows() throws IOException, InterruptedException {
         Files.createLink( fileTB(), orig() );
     }
 
     @Test( expected = ProviderMismatchException.class )
-    @Category( { HardLink.class } )
+    @Category( { HardLink.class, Writable.class } )
     public void testHardLinkToOtherProviderThrows() throws IOException {
         Files.createLink( link(), otherProviderFileA() );
     }
@@ -142,14 +119,14 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
 //    }
 
     @Test
-    @Category( { HardLink.class } )
+    @Category( { HardLink.class, Writable.class } )
     public void testHardLinkToDirThrows() throws IOException {
         Files.createLink( link(), orig() );
         assertThat( link(), exists() );
     }
 
     @Test
-    @Category( { HardLink.class } )
+    @Category( { HardLink.class, Writable.class } )
     public void testHardLinkToHardLink() throws IOException {
         Files.createLink( link(), orig() );
         Files.createLink( link2(), link() );
@@ -158,7 +135,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     }
 
     @Test
-    @Category( { HardLink.class } )
+    @Category( { HardLink.class, Writable.class } )
     public void test2ndHardLink() throws IOException {
         Files.createLink( link(), fileTA() );
         Files.createLink( link2(), fileTA() );
@@ -186,15 +163,15 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     }
 
     @Test
-    @Category( { HardLink.class } )
+    @Category( { HardLink.class, Writable.class } )
     public void testHardLinkToRelative() throws IOException {
         Files.createLink( link(), relativize( orig() ) );
         assertThat( Files.isSameFile( link(), orig() ), is( true ) );
     }
 
     @Test
-    @Category( { HardLink.class } )
-    public void testMoveHardLinkToReldoesNotMoveTarget() throws IOException {
+    @Category( { HardLink.class, Writable.class, Move.class } )
+    public void testMoveHardLinkToRelDoesNotMoveTarget() throws IOException {
         Files.createLink( link(), relativize( orig() ) );
         Files.move( link(), dirTB().resolve( nameC() ) );
         assertThat( Files.isSameFile( dirTB().resolve( nameC() ), orig() ), is( true ) );
