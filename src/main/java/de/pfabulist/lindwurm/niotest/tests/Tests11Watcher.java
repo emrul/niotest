@@ -443,7 +443,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testMovedWatchedDirCancelsKeys() throws Exception {
         Path dir = dirTA();
         final WatchService watcher = FS.newWatchService();
@@ -456,7 +456,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchTwoModifiesOneKey() throws Exception {
         Path toBeModified = watchedFileA();
         watcherSetup( ENTRY_MODIFY );

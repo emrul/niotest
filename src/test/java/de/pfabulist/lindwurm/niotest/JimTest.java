@@ -55,22 +55,23 @@ public class JimTest extends AllTests {
                 watchable().delay( 5500 ).
                 fsCreation().
                     uri( Tests05URI::toURIWithoutPath ).
-                    env( Collections.singletonMap( "config",  Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ) ).
+                    env( Collections.singletonMap( "config", Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ) ).
                     next().
                 nitpickScheme( "UnsupportedAttributeThrows", "IllegalArg instead Unsupported" ).
                 bug( "testCloseDirStreamInTheMiddleOfIteration" ).
-                bug("testClosedFSGetFileStore").
+                bug( "testClosedFSGetFileStore").
                 bug( "testCopySymLinkToItself").
                 bug( "testCopyBrokenSymLinkToItself").
                 bug( "testMoveARelSymLink").
                 bug( "testMoveARelSymLink2").
-//                bug( "testIsSameFileWithSpecialUnnormalizedPath" ).
                 bug( "testSymLinkToUnnormalizedRelPath" ).
                 bug( "testGetFileStoreOfNonExistent" ).
                 bug( "testGetFileStoreOfBrokenSymLink" ).
                 bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
                 bug( "testWatchAModify" ).
                 bug( "testWatchSeveralEventsInOneDir" ).
+                bug( "testWatchTwoModifiesOneKey" ).
+                bug( "testWatchATruncate").
                 nitpick( "testReadChannelOfDir", "who cares" ).
                 nitpick( "testRegisterWatchServiceOfClosedFS", "different exception" ).
                 nitpick("testAppendAndReadThrows", "IllegalArg instead Unsupported").
