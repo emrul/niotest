@@ -3,6 +3,7 @@ package de.pfabulist.lindwurm.niotest.tests;
 import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescription;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.CreationTime;
+import de.pfabulist.lindwurm.niotest.tests.topics.LastAccessTime;
 import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import org.junit.Test;
@@ -408,7 +409,7 @@ public abstract class Tests06Attributes extends Tests05URI {
     }
 
     @Test
-    @Category( { Attributes.class, Writable.class } )
+    @Category( { Attributes.class, Writable.class, LastAccessTime.class } )
     public void testSetLastAccessTimeViaString() throws IOException {
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = fileTA();
@@ -418,7 +419,7 @@ public abstract class Tests06Attributes extends Tests05URI {
     }
 
     @Test
-    @Category( { Attributes.class, Writable.class } )
+    @Category( { Attributes.class, Writable.class, LastAccessTime.class } )
     public void testSetLastAccessTimeViaView() throws IOException {
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = fileTA();

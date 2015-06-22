@@ -511,7 +511,7 @@ public abstract class Tests03File extends Tests02Dir {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Attributes.class } )
+    @Category( { SlowTest.class, Writable.class, Attributes.class, LastAccessTime.class } )
     public void testReadFileSetsLastAccessTime() throws Exception {
         Path file = fileTA();
         FileTime before = Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime();
@@ -523,7 +523,7 @@ public abstract class Tests03File extends Tests02Dir {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Attributes.class } )
+    @Category( { SlowTest.class, Writable.class, Attributes.class, LastAccessTime.class } )
     public void testReadFileDoesNotSetParentsLastAccessTime() throws Exception {
         Path file = fileTA();
         FileTime before = Files.readAttributes( file.getParent(), BasicFileAttributes.class ).lastAccessTime();
