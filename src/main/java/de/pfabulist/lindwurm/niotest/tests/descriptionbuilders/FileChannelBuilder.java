@@ -1,7 +1,9 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
-import de.pfabulist.lindwurm.niotest.tests.topics.FileChannel;
+import de.pfabulist.lindwurm.niotest.tests.topics.AsynchronousFileChannel;
+import de.pfabulist.lindwurm.niotest.tests.topics.FileChannelT;
+import de.pfabulist.lindwurm.niotest.tests.topics.Scatter;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -36,7 +38,17 @@ public class FileChannelBuilder<T> extends DescriptionBuilder<T>{
     }
 
     public T no() {
-        descr.removeTopic( FileChannel.class );
+        descr.removeTopic( FileChannelT.class );
         return t;
+    }
+
+    public FileChannelBuilder<T> noScatterGather() {
+        descr.removeTopic( Scatter.class );
+        return this;
+    }
+
+    public FileChannelBuilder<T> noAsynchronous() {
+        descr.removeTopic( AsynchronousFileChannel.class );
+        return this;
     }
 }

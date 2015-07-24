@@ -2,7 +2,7 @@ package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.kleinod.collection.Sets;
 import de.pfabulist.lindwurm.niotest.tests.topics.Closable;
-import de.pfabulist.lindwurm.niotest.tests.topics.FileChannel;
+import de.pfabulist.lindwurm.niotest.tests.topics.FileChannelT;
 import de.pfabulist.lindwurm.niotest.tests.topics.Move;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import org.junit.Test;
@@ -19,12 +19,14 @@ import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Collections;
 
+import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.READ;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -130,7 +132,7 @@ public abstract class Tests07Closed extends Tests06Attributes {
     }
 
     @Test( expected = ClosedFileSystemException.class )
-    @Category({ Closable.class, FileChannel.class })
+    @Category({ Closable.class, FileChannelT.class })
     public void testClosedFSNewFileChannel() throws IOException {
         getClosedFSProvider().newFileChannel( getClosedFileA(), Collections.<OpenOption> emptySet() );
     }
@@ -225,6 +227,16 @@ public abstract class Tests07Closed extends Tests06Attributes {
     public void testClosedFSReadAttributesString() throws IOException {
         getClosedFSProvider().readAttributes( getClosedFileA(), "*" );
     }
+
+    @Test( expected = ClosedFileSystemException.class )
+    @Category( Closable.class )
+    public void testAppendFilesInClosedFSThrows() throws IOException {
+        Files.write( getClosedFileA(), CONTENT_OTHER, APPEND );
+    }
+
+    /*
+     * ----------------------------------------------------------------------------------------
+     */
 
     public FileSystem getClosedFS() throws IOException {
 

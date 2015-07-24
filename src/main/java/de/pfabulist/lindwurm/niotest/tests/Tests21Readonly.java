@@ -12,8 +12,10 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.ReadOnlyFileSystemException;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileTime;
 
+import static java.nio.file.StandardOpenOption.APPEND;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -54,6 +56,12 @@ public abstract class Tests21Readonly extends Tests20SymLinks {
     @Category( { Readonly.class } )
     public void testCanNotWriteToReadonlyFile() throws IOException {
         Files.write( getFile(), CONTENT );
+    }
+
+    @Test( expected = ReadOnlyFileSystemException.class )
+    @Category( { Readonly.class } )
+    public void testCanNotAppendToReadonlyFile() throws IOException {
+        Files.write( getFile(), CONTENT, APPEND );
     }
 
     @Test
@@ -119,7 +127,6 @@ public abstract class Tests21Readonly extends Tests20SymLinks {
         Files.delete( getEmptyDir() );
     }
 
-
     @Test( expected = ReadOnlyFileSystemException.class )
     @Category( { Readonly.class } )
     public void testCreateHardLinkInReadonly() throws IOException {
@@ -138,7 +145,6 @@ public abstract class Tests21Readonly extends Tests20SymLinks {
         // should not throw UnsupportedOperationException
         FS.provider().checkAccess( getFile(), AccessMode.WRITE );
     }
-
 
     // --------------------------------------------------------------
 

@@ -1,6 +1,8 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
+import de.pfabulist.lindwurm.niotest.tests.topics.PermissionChecks;
 import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
 import de.pfabulist.lindwurm.niotest.tests.topics.Windows;
 
@@ -41,7 +43,8 @@ public class UnixBuilder<T> extends DescriptionBuilder<T>{
         super( descr, t );
         descr.props.put( "maxFilenameLength", 255 );
         descr.removeTopic( Windows.class );
-        descr.attributeDescriptions.add( attributeBuilding( Posix.class, "posix", PosixFileAttributeView.class, PosixFileAttributes.class ).
+        descr.removeTopic( DosAttributesT.class );
+        descr.attributeDescriptions.put( "posix", attributeBuilding( Posix.class, "posix", PosixFileAttributeView.class, PosixFileAttributes.class ).
                 addAttribute( "owner", PosixFileAttributes::owner ).
                 addAttribute( "permissions", PosixFileAttributes::permissions ).
                 addAttribute( "group", PosixFileAttributes::group ).
@@ -51,6 +54,11 @@ public class UnixBuilder<T> extends DescriptionBuilder<T>{
 
     public UnixBuilder<T> noPosix() {
         descr.removeTopic( Posix.class );
+        return this;
+    }
+
+    public UnixBuilder<T> noPermissionChecks() {
+        descr.removeTopic( PermissionChecks.class );
         return this;
     }
 

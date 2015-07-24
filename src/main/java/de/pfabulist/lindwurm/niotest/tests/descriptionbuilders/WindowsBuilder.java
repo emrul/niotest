@@ -2,11 +2,17 @@ package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 import de.pfabulist.lindwurm.niotest.tests.Tests10PathWithContent;
+import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
 import de.pfabulist.lindwurm.niotest.tests.topics.MoveWhile;
 import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
 import de.pfabulist.lindwurm.niotest.tests.topics.RootComponent;
 import de.pfabulist.lindwurm.niotest.tests.topics.UNC;
 import de.pfabulist.lindwurm.niotest.tests.topics.Unix;
+
+import java.nio.file.attribute.DosFileAttributeView;
+import java.nio.file.attribute.DosFileAttributes;
+
+import static de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescriptionBuilder.attributeBuilding;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -42,6 +48,15 @@ public class WindowsBuilder<T> extends DescriptionBuilder<T> {
         descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, 255 );
         descr.removeTopic( Posix.class );
         descr.removeTopic( MoveWhile.class );
+
+        descr.attributeDescriptions.put( "dos",
+                attributeBuilding( DosAttributesT.class, "dos", DosFileAttributeView.class, DosFileAttributes.class ).
+                        addAttribute( "hidden", DosFileAttributes::isHidden ).
+                        addAttribute( "archive", DosFileAttributes::isArchive ).
+                        addAttribute( "system", DosFileAttributes::isSystem ).
+                        addAttribute( "readonly", DosFileAttributes::isReadOnly ).
+                        build() );
+
     }
 
     public WindowsBuilder<T> noUNC() {
@@ -53,4 +68,5 @@ public class WindowsBuilder<T> extends DescriptionBuilder<T> {
         descr.removeTopic( RootComponent.class );
         return this;
     }
+
 }

@@ -5,7 +5,7 @@ import de.pfabulist.kleinod.paths.Pathss;
 import de.pfabulist.lindwurm.niotest.tests.topics.AsynchronousFileChannel;
 import de.pfabulist.lindwurm.niotest.tests.topics.Copy;
 import de.pfabulist.lindwurm.niotest.tests.topics.Delete;
-import de.pfabulist.lindwurm.niotest.tests.topics.FileChannel;
+import de.pfabulist.lindwurm.niotest.tests.topics.FileChannelT;
 import de.pfabulist.lindwurm.niotest.tests.topics.HardLink;
 import de.pfabulist.lindwurm.niotest.tests.topics.Move;
 import de.pfabulist.lindwurm.niotest.tests.topics.SymLink;
@@ -84,7 +84,7 @@ public abstract class Tests09WrongProvider extends Tests08ThreadSafe {
     }
 
     @Test( expected = ProviderMismatchException.class )
-    @Category( FileChannel.class )
+    @Category( FileChannelT.class )
     public void testNewFileChannelOtherProvider() throws IOException {
         FS.provider().newFileChannel( otherProviderAbsA(), Collections.<OpenOption> emptySet() );
     }
@@ -185,7 +185,7 @@ public abstract class Tests09WrongProvider extends Tests08ThreadSafe {
     }
 
     @Test( expected = ProviderMismatchException.class )
-    @Category( { FileChannel.class, AsynchronousFileChannel.class } )
+    @Category( { FileChannelT.class, AsynchronousFileChannel.class } )
     public void testNewAsynchronousFileChannelOtherProvider() throws IOException {
         FS.provider().newAsynchronousFileChannel( otherProviderAbsA(), Collections.<OpenOption> emptySet(), null );
     }

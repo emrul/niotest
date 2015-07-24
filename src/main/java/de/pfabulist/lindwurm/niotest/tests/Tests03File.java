@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.collection.Sets;
 import de.pfabulist.lindwurm.niotest.matcher.IteratorMatcher;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
@@ -304,10 +305,7 @@ public abstract class Tests03File extends Tests02Dir {
     @Test( expected = NoSuchFileException.class )
     @Category( Writable.class )
     public void testWriteNonExistent() throws IOException {
-
-        Path notthere = absTA();
-
-        try( SeekableByteChannel ch = FS.provider().newByteChannel( notthere, singleton( WRITE ) ) ) {}
+        try( SeekableByteChannel ch = FS.provider().newByteChannel( absTA(), singleton( WRITE ) ) ) {}
     }
 
     @Test
@@ -357,6 +355,19 @@ public abstract class Tests03File extends Tests02Dir {
     public void testAppendAndReadThrows() throws IOException {
         try( SeekableByteChannel ch = FS.provider().newByteChannel( fileTA(), asSet( APPEND, READ ) ) ) {
         }
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    @Category( Writable.class )
+    public void testAppendAndTruncateExistingThrows() throws IOException {
+        try( SeekableByteChannel ch = FS.provider().newByteChannel( fileTA(), asSet( APPEND, TRUNCATE_EXISTING ) ) ) {
+        }
+    }
+
+    @Test( expected = NoSuchFileException.class)
+    @Category( Writable.class )
+    public void testAppendDoesNotCreateNewFile() throws IOException {
+        Files.write( absTA(), CONTENT, APPEND );
     }
 
     @Test
@@ -774,14 +785,14 @@ public abstract class Tests03File extends Tests02Dir {
         Files.write( fileTA().resolve( "foo" ), CONTENT );
     }
 
-    // todo
-//    @Test( expected = NonWritableChannelException.class )
-//    public void testTruncateOnAppendChannelThrows() throws Exception{
-//        Path file = fileTA();
-//        try( SeekableByteChannel channel =  FS.provider().newByteChannel( file, Sets.asSet(APPEND) )) {
-//            channel.truncate( 2 );
-//        }
-//    }
+    @Test( expected = FileSystemException.class )
+    @Category( Writable.class )
+    public void testTruncateOnAppendChannelThrows() throws Exception{
+        Path file = fileTA();
+        try( SeekableByteChannel channel =  FS.provider().newByteChannel( file, Sets.asSet( APPEND ) )) {
+            channel.truncate( 2 );
+        }
+    }
 
     // todo unclear
 //    @Test

@@ -1,8 +1,4 @@
-package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
-
-import de.pfabulist.lindwurm.niotest.tests.FSDescription;
-import de.pfabulist.lindwurm.niotest.tests.topics.CreationTime;
-import de.pfabulist.lindwurm.niotest.tests.topics.LastAccessTime;
+package de.pfabulist.lindwurm.niotest.tests.topics;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -31,19 +27,5 @@ import de.pfabulist.lindwurm.niotest.tests.topics.LastAccessTime;
  * **** END LICENSE BLOCK ****
  */
 
-public class TimeBuilder<T> extends DescriptionBuilder<T> {
-    public TimeBuilder( FSDescription descr, T t ) {
-        super( descr, t );
-    }
-
-    public TimeBuilder<T> noLastAccessTime() {
-        descr.removeTopic( LastAccessTime.class );
-        return this;
-    }
-
-    public TimeBuilder<T> noCreationTime( ) {
-        descr.removeTopic( CreationTime.class );
-        return this;
-    }
-
+public interface DosAttributesT extends Topic {
 }

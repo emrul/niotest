@@ -27,5 +27,4 @@ package de.pfabulist.lindwurm.niotest.tests.topics;
  * **** END LICENSE BLOCK ****
  */
 
-public interface FileChannel extends Topic {
-}
+public interface FileKeyT extends Topic {}

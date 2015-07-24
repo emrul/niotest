@@ -58,8 +58,9 @@ public class DefaultFSTest extends AllTests {
 
         if ( os.isUnix() ) {
             descr = build().
-                    unix().next().
+                    unix().noPermissionChecks().next().
                     playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
+                    fileStores().noLimitedPlayground().notExclusive().next().
                     closable().no().
                     watchable().delay( 12000 ).
                     otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
@@ -83,6 +84,7 @@ public class DefaultFSTest extends AllTests {
                     bug( "testCopyBrokenSymLinkToItself", os.isUnix() ).
                     bug( "testSymLinkToUnnormalizedRelPath" ).
                     bug( "testMovedWatchedDirCancelsKeys" ).
+                    bug( "testTruncateOnAppendChannelThrows" ).
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                     done();
         }

@@ -1,4 +1,4 @@
-niotest  [![Build Status](https://travis-ci.org/openCage/niotest.svg?branch=master)](https://travis-ci.org/openCage/niotest)
+niotest  [![Build Status](https://travis-ci.org/openCage/niotest.svg?branch=master)](https://travis-ci.org/openCage/niotest) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.pfabulist.lindwurm/niotest/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.pfabulist.lindwurm/niotest)
 
 =======
 
@@ -11,7 +11,7 @@ Niotest is a framework for testing java 7 nio2 based virtual filesystem as speci
     <dependency>
         <groupId>de.pfabulist.lindwurm</groupId>
         <artifactId>niotest</artifactId>
-        <version>0.28</version>
+        <version>0.29</version>
     </dependency>
 
 ### Design
@@ -46,6 +46,34 @@ To use niotest create class extending Alltests and describe your nio filesystem
 If you run this niotest will complain that it needs a playground, i.e. a root folder in your Filesystem.
 You either point it to a writable directory where niotest can create files and directories or you describe some 
 existing readonly objects.
+
+
+## Releases
+
+### 0.29
+
+* FileChannel Tests
+  no lock tests
+  no asynchronous tests
+
+* FileStores with limited size tests 
+
+* Files.isHidden tests
+
+* DosAttributes tests
+  hidden flag: reading and setting
+  rest: readonly 
+  
+* Unix: PosixFileAttributes
+  some
+  some permission checks
+  
+* FileOwnerAttributeView
+ 
+* Principals
+
+
+  
  
  
 

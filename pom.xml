@@ -33,7 +33,7 @@
 
     <groupId>de.pfabulist.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.28.6</version>
+    <version>0.29</version>
 
     <name>niotest</name>
     <description>A test suit for java 7 nio2 based virtual filesystems</description>

@@ -3,7 +3,9 @@ package de.pfabulist.lindwurm.niotest.tests;
 import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescription;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.CreationTime;
+import de.pfabulist.lindwurm.niotest.tests.topics.FileKeyT;
 import de.pfabulist.lindwurm.niotest.tests.topics.LastAccessTime;
+import de.pfabulist.lindwurm.niotest.tests.topics.Move;
 import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import org.junit.Test;
@@ -469,12 +471,25 @@ public abstract class Tests06Attributes extends Tests05URI {
     }
 
     @Test
-    @Category( Attributes.class )
+    @Category( { Attributes.class, FileKeyT.class } )
     public void testFileKeyIsId() throws IOException {
-        assumeThat( Files.readAttributes( getFile(), BasicFileAttributes.class ).fileKey(), notNullValue() );
-
         assertThat( Files.readAttributes( getFile(), "basic:fileKey" ),
                     is( not( Files.readAttributes( getNonEmptyDir(), "basic:fileKey" ) ) ) ); // nonEmptyDir here is just another existing path
+    }
+
+    @Test
+    @Category( { Attributes.class, FileKeyT.class, Move.class, Writable.class } )
+    public void testFileKeyIsKeptInMove() throws IOException {
+
+        Path src = fileTAB();
+        Path tgt = absTC();
+        Object key = Files.readAttributes( src, "basic:fileKey" );
+        Files.move( src, tgt );
+
+        Object key2 = Files.readAttributes( tgt, "basic:fileKey" );
+
+        assertThat( key2,
+                    is( key ));
     }
 
     @Test

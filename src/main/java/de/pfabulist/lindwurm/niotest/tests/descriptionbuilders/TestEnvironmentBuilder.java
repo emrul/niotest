@@ -1,9 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
-import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescription;
-import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescriptionBuilder;
-import de.pfabulist.lindwurm.niotest.tests.topics.Topic;
+import de.pfabulist.lindwurm.niotest.tests.topics.Exclusive;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -32,20 +30,13 @@ import de.pfabulist.lindwurm.niotest.tests.topics.Topic;
  * **** END LICENSE BLOCK ****
  */
 
-public class AttributeBuilder<T> extends DescriptionBuilder<T> {
-    public AttributeBuilder( FSDescription descr, T t ) {
+public class TestEnvironmentBuilder <T> extends DescriptionBuilder<T>{
+    public TestEnvironmentBuilder( FSDescription descr, T t ) {
         super( descr, t );
     }
 
-    public AttributeBuilder<T> add( AttributeDescriptionBuilder adb ) {
-        AttributeDescription ad = adb.build();
-        descr.attributeDescriptions.put( ad.getName(), ad );
-        return this;
-    }
-
-    public AttributeBuilder<T> remove( String name, Class<? extends Topic> topic ) {
-        descr.attributeDescriptions.remove( name );
-        descr.removeTopic( topic );
+    public TestEnvironmentBuilder<T> exclusive() {
+        descr.removeTopic( Exclusive.class );
         return this;
     }
 }

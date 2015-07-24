@@ -46,13 +46,14 @@ public class JimTest extends AllTests {
     public static void before() {
 
         descr = build().
-                unix().next().
+                unix().noPermissionChecks().next().
                 playground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/play" ) ).
                 time().noLastAccessTime().next().
                 closable().playground( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/play" ) ).
                 pathConstraints().noMaxFilenameLength().next().
                 //symlinks().toOtherProviders(false).relativeTargets(false).yes().
                 watchable().delay( 5500 ).
+                fileStores().sizeLimitedPlayground( Jimfs.newFileSystem( Configuration.unix().toBuilder().setMaxSize( 38000L ).build() ).getPath( "/play" )).next().
                 fsCreation().
                     uri( Tests05URI::toURIWithoutPath ).
                     env( Collections.singletonMap( "config", Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ) ).
@@ -72,6 +73,9 @@ public class JimTest extends AllTests {
                 bug( "testWatchSeveralEventsInOneDir" ).
                 bug( "testWatchTwoModifiesOneKey" ).
                 bug( "testWatchATruncate").
+                bug( "testTransferFromPositionBeyondFileSizeDoesNothing" ).
+                bug( "testAppendAndTruncateExistingThrows" ).
+                bug( "testTruncateOnAppendChannelThrows" ).
                 nitpick( "testReadChannelOfDir", "who cares" ).
                 nitpick( "testRegisterWatchServiceOfClosedFS", "different exception" ).
                 nitpick("testAppendAndReadThrows", "IllegalArg instead Unsupported").

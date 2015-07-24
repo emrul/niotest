@@ -1,18 +1,23 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
+import de.pfabulist.lindwurm.niotest.tests.topics.FileOwnerView;
+import de.pfabulist.lindwurm.niotest.tests.topics.PermissionChecks;
 import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
+import de.pfabulist.lindwurm.niotest.tests.topics.Principals;
 import de.pfabulist.lindwurm.niotest.tests.topics.Unix;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.UserPrincipal;
+import java.nio.file.attribute.UserPrincipalLookupService;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
 * ** BEGIN LICENSE BLOCK *****
@@ -67,16 +72,65 @@ public abstract class Tests16Unix extends Tests13FileStore {
     @Test
     @Category({ Attributes.class, Posix.class, Unix.class })
     public void testPosixGetAttributeView() throws IOException {
-        PosixFileAttributes pfa = Files.readAttributes( getFile(), PosixFileAttributes.class);
-
-        assertThat( pfa, notNullValue());
+        assertThat( Files.readAttributes( getFile(), PosixFileAttributes.class)).isNotNull();
     }
 
     @Test
     @Category( Unix.class )
     public void testUnixSeparatorIsSlash() {
-        assertThat( FS.getSeparator(), is("/"));
+        assertThat( FS.getSeparator()).isEqualTo( "/");
+    }
+
+    @Test
+    @Category( Unix.class )
+    public void testDotFilesAreHidden() throws IOException {
+        assertThat( Files.isHidden( absTA().resolve( ".dot" ))).isTrue();
+    }
+
+    @Test
+    @Category({ Attributes.class, Posix.class, Unix.class })
+    public void testOwnerByTwoMethods() throws IOException {
+
+//        System.out.println( Files.getOwner( fileTA() ));
+        System.out.println( Files.getOwner( dirTB() ));
+
+        System.out.println( Files.getPosixFilePermissions( fileTA() ) );
+//        System.out.println(Files.getAttribute( fileTA(), "owner:owner" ));
+//        assertThat( Files.getOwner( getDefaultPath()),
+//                is(Files.readAttributes(getDefaultPath(), PosixFileAttributes.class).owner()));
+    }
+
+    @Test
+    @Category({  Principals.class, Posix.class, Unix.class, PermissionChecks.class })
+    public void testDifferentOwnerCantWrite() throws IOException {
+        UserPrincipal none = FS.getUserPrincipalLookupService().lookupPrincipalByName( "nobody" );
+
+        Files.setOwner( fileTA(), none );
+        System.out.println( Files.getPosixFilePermissions( fileTA() ) );
+
+        assertThatThrownBy( () -> Files.write( absTA(), CONTENT_OTHER ) ).isInstanceOf( AccessDeniedException.class );
     }
 
 
+    @Test
+    @Category({ Posix.class, Unix.class, Principals.class  })
+    public void testFilesHaveOwners() throws IOException {
+        assertThat( Files.getOwner( fileTA() )).isNotNull();
+    }
+
+    @Test
+    @Category({ Principals.class  })
+    public void testGetPrincipalsLookupServiceDoesNotThrow() throws IOException {
+        assertThat( FS.getUserPrincipalLookupService() ).isNotNull();
+    }
+
+    @Test
+    @Category({ Principals.class, Attributes.class, FileOwnerView.class })
+    public void testFindOwner() throws IOException {
+        UserPrincipalLookupService lookupService =  FS.getUserPrincipalLookupService();
+
+        UserPrincipal owner = Files.getOwner( FS.getPath( "" ).toAbsolutePath());
+
+        assertThat(lookupService.lookupPrincipalByName( owner.getName() )).isEqualTo( owner );
+    }
 }

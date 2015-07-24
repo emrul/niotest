@@ -538,6 +538,8 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
 
     }
 
+    // todo check access and sym links
+
     // no otherproviderlinks
 //    @Test
 //    @Category({ SymLink.class})  public void testReadFromSymLinkToOtherProvider() throws IOException {

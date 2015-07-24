@@ -64,10 +64,10 @@ public class FSDescription {
 
     private Set<String> usedBugs = new HashSet<>();
     private Set<String> usedSchemes = new HashSet<>();
-    public final List<AttributeDescription> attributeDescriptions = new ArrayList<>();
+    public final Map<String,AttributeDescription> attributeDescriptions = new HashMap<>();
 
     public FSDescription() {
-        attributeDescriptions.add( attributeBuilding( Basic.class, "basic", BasicFileAttributeView.class, BasicFileAttributes.class ).
+        attributeDescriptions.put( "basic", attributeBuilding( Basic.class, "basic", BasicFileAttributeView.class, BasicFileAttributes.class ).
                 addAttribute( "lastModifiedTime", BasicFileAttributes::lastModifiedTime ).
                 addAttribute( "creationTime", BasicFileAttributes::creationTime ).
                 addAttribute( "size", BasicFileAttributes::size ).
@@ -164,7 +164,7 @@ public class FSDescription {
     }
 
     public Stream<AttributeDescription> getAttributeDescriptions() {
-        return attributeDescriptions.stream().filter( ad -> !notProvidedTopics.contains( ad.getTopic()) );
+        return attributeDescriptions.values().stream().filter( ad -> !notProvidedTopics.contains( ad.getTopic()) );
 
     }
 

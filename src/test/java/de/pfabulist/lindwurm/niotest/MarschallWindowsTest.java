@@ -3,11 +3,20 @@ package de.pfabulist.lindwurm.niotest;
 import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 import de.pfabulist.lindwurm.niotest.tests.AllTests;
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
+import de.pfabulist.lindwurm.niotest.tests.topics.FileOwnerView;
+import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
+import java.nio.file.attribute.DosFileAttributeView;
+import java.nio.file.attribute.DosFileAttributes;
+import java.nio.file.attribute.FileOwnerAttributeView;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 
+import static de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescriptionBuilder.attributeBuilding;
 import static de.pfabulist.lindwurm.niotest.tests.descriptionbuilders.CombinedBuilder.build;
 
 /**
@@ -47,13 +56,26 @@ public class MarschallWindowsTest extends AllTests {
 
         fsDescription = build().
                 windows().noUNC().noRootComponents().next().
-                playground().set( MemoryFileSystemBuilder.newWindows().addFileAttributeView( UserDefinedFileAttributeView.class ).build( "marschall" ).getPath( "play" ).toAbsolutePath() ).
+                playground().set( MemoryFileSystemBuilder.
+                                    newWindows().
+                                    addFileAttributeView( UserDefinedFileAttributeView.class ).
+                                    //addFileAttributeView( FileOwnerAttributeView.class ).
+                                    build( "marschall" ).getPath( "play" ).toAbsolutePath() ).
                 time().noLastAccessTime().next().
                 pathConstraints().noMaxFilenameLength().next().
                 closable().no().
                 hardlinks().no().
                 symlinks().noDirs().next().
                 watchable().no().
+                fileStores().noLimitedPlayground().next().
+                attributes().add( attributeBuilding( DosAttributesT.class, "dos", DosFileAttributeView.class, DosFileAttributes.class ).
+                        addAttribute( "hidden", DosFileAttributes::isHidden ).
+                        addAttribute( "archive", DosFileAttributes::isArchive ).
+                        addAttribute( "system", DosFileAttributes::isSystem )
+                        // .addAttribute( "readonly", DosFileAttributes::isReadOnly ) not supported by Marschal
+                    ).
+                    remove( "owner", FileOwnerView.class ).next().
+
                 bugScheme( "RelSymLink", true ).
                 bug( "testAppendAndReadThrows" ).
                 bug("testEveryChannelWriteUpdatesLastModifiedTime").
@@ -74,9 +96,12 @@ public class MarschallWindowsTest extends AllTests {
                 bug( "testGetFileStoreOfBrokenSymLink" ).
                 bug( "testPathToUriAndBackIsSame").
                 bug( "testPathWithWitespaceToUriAndBack").
+                bug( "testAppendAndTruncateExistingThrows" ).
                 nitpick( "testIsSameFileOtherProvider", "strange anyway").
                 nitpick("testGetPathOtherURI", "different exception").
                 nitpick("testRegisterOnClosedWatchService", "different exception").
+                bug( "testTransferFromSourceWithLessThanRequestedBytesGetsWhatsThere" ).
+                bug( "testTransferFromPositionBeyondFileSizeDoesNothing").
                 done();
         
 //                new FSDescription().

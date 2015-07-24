@@ -94,8 +94,11 @@ public class CombinedBuilder {
         return new WatchBuilder<>( descr, this );
     }
 
-    public TimeBuilder<CombinedBuilder> time() {
-        return new TimeBuilder<>( descr, this );
+    public BasicAttributesBuilder<CombinedBuilder> time() {
+        return new BasicAttributesBuilder<>( descr, this );
+    }
+    public BasicAttributesBuilder<CombinedBuilder> basicAttributes() {
+        return new BasicAttributesBuilder<>( descr, this );
     }
 
 
@@ -135,4 +138,6 @@ public class CombinedBuilder {
     public AttributeBuilder<CombinedBuilder> attributes() {
         return new AttributeBuilder<>( descr, this );
     }
+
+    public TestEnvironmentBuilder<CombinedBuilder> testEnv() { return new TestEnvironmentBuilder(descr, this); }
 }

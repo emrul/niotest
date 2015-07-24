@@ -1,8 +1,10 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
 import de.pfabulist.lindwurm.niotest.tests.topics.RootComponent;
 import de.pfabulist.lindwurm.niotest.tests.topics.UNC;
 import de.pfabulist.lindwurm.niotest.tests.topics.Windows;
+import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -11,6 +13,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributeView;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -194,6 +197,21 @@ public abstract class Tests17Windows extends Tests16Unix {
     public void testWindowsNoRootComponentGetRootHasNoRootComponent() {
         assertThat( FS.getPath( "\\foo" ).getRoot(), is( FS.getPath( "\\" ) ) );
     }
+
+    @Test
+    @Category({ Windows.class, DosAttributesT.class, Writable.class })
+    public void testWindowsIsHidden() throws IOException {
+        assertThat( Files.isHidden( fileTA()), is(false) );
+
+        Files.getFileAttributeView( absTA(), DosFileAttributeView.class ).setHidden( true );
+        assertThat( Files.isHidden( fileTA()), is(true) );
+
+        Files.setAttribute( absTA(), "dos:hidden", false );
+        assertThat( Files.isHidden( fileTA() ), is(false) );
+    }
+
+
+
 
     // TODO defaultfs bugs
 //    @Test @Category( Windows.class )

@@ -1,7 +1,11 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.Exclusive;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileStores;
+import de.pfabulist.lindwurm.niotest.tests.topics.SizeLimit;
+
+import java.nio.file.Path;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -39,5 +43,20 @@ public class FileStoreBuilder<T> extends DescriptionBuilder<T> {
     public T no() {
         descr.removeTopic( FileStores.class );
         return t;
+    }
+
+    public FileStoreBuilder<T> sizeLimitedPlayground( Path limited ) {
+        descr.props.put( "sizeLimitedPlayground", limited );
+        return this;
+    }
+
+    public FileStoreBuilder<T> noLimitedPlayground() {
+        descr.removeTopic( SizeLimit.class );
+        return this;
+    }
+
+    public FileStoreBuilder<T> notExclusive() {
+        descr.removeTopic( Exclusive.class );
+        return this;
     }
 }
