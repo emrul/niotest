@@ -1,5 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
+import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
 import de.pfabulist.unchecked.Filess;
 import de.pfabulist.lindwurm.niotest.tests.topics.Copy;
 import de.pfabulist.lindwurm.niotest.tests.topics.Delete;
@@ -649,7 +651,7 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
 //    }
 
     @Test
-    @Category( { SymLink.class } )
+    @Category( { SymLink.class, SlowTest.class, Attributes.class } )
     public void testMoveSymLinkDoesNotChangeLastModifiedTime() throws IOException {
         Files.createSymbolicLink( symLink(), fileTA() );
         FileTime before = Files.getLastModifiedTime( symLink(), LinkOption.NOFOLLOW_LINKS );

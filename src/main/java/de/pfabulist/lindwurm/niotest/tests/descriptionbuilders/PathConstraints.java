@@ -1,7 +1,9 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.LimitedPath;
 import de.pfabulist.lindwurm.niotest.tests.topics.MaxFilename;
+import de.pfabulist.lindwurm.niotest.tests.topics.MaxPath;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -39,4 +41,31 @@ public class PathConstraints<T> extends DescriptionBuilder<T> {
         descr.removeTopic( MaxFilename.class );
         return this;
     }
+
+    public PathConstraints<T> noMaxPathLength() {
+        descr.removeTopic( MaxPath.class );
+        return this;
+    }
+
+    public PathConstraints<T> unlimitedPathLength() {
+        descr.props.put( "maxPathLength", 45000 );
+        descr.removeTopic( LimitedPath.class );
+        return this;
+    }
+
+    public PathConstraints<T> pathLength( int len ) {
+        descr.props.put( "maxPathLength", len );
+        return this;
+    }
+
+    public PathConstraints<T> filenameLength( int len ) {
+        descr.props.put( "maxFilenameLength", len );
+        return this;
+    }
+
+    public PathConstraints<T> unlimitedFilenameLength() {
+        descr.props.put( "maxFilenameLength", 42000 );
+        return this;
+    }
+
 }

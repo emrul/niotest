@@ -4,6 +4,7 @@ import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 import de.pfabulist.lindwurm.niotest.tests.Tests10PathWithContent;
 import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
 import de.pfabulist.lindwurm.niotest.tests.topics.MoveWhile;
+import de.pfabulist.lindwurm.niotest.tests.topics.NonCasePreserving;
 import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
 import de.pfabulist.lindwurm.niotest.tests.topics.RootComponent;
 import de.pfabulist.lindwurm.niotest.tests.topics.UNC;
@@ -46,8 +47,11 @@ public class WindowsBuilder<T> extends DescriptionBuilder<T> {
         super( descr, t );
         descr.removeTopic( Unix.class );
         descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, 255 );
+        descr.props.put( Tests10PathWithContent.MAX_PATH_LENGTH, 32767 );
         descr.removeTopic( Posix.class );
         descr.removeTopic( MoveWhile.class );
+        descr.removeTopic( NonCasePreserving.class );
+
 
         descr.attributeDescriptions.put( "dos",
                 attributeBuilding( DosAttributesT.class, "dos", DosFileAttributeView.class, DosFileAttributes.class ).
@@ -66,6 +70,13 @@ public class WindowsBuilder<T> extends DescriptionBuilder<T> {
 
     public WindowsBuilder<T> noRootComponents() {
         descr.removeTopic( RootComponent.class );
+        return this;
+    }
+
+    public WindowsBuilder<T> fat() {
+        descr.addTopic( NonCasePreserving.class );
+        descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, 12 ); // todo better match 8.3
+        descr.props.put( Tests10PathWithContent.MAX_PATH_LENGTH, 255 ); // todo check
         return this;
     }
 

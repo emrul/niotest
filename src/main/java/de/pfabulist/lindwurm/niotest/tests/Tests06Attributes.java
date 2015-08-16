@@ -180,16 +180,14 @@ public abstract class Tests06Attributes extends Tests05URI {
 
                 Path path = getFile();
 
-                for( Object okey : ad.getAttributeNames() ) {
+                for( String key : ad.getAttributeNames() ) {
 
-                    String key = (String) okey;
+                    Object val1 = ad.get( FS.provider().readAttributes( path, ad.getReadType() ), key );
+                    Object val2 = FS.provider().readAttributes( path, ad.getName() + ":" + key ).get( key );
+                    Object val3 = ad.get( FS.provider().getFileAttributeView( path, ad.getViewType() ).readAttributes(), key );
 
-                    Object last1 = ad.get( FS.provider().readAttributes( path, ad.getReadType() ), key );
-                    Object last2 = FS.provider().readAttributes( path, ad.getName() + ":" + key ).get( key );
-                    Object last3 = ad.get( FS.provider().getFileAttributeView( path, ad.getViewType() ).readAttributes(), key );
-
-                    assertThat( "get attribute " + ad.getName() + ":" + key, last1, is( last2 ) );
-                    assertThat( "get attribute " + ad.getName() + ":" + key, last2, is( last3 ) );
+                    assertThat( "get attribute " + ad.getName() + ":" + key, val1, is( val2 ) );
+                    assertThat( "get attribute " + ad.getName() + ":" + key, val2, is( val3 ) );
                 }
             } catch( IOException e ) {
             }

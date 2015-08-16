@@ -27,5 +27,5 @@ package de.pfabulist.lindwurm.niotest.tests.topics;
  * **** END LICENSE BLOCK ****
  */
 
-public interface MaxPath {
+public interface MaxPath extends Topic {
 }

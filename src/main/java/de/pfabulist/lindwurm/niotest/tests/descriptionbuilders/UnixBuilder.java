@@ -1,7 +1,10 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.CaseInsensitive;
 import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
+import de.pfabulist.lindwurm.niotest.tests.topics.LimitedPath;
+import de.pfabulist.lindwurm.niotest.tests.topics.NonCasePreserving;
 import de.pfabulist.lindwurm.niotest.tests.topics.PermissionChecks;
 import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
 import de.pfabulist.lindwurm.niotest.tests.topics.Windows;
@@ -42,8 +45,13 @@ public class UnixBuilder<T> extends DescriptionBuilder<T>{
     public UnixBuilder( FSDescription descr, T t ) {
         super( descr, t );
         descr.props.put( "maxFilenameLength", 255 );
+        descr.props.put( "maxPathLength", 42000 );
+        descr.removeTopic( LimitedPath.class );
         descr.removeTopic( Windows.class );
         descr.removeTopic( DosAttributesT.class );
+        descr.removeTopic( CaseInsensitive.class );
+        descr.removeTopic( NonCasePreserving.class );
+
         descr.attributeDescriptions.put( "posix", attributeBuilding( Posix.class, "posix", PosixFileAttributeView.class, PosixFileAttributes.class ).
                 addAttribute( "owner", PosixFileAttributes::owner ).
                 addAttribute( "permissions", PosixFileAttributes::permissions ).
@@ -62,4 +70,20 @@ public class UnixBuilder<T> extends DescriptionBuilder<T>{
         return this;
     }
 
+    public UnixBuilder<T> otherUser() {
+        descr.removeTopic( PermissionChecks.class );
+        return this;
+    }
+
+    public UnixBuilder<T> hfsPlus() {
+        descr.props.put( "maxPathLength", 1016 ); // todo docu says 1024 ??
+        descr.addTopic( CaseInsensitive.class );
+
+        // todo : is seperator (in a way)
+        return this;
+    }
+
+    public UnixBuilder<T> osx() {
+        return hfsPlus(); // default for osx
+    }
 }

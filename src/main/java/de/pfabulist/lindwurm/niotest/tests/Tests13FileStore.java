@@ -3,6 +3,7 @@ package de.pfabulist.lindwurm.niotest.tests;
 import de.pfabulist.lindwurm.niotest.tests.topics.Exclusive;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileStores;
 import de.pfabulist.lindwurm.niotest.tests.topics.SizeLimit;
+import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import de.pfabulist.unchecked.Filess;
 import de.pfabulist.unchecked.Unchecked;
 import org.assertj.core.api.Assertions;
@@ -16,7 +17,9 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
+import java.util.IntSummaryStatistics;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import static de.pfabulist.unchecked.Unchecked.u;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -119,7 +122,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
 //    }
 
     @Test
-    @Category( { FileStores.class, Exclusive.class } )
+    @Category( { FileStores.class, Exclusive.class, Writable.class } )
     public void testPathFileStoreGrowingFileLowersUnallocatedSpace() throws IOException {
 
         Path file = fileTA();
@@ -131,7 +134,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     }
 
     @Test
-    @Category( { FileStores.class, Exclusive.class } )
+    @Category( { FileStores.class, Exclusive.class, Writable.class } )
     public void testPathFileStoreGrowingFileLowersUsableSpace() throws IOException {
         Path file = fileTA();
         FileStore store = FS.provider().getFileStore( file );

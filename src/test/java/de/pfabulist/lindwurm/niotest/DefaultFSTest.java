@@ -56,13 +56,47 @@ public class DefaultFSTest extends AllTests {
 
         OS os = new OS();
 
-        if ( os.isUnix() ) {
+        if ( os.isOSX()) {
+            descr = build().
+                    unix().hfsPlus().noPermissionChecks().next().
+                    playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
+                    fileStores().noLimitedPlayground().notExclusive().next().
+                    closable().no().
+                    watchable().delay( 12000 ).
+//                    pathConstraints().pathLength( 1016 ).next(). // huh should be unlimited
+                    otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
+                    time().noLastAccessTime().noCreationTime().next().
+                    //attributes().add( attributeBuilding( Posix.class, "posix", PosixFileAttributeView.class, PosixFileAttributes.class ).
+//                    addAttribute( "owner", PosixFileAttributes::owner ).
+//                    addAttribute( "permissions", PosixFileAttributes::permissions ).
+//                    addAttribute( "group", PosixFileAttributes::group )).
+//                    next().
+                    bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
+                    bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
+                    bug( "testIsSameFileOfDifferentPathNonExistingFile2IsNot" ).
+                    bug( "testDeleteWatchedDirCancelsKeys" ).
+                    bug( "testWatchTwoModifiesOneKey", os.isUnix() ).
+                    bug( "testWatchSeveralEventsInOneDir", os.isUnix() ).
+                    bug( "testWatchAModify", os.isUnix() ).
+                    bug( "testWatchATruncate", os.isUnix() ).
+                    bug( "testDeleteWatchedDirCancelsKeys" ).
+                    bug( "testIsSameFileWithSpecialUnnormalizedPath", os.isUnix() ).
+                    bug( "testCopySymLinkToItself", os.isUnix() ).
+                    bug( "testCopyBrokenSymLinkToItself", os.isUnix() ).
+                    bug( "testSymLinkToUnnormalizedRelPath" ).
+                    bug( "testMovedWatchedDirCancelsKeys" ).
+                    bug( "testTruncateOnAppendChannelThrows" ).
+                    nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
+                    done();
+
+        } else if ( os.isUnix() ) {
             descr = build().
                     unix().noPermissionChecks().next().
                     playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
                     fileStores().noLimitedPlayground().notExclusive().next().
                     closable().no().
                     watchable().delay( 12000 ).
+                    pathConstraints().pathLength( 1016 ).next(). // huh should be unlimited
                     otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
                     time().noLastAccessTime().noCreationTime().next().
                     attributes().add( attributeBuilding( Posix.class, "posix", PosixFileAttributeView.class, PosixFileAttributes.class ).

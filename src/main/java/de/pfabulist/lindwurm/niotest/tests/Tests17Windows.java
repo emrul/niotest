@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.lindwurm.niotest.tests.topics.CasePreserving;
 import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
 import de.pfabulist.lindwurm.niotest.tests.topics.RootComponent;
 import de.pfabulist.lindwurm.niotest.tests.topics.UNC;
@@ -72,14 +73,6 @@ public abstract class Tests17Windows extends Tests16Unix {
 //    }
 //
 
-    @Test
-    @Category( Windows.class )
-    public void testCaseIgnorantWriting() throws IOException {
-        Files.write( absTA(), CONTENT );
-        Files.write( mixCase( absTA() ), CONTENT_OTHER );
-
-        assertThat( Files.readAllBytes( absTA() ), is( CONTENT_OTHER ) );
-    }
 
     @Test
     @Category( Windows.class )
@@ -97,21 +90,7 @@ public abstract class Tests17Windows extends Tests16Unix {
         }
     }
 
-    @Test
-    @Category( Windows.class )
-    public void testCaseRememberingOverwriteDoesNotOverwriteRememberedName() throws IOException {
-        Path file = dirTA().resolve( nameD() );
 
-        // create file where last filename is mixed case
-        Files.write( mixCase( file ), CONTENT );
-        Files.write( file, CONTENT );
-
-        try( DirectoryStream<Path> dstr = Files.newDirectoryStream( file.getParent() ) ) {
-            Path kid = dstr.iterator().next();
-            assertThat( kid, is( file ) );
-            assertThat( kid.toString(), not( is( file.toString() ) ) );
-        }
-    }
 
     @Test
     @Category( Windows.class )
@@ -471,20 +450,5 @@ public abstract class Tests17Windows extends Tests16Unix {
      * ------------------------------------------------------------------
      */
 
-    public Path mixCase( Path in ) {
-
-        String inStr = in.toString();
-        String mix = "";
-
-        for( int i = 0; i < inStr.length(); i++ ) {
-            if( i % 2 == 0 ) {
-                mix += inStr.substring( i, i + 1 ).toUpperCase();
-            } else {
-                mix += inStr.substring( i, i + 1 ).toLowerCase();
-            }
-        }
-
-        return in.getFileSystem().getPath( mix );
-    }
 
 }

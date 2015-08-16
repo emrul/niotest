@@ -27,5 +27,5 @@ package de.pfabulist.lindwurm.niotest.tests.topics;
  * **** END LICENSE BLOCK ****
  */
 
-public interface CasePreserving {
+public interface CasePreserving extends Topic {
 }

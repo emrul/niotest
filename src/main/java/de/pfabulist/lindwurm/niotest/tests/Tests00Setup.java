@@ -59,11 +59,12 @@ public abstract class Tests00Setup {
 
         if( null != annotated.getCats() ) {
             for( int i = 0; i < annotated.getCats().value().length; i++ ) {
-                assumeThat( description.provides( annotated.getCats().value()[ i ] ), is( true ) );
+                Class<?> top = annotated.getCats().value()[ i ];
+                assumeThat( "not supported in test: " + top.getSimpleName(), description.provides( top ), is( true ) );
             }
         }
 
-        assumeThat( description.isBug( testMethodName ), is( false ) );
+        assumeThat( "known bug" ,description.isBug( testMethodName ), is( false ) );
 
     }
 

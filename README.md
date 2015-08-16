@@ -50,6 +50,13 @@ existing readonly objects.
 
 ## Releases
 
+### 0.30
+
+* max path tests
+* permission tests expects root user 
+* osx (hfs+) specific path limits
+* case insensitive and case preserving tests 
+
 ### 0.29
 
 * FileChannel Tests

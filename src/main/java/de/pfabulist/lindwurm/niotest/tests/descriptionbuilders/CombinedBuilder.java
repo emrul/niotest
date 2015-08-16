@@ -2,6 +2,9 @@ package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
@@ -71,6 +74,20 @@ public class CombinedBuilder {
         }
 
         return this;
+    }
+
+    public CombinedBuilder waitForFile( Path path ) {
+        //        Path p = Paths.get("/Users/openCage/tmp/vvm.start" );
+        while ( !Files.exists( path )) {
+            try {
+                Thread.sleep( 2000 );
+            } catch( InterruptedException e ) {
+                e.printStackTrace();
+            }
+        }
+
+        return this;
+
     }
     // ----
 

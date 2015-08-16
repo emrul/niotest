@@ -1,5 +1,9 @@
 package de.pfabulist.lindwurm.niotest;
 
+import org.junit.Test;
+
+import java.util.stream.IntStream;
+
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
@@ -28,4 +32,17 @@ package de.pfabulist.lindwurm.niotest;
  */
 
 public class STest {
+
+    @Test
+    public void testing() {
+
+        int maxPathLength = 50;
+        String longname = "0123456789";
+        String ret = IntStream.range( 0, ( maxPathLength / ( longname.length() + 1 ))).
+                mapToObj( n -> longname ).
+                reduce( longname, ( x, y ) -> x + ( "/" + y ) );
+
+        System.out.println( ret );
+
+    }
 }
