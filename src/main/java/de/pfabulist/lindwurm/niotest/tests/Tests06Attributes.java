@@ -1,13 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescription;
-import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
-import de.pfabulist.lindwurm.niotest.tests.topics.CreationTime;
-import de.pfabulist.lindwurm.niotest.tests.topics.FileKeyT;
-import de.pfabulist.lindwurm.niotest.tests.topics.LastAccessTime;
-import de.pfabulist.lindwurm.niotest.tests.topics.Move;
-import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
-import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
+import de.pfabulist.lindwurm.niotest.tests.topics.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -195,7 +189,7 @@ public abstract class Tests06Attributes extends Tests05URI {
     }
 
     @Test
-    @Category( Attributes.class )
+    @Category({ Attributes.class, WorkingDirectoryInPlaygroundTree.class })
     public void testGetLastModifiedViaStringOfRelativePath() throws IOException {
         Path path = getFile();
         assertThat( FS.provider().readAttributes( pathDefault().toAbsolutePath().relativize( path ), "basic:lastModifiedTime" ).get( "lastModifiedTime" ),

@@ -1,11 +1,8 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.lindwurm.niotest.tests.topics.*;
 import de.pfabulist.unchecked.Filess;
 import de.pfabulist.lindwurm.niotest.Utils;
-import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
-import de.pfabulist.lindwurm.niotest.tests.topics.LastAccessTime;
-import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
-import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -143,7 +140,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
     }
 
     @Test
-    @Category( Writable.class )
+    @Category( { Writable.class, WorkingDirectoryInPlaygroundTree.class })
     public void testNewRelDirectoryExists() throws IOException {
         Files.createDirectory( relTA() );
         assertThat( relTA(), exists() );
@@ -254,6 +251,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
     }
 
     @Test
+    @Category( WorkingDirectoryInPlaygroundTree.class )
     public void testKidsOfRelativeDirAreRelative() throws Exception {
         try( DirectoryStream<Path> kids = Files.newDirectoryStream( relativize( getNonEmptyDir() ).getParent() ) ) {
             for( Path kid : kids ) {
@@ -498,6 +496,8 @@ public abstract class Tests02Dir extends Tests01NoContent {
     }
 
     public Path relativize( Path path ) {
+
+  //      return path.getRoot().resolve( nameE()).relativize( path );
         return pathDefault().toAbsolutePath().relativize( path );
     }
 

@@ -152,11 +152,12 @@ public abstract class Tests17Windows extends Tests16Unix {
         assertThat( FS.getPath( "X:\\foo" ), is( FS.getPath( "x:\\foo" ) ) );
     }
 
-    @Test
-    @Category( Windows.class )
-    public void testWindowsRootOfDefaultIsC() {
-        assertThat( FS.getPath( "" ).toAbsolutePath().getRoot(), is( FS.getPath( "C:\\" ) ) );
-    }
+    // oops wrong: default on windows can be on different drive
+//    @Test
+//    @Category( Windows.class )
+//    public void testWindowsRootOfDefaultIsC() {
+//        assertThat( FS.getPath( "" ).toAbsolutePath().getRoot(), is( FS.getPath( "C:\\" ) ) );
+//    }
 
     //
 //    // todo setup with 2 exsiting paths in different compo

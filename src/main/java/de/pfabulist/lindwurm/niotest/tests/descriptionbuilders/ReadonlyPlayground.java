@@ -1,6 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.WorkingDirectoryInPlaygroundTree;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 
 import java.nio.file.Path;
@@ -41,6 +42,11 @@ public class ReadonlyPlayground<T> extends DescriptionBuilder<T> {
     public ReadonlyPlayground<T> set( Path root ) {
         descr.removeTopic( Writable.class );
         descr.props.put( "playground", root );
+
+        if ( !root.getRoot().equals( root.getFileSystem().getPath("").toAbsolutePath().getRoot())) {
+            descr.removeTopic( WorkingDirectoryInPlaygroundTree.class );
+        }
+
         return this;
     }
 

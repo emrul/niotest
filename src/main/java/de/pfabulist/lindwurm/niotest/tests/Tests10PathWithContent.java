@@ -1,18 +1,6 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import de.pfabulist.lindwurm.niotest.tests.topics.CaseInsensitive;
-import de.pfabulist.lindwurm.niotest.tests.topics.CasePreserving;
-import de.pfabulist.lindwurm.niotest.tests.topics.Copy;
-import de.pfabulist.lindwurm.niotest.tests.topics.Delete;
-import de.pfabulist.lindwurm.niotest.tests.topics.FileStores;
-import de.pfabulist.lindwurm.niotest.tests.topics.HardLink;
-import de.pfabulist.lindwurm.niotest.tests.topics.LimitedPath;
-import de.pfabulist.lindwurm.niotest.tests.topics.MaxFilename;
-import de.pfabulist.lindwurm.niotest.tests.topics.MaxPath;
-import de.pfabulist.lindwurm.niotest.tests.topics.Move;
-import de.pfabulist.lindwurm.niotest.tests.topics.NonCasePreserving;
-import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
-import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
+import de.pfabulist.lindwurm.niotest.tests.topics.*;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -25,7 +13,6 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,6 +78,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 //    }
 
     @Test
+    @Category( WorkingDirectoryInPlaygroundTree.class )
     public void testIsSameFileWithRelativePath() throws IOException {
         assertThat( FS.provider().isSameFile( getFile(), relativize( getFile()))).isTrue();
     }
@@ -132,6 +120,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     @Test
+    @Category( WorkingDirectoryInPlaygroundTree.class )
     public void testCheckAccessRelativePath() throws IOException {
         // expect no throw
         FS.provider().checkAccess( relativize( getFile() ) );
@@ -209,7 +198,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     @Test
-    @Category( { Writable.class } )
+    @Category( { Writable.class, WorkingDirectoryInPlaygroundTree.class } )
     public void testCreateDirectoryWithRelativePath() throws IOException {
         Files.createDirectory( relTA() );
         assertThat( relTA()).exists();
@@ -241,6 +230,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     @Test
+    @Category( WorkingDirectoryInPlaygroundTree.class )
     public void testToRealPathReturnsAnAbsolutePath() throws Exception {
         assertThat( relativize( getFile() ).toRealPath()).isAbsolute();
     }
