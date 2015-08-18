@@ -56,6 +56,8 @@ existing readonly objects.
 * permission tests expects root user 
 * osx (hfs+) specific path limits
 * case insensitive and case preserving tests 
+* windows test are back
+* remove filekey tests from windows
 
 ### 0.29
 

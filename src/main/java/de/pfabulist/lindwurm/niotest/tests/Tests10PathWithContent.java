@@ -319,7 +319,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
         int i = 0;
         for ( Path elem : loong ) {
             now = now.resolve( elem );
-            System.out.println( "creating " + now.toString().length() + " " + now );
+        //    System.out.println( "creating " + now.toString().length() + " " + now );
 
             if ( i++ < 12 ) {
                 Files.createDirectories( now );
@@ -333,9 +333,6 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, Copy.class, MaxFilename.class } )
     public void testMaxFilenameCopyWorks() throws IOException {
         Path loong = absTLongFilename();
-        for ( Path el : loong ) {
-            System.out.println( el.toString().length() );
-        }
         Files.createDirectories( loong.getParent());
         Files.copy( fileTAB(), loong );
     }

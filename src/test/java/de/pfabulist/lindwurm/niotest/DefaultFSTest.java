@@ -60,25 +60,24 @@ public class DefaultFSTest extends AllTests {
     @BeforeClass
     public static void before() {
 
-
         OS os = new OS();
 
-        if ( os.isOSX()) {
+        if( os.isOSX() ) {
             descr = build().
                     unix().hfsPlus().noPermissionChecks().next().
-                    playground().set(Pathss.getTmpDir("DefaultFileSystemTest")).
+                    playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
                     fileStores().noLimitedPlayground().notExclusive().next().
                     closable().no().
-                    watchable().delay(12000).
+                    watchable().delay( 12000 ).
 //                    pathConstraints().pathLength( 1016 ).next(). // huh should be unlimited
-                    otherProviderplayground().set(Jimfs.newFileSystem(Configuration.unix().toBuilder().setAttributeViews("basic", "owner", "posix", "unix").build()).getPath("/other")).
+        otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
                     time().noLastAccessTime().noCreationTime().next().
                     //attributes().add( attributeBuilding( Posix.class, "posix", PosixFileAttributeView.class, PosixFileAttributes.class ).
 //                    addAttribute( "owner", PosixFileAttributes::owner ).
 //                    addAttribute( "permissions", PosixFileAttributes::permissions ).
 //                    addAttribute( "group", PosixFileAttributes::group )).
 //                    next().
-                    bug("testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows()).
+                            bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFile2IsNot" ).
                     bug( "testWatchTwoModifiesOneKey", os.isUnix() ).
@@ -95,21 +94,21 @@ public class DefaultFSTest extends AllTests {
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                     done();
 
-        } else if ( os.isUnix() ) {
+        } else if( os.isUnix() ) {
             descr = build().
                     unix().noPermissionChecks().next().
                     playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
                     fileStores().noLimitedPlayground().notExclusive().next().
                     closable().no().
-                    watchable().delay( 12000 ).
-                    pathConstraints().pathLength( 1016 ).next(). // huh should be unlimited
+                    //watchable().delay( 12000 ).
+                    //pathConstraints().pathLength( 1016 ).next(). // huh should be unlimited
                     otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
                     time().noLastAccessTime().noCreationTime().next().
                     attributes().add( attributeBuilding( Posix.class, "posix", PosixFileAttributeView.class, PosixFileAttributes.class ).
-                                        addAttribute( "owner", PosixFileAttributes::owner ).
-                                        addAttribute( "permissions", PosixFileAttributes::permissions ).
-                                        addAttribute( "group", PosixFileAttributes::group )).
-                                next().
+                    addAttribute( "owner", PosixFileAttributes::owner ).
+                    addAttribute( "permissions", PosixFileAttributes::permissions ).
+                    addAttribute( "group", PosixFileAttributes::group ) ).
+                    next().
                     bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFile2IsNot" ).
@@ -127,24 +126,24 @@ public class DefaultFSTest extends AllTests {
                     bug( "testTruncateOnAppendChannelThrows" ).
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                     done();
-        } else if ( os.isWindows() ) {
+        } else if( os.isWindows() ) {
             descr = build().
                     windows().noUNC().noRootComponents().next().
-                    playground().set(Pathss.getTmpDir("DefaultFileSystemTest")).
+                    playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
                     time().noLastAccessTime().next().
                     pathConstraints().noMaxFilenameLength().noMaxPathLength().next().
                     closable().no().
                     hardlinks().no().
                     //watchable().no().
-                    fileStores().noLimitedPlayground().notExclusive().next().
+                            fileStores().noLimitedPlayground().notExclusive().next().
                     symlinks().no(). // privilege problem
-                    otherProviderplayground().set(Jimfs.newFileSystem(Configuration.unix().toBuilder().setAttributeViews("basic", "owner", "posix", "unix").build()).getPath("/other")).
+                    otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
                     fsCreation().
-                    uri(Tests05URI::toURIWithoutPath).next().
+                    uri( Tests05URI::toURIWithoutPath ).next().
 
-                    bug("testIsSameFileOfDifferentPathNonExistingFileIsNot").
-                    bug("testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
-                    bug( "testMovedWatchedDirCancelsKeys").
+                    bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
+                    bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
+                    bug( "testMovedWatchedDirCancelsKeys" ).
                     bug( "testTruncateOnAppendChannelThrows" ).
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                     done();
@@ -153,16 +152,13 @@ public class DefaultFSTest extends AllTests {
 //                            addAttribute( "archive", DosFileAttributes::isArchive ).
 //                            addAttribute( "system", DosFileAttributes::isSystem )
 //                    // .addAttribute( "readonly", DosFileAttributes::isReadOnly ) not supported by Marschal
-          //  ).
-        //            remove( "owner", FileOwnerView.class ).next().
-
+            //  ).
+            //            remove( "owner", FileOwnerView.class ).next().
 
         } else {
             throw new UnsupportedOperationException( "os not supported: " + os );
         }
 
     }
-
-
 
 }

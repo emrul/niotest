@@ -2,6 +2,7 @@ package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileOwnerView;
+import de.pfabulist.lindwurm.niotest.tests.topics.OwnerView;
 import de.pfabulist.lindwurm.niotest.tests.topics.PermissionChecks;
 import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
 import de.pfabulist.lindwurm.niotest.tests.topics.Principals;
@@ -83,16 +84,11 @@ public abstract class Tests16Unix extends Tests13FileStore {
     }
 
     @Test
-    @Category( { Attributes.class, Posix.class, Unix.class } )
+    @Category( { Attributes.class, Posix.class, OwnerView.class } )
     public void testOwnerByTwoMethods() throws IOException {
 
-//        System.out.println( Files.getOwner( fileTA() ));
-        System.out.println( Files.getOwner( dirTB() ) );
-
-        System.out.println( Files.getPosixFilePermissions( fileTA() ) );
-//        System.out.println(Files.getAttribute( fileTA(), "owner:owner" ));
-//        assertThat( Files.getOwner( getDefaultPath()),
-//                is(Files.readAttributes(getDefaultPath(), PosixFileAttributes.class).owner()));
+        assertThat( Files.getOwner( pathDefault() )).isEqualTo(
+                    Files.readAttributes( pathDefault(), PosixFileAttributes.class ).owner() );
     }
 
     @Test
@@ -101,7 +97,7 @@ public abstract class Tests16Unix extends Tests13FileStore {
         UserPrincipal none = FS.getUserPrincipalLookupService().lookupPrincipalByName( "root" );
 
         Files.setOwner( fileTA(), none );
-        System.out.println( Files.getPosixFilePermissions( fileTA() ) );
+        //System.out.println( Files.getPosixFilePermissions( fileTA() ) );
 
         assertThatThrownBy( () -> Files.write( absTA(), CONTENT_OTHER ) ).isInstanceOf( AccessDeniedException.class );
     }
@@ -138,7 +134,5 @@ public abstract class Tests16Unix extends Tests13FileStore {
 //        }
 //
 //    }
-
-
 
 }
