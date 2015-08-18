@@ -166,7 +166,8 @@ public abstract class Tests05URI extends Tests04Copy {
 
     public static URI toURIWithoutPath( FileSystem fs ) {
         Path root = fs.getPath( "" ).toAbsolutePath().getRoot();
-        return URI.create( Strings.withoutSuffix( root.toUri().toString(), root.toString() ) );
+        URI ret = URI.create( Strings.withoutSuffix( root.toUri().toString(), root.toString().replace( '\\', '/') ) );
+        return ret;
     }
 
 }

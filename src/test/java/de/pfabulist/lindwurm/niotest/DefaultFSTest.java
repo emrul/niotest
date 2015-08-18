@@ -7,6 +7,7 @@ import de.pfabulist.kleinod.os.OS;
 import de.pfabulist.kleinod.paths.Pathss;
 import de.pfabulist.lindwurm.niotest.tests.AllTests;
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.Tests05URI;
 import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescriptionBuilder;
 import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileOwnerView;
@@ -16,6 +17,7 @@ import org.junit.BeforeClass;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.*;
+import java.util.Collections;
 
 import static de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescriptionBuilder.attributeBuilding;
 import static de.pfabulist.lindwurm.niotest.tests.descriptionbuilders.CombinedBuilder.build;
@@ -137,6 +139,14 @@ public class DefaultFSTest extends AllTests {
                     fileStores().noLimitedPlayground().notExclusive().next().
                     symlinks().no(). // privilege problem
                     otherProviderplayground().set(Jimfs.newFileSystem(Configuration.unix().toBuilder().setAttributeViews("basic", "owner", "posix", "unix").build()).getPath("/other")).
+                    fsCreation().
+                    uri(Tests05URI::toURIWithoutPath).next().
+
+                    bug("testIsSameFileOfDifferentPathNonExistingFileIsNot").
+                    bug("testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
+                    bug( "testMovedWatchedDirCancelsKeys").
+                    bug( "testTruncateOnAppendChannelThrows" ).
+                    nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                     done();
 //                    attributes().add( attributeBuilding( DosAttributesT.class, "dos", DosFileAttributeView.class, DosFileAttributes.class ).
 //                            addAttribute( "hidden", DosFileAttributes::isHidden ).

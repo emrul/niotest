@@ -2,13 +2,7 @@ package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 import de.pfabulist.lindwurm.niotest.tests.Tests10PathWithContent;
-import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
-import de.pfabulist.lindwurm.niotest.tests.topics.MoveWhile;
-import de.pfabulist.lindwurm.niotest.tests.topics.NonCasePreserving;
-import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
-import de.pfabulist.lindwurm.niotest.tests.topics.RootComponent;
-import de.pfabulist.lindwurm.niotest.tests.topics.UNC;
-import de.pfabulist.lindwurm.niotest.tests.topics.Unix;
+import de.pfabulist.lindwurm.niotest.tests.topics.*;
 
 import java.nio.file.attribute.DosFileAttributeView;
 import java.nio.file.attribute.DosFileAttributes;
@@ -51,6 +45,7 @@ public class WindowsBuilder<T> extends DescriptionBuilder<T> {
         descr.removeTopic( Posix.class );
         descr.removeTopic( MoveWhile.class );
         descr.removeTopic( NonCasePreserving.class );
+        descr.removeTopic( FileKeyT.class );
 
 
         descr.attributeDescriptions.put( "dos",
