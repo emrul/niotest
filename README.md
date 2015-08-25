@@ -58,6 +58,7 @@ existing readonly objects.
 * case insensitive and case preserving tests 
 * windows test are back
 * remove filekey tests from windows
+* unix / linux with path tests
 
 ### 0.29
 
