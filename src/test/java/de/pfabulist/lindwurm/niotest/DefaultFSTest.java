@@ -101,7 +101,7 @@ public class DefaultFSTest extends AllTests {
                     fileStores().noLimitedPlayground().notExclusive().next().
                     closable().no().
                     //watchable().delay( 12000 ).
-                    pathConstraints().pathLength( 4095 ).next(). // PATH_MAX - null terminator
+                    //pathConstraints().pathLength( 4095 ).next(). // PATH_MAX - null terminator
                     otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
                     time().noLastAccessTime().noCreationTime().next().
                       bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).

@@ -1,5 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
+import de.pfabulist.kleinod.os.OS;
+import de.pfabulist.kleinod.os.OSConstants;
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 import de.pfabulist.lindwurm.niotest.tests.topics.CaseInsensitive;
 import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
@@ -44,8 +46,8 @@ import static de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescriptio
 public class UnixBuilder<T> extends DescriptionBuilder<T>{
     public UnixBuilder( FSDescription descr, T t ) {
         super( descr, t );
-        descr.props.put( "maxFilenameLength", 255 );
-        descr.props.put( "maxPathLength", 42000 );
+        descr.props.put( "maxFilenameLength", OSConstants.getMaxFilenameLength( OS.UNIX));
+        descr.props.put( "maxPathLength", 4095 ); // linux max_math - null terminator
         descr.removeTopic( LimitedPath.class );
         descr.removeTopic( Windows.class );
         descr.removeTopic( DosAttributesT.class );
@@ -76,7 +78,7 @@ public class UnixBuilder<T> extends DescriptionBuilder<T>{
     }
 
     public UnixBuilder<T> hfsPlus() {
-        descr.props.put( "maxPathLength", 1016 ); // todo docu says 1024 ??
+        descr.props.put( "maxPathLength", OSConstants.getMaxPathLength( OS.OSX) );
         descr.addTopic( CaseInsensitive.class );
 
         // todo : is seperator (in a way)
