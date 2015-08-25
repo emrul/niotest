@@ -115,23 +115,6 @@
             <artifactId>assertj-core</artifactId>
         </dependency>
 
-        <!--todo extra testing project-->
-        <!--<dependency>-->
-            <!--<groupId>de.weltraumschaf</groupId>-->
-            <!--<artifactId>jvfs</artifactId>-->
-            <!--<version>0.1.4-20131205</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
-        <!--no snapshots-->
-        <!--<dependency>-->
-            <!--<groupId>com.github.sylvainjuge</groupId>-->
-            <!--<artifactId>memoryfs</artifactId>-->
-            <!--<version>0.1-SNAPSHOT</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
-
     </dependencies>
 
     <!--<build>-->
