@@ -1,11 +1,11 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.kleinod.os.OS;
-import de.pfabulist.kleinod.os.OSConstants;
+import de.pfabulist.kleinod.os.PathLimits;
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.Tests10PathWithContent;
 import de.pfabulist.lindwurm.niotest.tests.topics.CaseInsensitive;
 import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
-import de.pfabulist.lindwurm.niotest.tests.topics.LimitedPath;
 import de.pfabulist.lindwurm.niotest.tests.topics.NonCasePreserving;
 import de.pfabulist.lindwurm.niotest.tests.topics.PermissionChecks;
 import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
@@ -13,6 +13,7 @@ import de.pfabulist.lindwurm.niotest.tests.topics.Windows;
 
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFileAttributes;
+import java.util.function.Function;
 
 import static de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescriptionBuilder.attributeBuilding;
 
@@ -46,9 +47,16 @@ import static de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescriptio
 public class UnixBuilder<T> extends DescriptionBuilder<T>{
     public UnixBuilder( FSDescription descr, T t ) {
         super( descr, t );
-        descr.props.put( "maxFilenameLength", OSConstants.getMaxFilenameLength( OS.UNIX));
-        descr.props.put( "maxPathLength", 4095 ); // linux max_math - null terminator
-        descr.removeTopic( LimitedPath.class );
+
+        PathLimits pathLimits = new PathLimits( OS.UNIX );
+        descr.props.put( Tests10PathWithContent.ONE_CHAR_COUNT, pathLimits.getBigChar() );
+        descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, pathLimits.getMaxFilenameLength() );
+        descr.props.put( Tests10PathWithContent.MAX_PATH_LENGTH, pathLimits.getMaxPathLength() );
+        descr.props.put( Tests10PathWithContent.GET_FILENAME_LENGTH, (Function<String,Integer>)pathLimits::filenameCount );
+        descr.props.put( Tests10PathWithContent.GET_PATH_LENGTH, (Function<String,Integer>)pathLimits::pathCount );
+
+
+//        descr.removeTopic( LimitedPath.class ); theory but linux c limits
         descr.removeTopic( Windows.class );
         descr.removeTopic( DosAttributesT.class );
         descr.removeTopic( CaseInsensitive.class );
@@ -78,7 +86,13 @@ public class UnixBuilder<T> extends DescriptionBuilder<T>{
     }
 
     public UnixBuilder<T> hfsPlus() {
-        descr.props.put( "maxPathLength", OSConstants.getMaxPathLength( OS.OSX) );
+        PathLimits pathLimits = new PathLimits( OS.OSX );
+        descr.props.put( Tests10PathWithContent.ONE_CHAR_COUNT, pathLimits.getBigChar() );
+        descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, pathLimits.getMaxFilenameLength() );
+        descr.props.put( Tests10PathWithContent.MAX_PATH_LENGTH, pathLimits.getMaxPathLength() );
+        descr.props.put( Tests10PathWithContent.GET_FILENAME_LENGTH, (Function<String,Integer>)pathLimits::filenameCount );
+        descr.props.put( Tests10PathWithContent.GET_PATH_LENGTH, (Function<String,Integer>)pathLimits::pathCount );
+
         descr.addTopic( CaseInsensitive.class );
 
         // todo : is seperator (in a way)

@@ -59,12 +59,12 @@ public class PathConstraints<T> extends DescriptionBuilder<T> {
     }
 
     public PathConstraints<T> filenameLength( int len ) {
-        descr.props.put( "maxFilenameLength", len );
+        descr.props.put( "getMaxFilenameLength", len );
         return this;
     }
 
     public PathConstraints<T> unlimitedFilenameLength() {
-        descr.props.put( "maxFilenameLength", 42000 );
+        descr.props.put( "getMaxFilenameLength", 42000 );
         return this;
     }
 

@@ -43,7 +43,7 @@
 //    }
 //
 //    public T unixStyle() {
-//        descr.props.put( "maxFilenameLength", 255 );
+//        descr.props.put( "getMaxFilenameLength", 255 );
 //        descr.removeTopic( Windows.class );
 ////        capa.addFeature("Unix", true);
 ////        capa.addFeature( "Posix", false );

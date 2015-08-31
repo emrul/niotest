@@ -1,6 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
+import de.pfabulist.lindwurm.niotest.tests.topics.NotDefaultFileSystem;
 import org.hamcrest.core.IsNull;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -633,9 +634,8 @@ public abstract class Tests01NoContent extends Tests00Setup {
     }
 
     @Test
+    @Category( NotDefaultFileSystem.class  )
     public void testPathsWithSamePathElementsButDifferentProviderAreDifferent() throws Exception {
-        assumeThat( FS, not( is( FileSystems.getDefault() ) ) );
-
         Path myABC = FS.getPath( nameA(), nameB(), nameC() );
         Path otherABC = FileSystems.getDefault().getPath( nameA(), nameB(), nameC() );
 
@@ -665,9 +665,8 @@ public abstract class Tests01NoContent extends Tests00Setup {
 //    }
 
     @Test( expected = UnsupportedOperationException.class )
+    @Category( NotDefaultFileSystem.class  )
     public void testToFileOnNonDefaultFSThrows() throws Exception {
-        assumeTrue( "default FileSystem does not throw", !FS.equals( FileSystems.getDefault() ) );
-
         absAB().toFile();
     }
 
@@ -710,9 +709,8 @@ public abstract class Tests01NoContent extends Tests00Setup {
     }
 
     @Test( expected = ClassCastException.class )
+    @Category( NotDefaultFileSystem.class  )
     public void testCompareToDifferentProviderThrows() throws Exception {
-        assumeThat( FS, not( is( FileSystems.getDefault() ) ) );
-
         relABC().compareTo( FileSystems.getDefault().getPath( nameA() ) );
     }
 

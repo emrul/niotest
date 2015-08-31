@@ -1,6 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,6 +90,13 @@ public class CombinedBuilder {
         return this;
 
     }
+
+    public CombinedBuilder fastOnly() {
+        descr.removeTopic( SlowTest.class );
+        return this;
+    }
+
+
     // ----
 
     public ClosablePlayground<CombinedBuilder> closable() {

@@ -50,6 +50,14 @@ existing readonly objects.
 
 ## Releases
 
+### 0.31
+
+* (minor) refactored default-filesystem check
+* (minor) tagged some tests as slow
+* osx: max path length is measured in UTF8 bytes but filename is measured in UTF16 codepoints
+       i.e path length measure is >= 2* the size of filename
+       but this is only for max testing
+
 ### 0.30
 
 * max path tests

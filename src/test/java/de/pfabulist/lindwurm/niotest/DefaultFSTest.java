@@ -69,15 +69,9 @@ public class DefaultFSTest extends AllTests {
                     fileStores().noLimitedPlayground().notExclusive().next().
                     closable().no().
                     watchable().delay( 12000 ).
-//                    pathConstraints().pathLength( 1016 ).next(). // huh should be unlimited
                     otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
                     time().noLastAccessTime().noCreationTime().next().
-                    //attributes().add( attributeBuilding( Posix.class, "posix", PosixFileAttributeView.class, PosixFileAttributes.class ).
-//                    addAttribute( "owner", PosixFileAttributes::owner ).
-//                    addAttribute( "permissions", PosixFileAttributes::permissions ).
-//                    addAttribute( "group", PosixFileAttributes::group )).
-//                    next().
-                            bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
+                    bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFile2IsNot" ).
                     bug( "testWatchTwoModifiesOneKey", os.isUnix() ).
@@ -92,7 +86,10 @@ public class DefaultFSTest extends AllTests {
                     bug( "testMovedWatchedDirCancelsKeys" ).
                     bug( "testTruncateOnAppendChannelThrows" ).
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
-                    done();
+
+                    //fastOnly().
+
+                            done();
 
         } else if( os.isUnix() ) {
             descr = build().
@@ -100,29 +97,26 @@ public class DefaultFSTest extends AllTests {
                     playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
                     fileStores().noLimitedPlayground().notExclusive().next().
                     closable().no().
-                    //watchable().delay( 12000 ).
-                    //pathConstraints().pathLength( 4095 ).next(). // PATH_MAX - null terminator
                     otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
                     time().noLastAccessTime().noCreationTime().next().
-                      bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
-                      bug( "testWatchSeveralEventsInOneDir" ).
-                      bug( "testCopySymLinkToItself" ).
-                      bug( "testCopyBrokenSymLinkToItself" ).
-                      bug( "testSymLinkToUnnormalizedRelPath" ).
-                      bug( "testMovedWatchedDirCancelsKeys" ).
-                      bug( "testTruncateOnAppendChannelThrows" ).
+                    bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
+                    bug( "testWatchSeveralEventsInOneDir" ).
+                    bug( "testCopySymLinkToItself" ).
+                    bug( "testCopyBrokenSymLinkToItself" ).
+                    bug( "testSymLinkToUnnormalizedRelPath" ).
+                    bug( "testMovedWatchedDirCancelsKeys" ).
+                    bug( "testTruncateOnAppendChannelThrows" ).
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                     done();
         } else if( os.isWindows() ) {
             descr = build().
-                    windows().noUNC().noRootComponents().next().
+                    windows().next().
                     playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
                     time().noLastAccessTime().next().
                     pathConstraints().noMaxFilenameLength().noMaxPathLength().next().
                     closable().no().
                     hardlinks().no().
-                    //watchable().no().
-                            fileStores().noLimitedPlayground().notExclusive().next().
+                    fileStores().noLimitedPlayground().notExclusive().next().
                     symlinks().no(). // privilege problem
                     otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
                     fsCreation().
@@ -134,13 +128,6 @@ public class DefaultFSTest extends AllTests {
                     bug( "testTruncateOnAppendChannelThrows" ).
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                     done();
-//                    attributes().add( attributeBuilding( DosAttributesT.class, "dos", DosFileAttributeView.class, DosFileAttributes.class ).
-//                            addAttribute( "hidden", DosFileAttributes::isHidden ).
-//                            addAttribute( "archive", DosFileAttributes::isArchive ).
-//                            addAttribute( "system", DosFileAttributes::isSystem )
-//                    // .addAttribute( "readonly", DosFileAttributes::isReadOnly ) not supported by Marschal
-            //  ).
-            //            remove( "owner", FileOwnerView.class ).next().
 
         } else {
             throw new UnsupportedOperationException( "os not supported: " + os );

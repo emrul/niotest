@@ -1,14 +1,4 @@
-package de.pfabulist.lindwurm.niotest.tests;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
-
-import java.nio.file.FileSystem;
-import java.nio.file.Path;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assume.assumeThat;
+package de.pfabulist.lindwurm.niotest.tests.topics;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -37,35 +27,4 @@ import static org.junit.Assume.assumeThat;
  * **** END LICENSE BLOCK ****
  */
 
-public abstract class Tests00Setup {
-
-    public final FSDescription description;
-    protected final FileSystem FS;
-
-    @Rule
-    public TestAnnotated annotated = new TestAnnotated();
-
-    @Rule
-    public TestName testMethodName = new TestName();
-
-    protected Tests00Setup( FSDescription description ) {
-        this.description = description;
-        FS = description.get( Path.class, "playground" ).getFileSystem();
-    }
-
-    @Before
-    public void setup() {
-        description.markHits( testMethodName );
-
-        if( null != annotated.getCats() ) {
-            for( int i = 0; i < annotated.getCats().value().length; i++ ) {
-                Class<?> top = annotated.getCats().value()[ i ];
-                assumeThat( "test: " + testMethodName.getMethodName() + " not run because FS is/has  not: " + top.getSimpleName(), description.provides( top ), is( true ));
-            }
-        }
-
-        assumeThat( "known bug" ,description.isBug( testMethodName ), is( false ) );
-
-    }
-
-}
+public interface NotDefaultFileSystem extends Topic {}

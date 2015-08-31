@@ -14,6 +14,7 @@ import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import javax.smartcardio.ATR;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
@@ -496,7 +497,7 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
     }
 
     @Test
-    @Category( { SymLink.class, DirSymLink.class } )
+    @Category( { SymLink.class, DirSymLink.class, Attributes.class, SlowTest.class } )
     public void testDoubleSymLinkReadAttributes() throws IOException, InterruptedException {
         fileTAB();
         Thread.sleep( 1100 );
@@ -528,7 +529,7 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
     }
 
     @Test
-    @Category( { SymLink.class, DirSymLink.class } )
+    @Category( { SymLink.class, DirSymLink.class, Attributes.class, SlowTest.class } )
     public void testDoubleSymLinkReadAttributesNoFollowLink() throws IOException, InterruptedException {
         fileTAB();
         Thread.sleep( 1100 );

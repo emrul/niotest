@@ -1,9 +1,11 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.NotDefaultFileSystem;
 import de.pfabulist.lindwurm.niotest.tests.topics.Readonly;
 import de.pfabulist.lindwurm.niotest.tests.topics.WorkingDirectoryInPlaygroundTree;
 
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 /**
@@ -45,6 +47,10 @@ public class Playground<T> extends DescriptionBuilder<T> {
 
         if ( !root.getRoot().equals( root.getFileSystem().getPath("").toAbsolutePath().getRoot())) {
             descr.removeTopic( WorkingDirectoryInPlaygroundTree.class );
+        }
+
+        if ( root.getFileSystem().equals( FileSystems.getDefault() )) {
+            descr.removeTopic( NotDefaultFileSystem.class );
         }
 
         return t;
