@@ -3,6 +3,7 @@ package de.pfabulist.lindwurm.niotest.tests;
 import de.pfabulist.lindwurm.niotest.tests.topics.*;
 import de.pfabulist.unchecked.Filess;
 import de.pfabulist.lindwurm.niotest.Utils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -394,10 +395,10 @@ public abstract class Tests02Dir extends Tests01NoContent {
      * ------------------------------------------------------------------------------
      */
 
-    protected static byte[] CONTENT;
-    protected static byte[] CONTENT_OTHER;
-    protected static byte[] CONTENT20k;
-    protected static byte[] CONTENT50;
+    @SuppressFBWarnings() protected static byte[] CONTENT;
+    @SuppressFBWarnings() protected static byte[] CONTENT_OTHER;
+    @SuppressFBWarnings() protected static byte[] CONTENT20k;
+    @SuppressFBWarnings() protected static byte[] CONTENT50;
 
     @BeforeClass
     public static void beforeDir() {

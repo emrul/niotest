@@ -87,7 +87,7 @@ public class DefaultFSTest extends AllTests {
                     bug( "testTruncateOnAppendChannelThrows" ).
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
 
-                    //fastOnly().
+                    fastOnly().
 
                             done();
 

@@ -2,7 +2,6 @@ package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.kleinod.collection.Sets;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileChannelT;
-import de.pfabulist.lindwurm.niotest.tests.topics.FileLockT;
 import de.pfabulist.lindwurm.niotest.tests.topics.Scatter;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import org.junit.Test;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
 import java.nio.channels.NonReadableChannelException;
 import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
@@ -23,6 +21,7 @@ import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Fail.fail;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -59,6 +58,8 @@ public abstract class Tests18FileChannels extends Tests17Windows {
     @Category( FileChannelT.class )
     public void testOpenFilChannel() throws IOException {
         try( FileChannel fch = FileChannel.open( fileTA(), Sets.asSet( WRITE, READ ) ) ) {
+        } catch( Exception e ) {
+            fail( "channels should be supported" );
         }
     }
 

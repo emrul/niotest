@@ -2,6 +2,7 @@ package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
 import de.pfabulist.lindwurm.niotest.tests.topics.NotDefaultFileSystem;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hamcrest.core.IsNull;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -26,8 +27,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.Assert.fail;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -580,6 +580,8 @@ public abstract class Tests01NoContent extends Tests00Setup {
                 case 2:
                     assertThat( kid, is( relC() ) );
                     break;
+                default:
+                    // nop
             }
 
             i++;
@@ -634,7 +636,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
     }
 
     @Test
-    @Category( NotDefaultFileSystem.class  )
+    @Category( NotDefaultFileSystem.class )
     public void testPathsWithSamePathElementsButDifferentProviderAreDifferent() throws Exception {
         Path myABC = FS.getPath( nameA(), nameB(), nameC() );
         Path otherABC = FileSystems.getDefault().getPath( nameA(), nameB(), nameC() );
@@ -665,19 +667,27 @@ public abstract class Tests01NoContent extends Tests00Setup {
 //    }
 
     @Test( expected = UnsupportedOperationException.class )
-    @Category( NotDefaultFileSystem.class  )
+    @Category( NotDefaultFileSystem.class )
     public void testToFileOnNonDefaultFSThrows() throws Exception {
         absAB().toFile();
     }
 
     @Test
     public void testPathMatcherKnowsGlob() {
-        FS.getPathMatcher( "glob:*" );
+        try {
+            FS.getPathMatcher( "glob:*" );
+        } catch ( UnsupportedOperationException exp ) {
+            fail( "glob should be supported" );
+        }
     }
 
     @Test
     public void testPathMatcherKnowsRegex() {
-        FS.getPathMatcher( "regex:.*" );
+        try {
+            FS.getPathMatcher( "regex:.*" );
+        } catch ( UnsupportedOperationException exp ) {
+            fail( "glob should be supported" );
+        }
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -709,7 +719,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
     }
 
     @Test( expected = ClassCastException.class )
-    @Category( NotDefaultFileSystem.class  )
+    @Category( NotDefaultFileSystem.class )
     public void testCompareToDifferentProviderThrows() throws Exception {
         relABC().compareTo( FileSystems.getDefault().getPath( nameA() ) );
     }
@@ -730,6 +740,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
     }
 
     @Test
+    @SuppressFBWarnings() // todo be more specific
     public void testPathIsImmutableToToAbsolute() throws Exception {
         Path rel = relAB();
         rel.toAbsolutePath();

@@ -27,7 +27,7 @@
     <parent>
         <groupId>de.pfabulist</groupId>
         <artifactId>opencage-parent</artifactId>
-        <version>2.3</version>
+        <version>3.0</version>
         <relativePath>../opencage-parent/pom.xml</relativePath>
     </parent>
 
@@ -92,7 +92,7 @@
         <dependency>
             <groupId>com.github.marschall</groupId>
             <artifactId>memoryfilesystem</artifactId>
-            <version>0.6.6</version>
+            <version>0.6.7</version>
             <scope>test</scope>
         </dependency>
 
@@ -113,7 +113,16 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <!--it's a testing framework => scope is compile-->
+            <scope>compile</scope>
         </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>com.google.code.findbugs</groupId>-->
+            <!--<artifactId>annotations</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+
 
     </dependencies>
 

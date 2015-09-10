@@ -1,6 +1,5 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import de.pfabulist.kleinod.collection.Sets;
 import de.pfabulist.lindwurm.niotest.matcher.IteratorMatcher;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
@@ -10,6 +9,7 @@ import de.pfabulist.lindwurm.niotest.tests.topics.Unix;
 import de.pfabulist.lindwurm.niotest.tests.topics.Windows;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import de.pfabulist.unchecked.Filess;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -51,6 +51,7 @@ import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeThat;
 
 /**
@@ -656,7 +657,7 @@ public abstract class Tests03File extends Tests02Dir {
             inout.position( 2 );
             ByteBuffer buffer = ByteBuffer.allocate( 2 );
             inout.read( buffer );
-            assertThat( buffer.array()[ 0 ], is( "a".getBytes()[ 0 ] ) );
+            assertThat( buffer.array()[ 0 ], is( getBytes("a")[ 0 ] ) );
         }
     }
 
@@ -734,8 +735,10 @@ public abstract class Tests03File extends Tests02Dir {
 
     @Test
     @Category( Unix.class )
-    public void testReadChannelOfDir() throws IOException {
+    public void testReadChannelOfDirDoesNotThrow() throws IOException {
         try( SeekableByteChannel channel = FS.provider().newByteChannel( getNonEmptyDir(), asSet( READ ) ) ) {
+        } catch( FileSystemException exp ) {
+            fail( "unix system should allow read of dir" );
         }
     }
 
@@ -789,7 +792,7 @@ public abstract class Tests03File extends Tests02Dir {
     @Category( Writable.class )
     public void testTruncateOnAppendChannelThrows() throws Exception{
         Path file = fileTA();
-        try( SeekableByteChannel channel =  FS.provider().newByteChannel( file, Sets.asSet( APPEND ) )) {
+        try( SeekableByteChannel channel =  FS.provider().newByteChannel( file, asSet( APPEND ) )) {
             channel.truncate( 2 );
         }
     }
@@ -823,6 +826,7 @@ public abstract class Tests03File extends Tests02Dir {
         return fileTA();
     }
 
+    @SuppressFBWarnings()
     protected static OpenOption[] standardOpen = { CREATE, TRUNCATE_EXISTING, WRITE };
 
 }

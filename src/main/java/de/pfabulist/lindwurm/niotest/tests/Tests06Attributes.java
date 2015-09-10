@@ -1,6 +1,5 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescription;
 import de.pfabulist.lindwurm.niotest.tests.topics.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -24,7 +23,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
+import static org.junit.Assert.fail;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -60,15 +59,17 @@ public abstract class Tests06Attributes extends Tests05URI {
 
     @Test
     @Category( Attributes.class )
-    public void testGetLastModifiedTime() throws IOException {
-        // expect no throw
-        Files.readAttributes( pathDefault(), BasicFileAttributes.class ).lastModifiedTime();
+    public void testGetLastModifiedTimeDoesNotThrow() throws IOException {
+        try {
+            Files.readAttributes( pathDefault(), BasicFileAttributes.class ).lastModifiedTime();
+        } catch( Exception e ) {
+            fail( "last modified time should be supported attribute" );
+        }
     }
 
     @Test
     @Category( { Attributes.class, Writable.class } )
     public void testGetCreationTimeIsRecent() throws IOException {
-        // expect no throw
         FileTime created = Files.readAttributes( fileTA(), BasicFileAttributes.class ).creationTime();
 
         assertThat( created, isCloseTo( FileTime.fromMillis( System.currentTimeMillis() ) ) );
@@ -133,7 +134,11 @@ public abstract class Tests06Attributes extends Tests05URI {
     public void testSizeOfDirDoesNotThrow() throws IOException {
         // the behaviour of the size of a dir is unspecified (e.g. whether it changes with new kids)
         // but it should not throw
-        Files.size( pathDefault() );
+        try {
+            Files.size( pathDefault() );
+        } catch( IOException e ) {
+            fail( "size of dir should not throw" );
+        }
     }
 
     @Test
@@ -279,6 +284,7 @@ public abstract class Tests06Attributes extends Tests05URI {
 
     @Test
     @Category( Attributes.class )
+    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     public void testGetUnsupportedAttributeThrows2() throws IOException {
 
         description.getAttributeDescriptions().forEach(
@@ -453,7 +459,11 @@ public abstract class Tests06Attributes extends Tests05URI {
         BasicFileAttributeView view = FS.provider().getFileAttributeView( absTA(), BasicFileAttributeView.class );
 
         fileTA();
-        view.readAttributes();
+        try {
+            view.readAttributes();
+        } catch( Exception e ) {
+            fail( "future files have a view" );
+        }
     }
 
     @Test( expected = NoSuchFileException.class )
@@ -487,7 +497,11 @@ public abstract class Tests06Attributes extends Tests05URI {
     @Test
     @Category( Attributes.class )
     public void testUserDefinedAttributes() {
-        Files.getFileAttributeView( getFile(), UserDefinedFileAttributeView.class );
+        try {
+            Files.getFileAttributeView( getFile(), UserDefinedFileAttributeView.class );
+        } catch( Exception e ) {
+            fail( "UserDefinedAttributeView must be supported" );
+        }
     }
 
 }

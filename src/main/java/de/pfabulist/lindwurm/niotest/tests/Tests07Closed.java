@@ -13,13 +13,14 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.ClosedDirectoryStreamException;
 import java.nio.file.ClosedFileSystemException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -234,6 +235,14 @@ public abstract class Tests07Closed extends Tests06Attributes {
         Files.write( getClosedFileA(), CONTENT_OTHER, APPEND );
     }
 
+    @Test( expected = ClosedDirectoryStreamException.class )
+    @Category( Closable.class )
+    public void testReadFromDirStreamOfClosedFSThrows() throws IOException {
+        for ( Path kid : getClosedDirStream()) {
+        }
+    }
+
+
     /*
      * ----------------------------------------------------------------------------------------
      */
@@ -279,9 +288,14 @@ public abstract class Tests07Closed extends Tests06Attributes {
         return description.closedFSVars.fs;
     }
 
+    public DirectoryStream<Path> getClosedDirStream() throws IOException {
+        getClosedFS();
+        return description.closedFSVars.dirStream;
+    }
+
     public FileSystemProvider getClosedFSProvider() throws IOException {
         getClosedFS();
-        return FS.provider();
+        return description.closedFSVars.provider;
     }
 
     public Path getClosedFileA() throws IOException {

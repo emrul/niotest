@@ -175,13 +175,13 @@ public class NullPath implements Path {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
 
         NullPath paths = (NullPath) o;
 
-        if (absolute != paths.absolute) return false;
-        if (fileSystem != null ? !fileSystem.equals(paths.fileSystem) : paths.fileSystem != null) return false;
+        if (absolute != paths.absolute) {return false; }
+        if (fileSystem != null ? !fileSystem.equals(paths.fileSystem) : paths.fileSystem != null) {return false; }
 
         return true;
     }

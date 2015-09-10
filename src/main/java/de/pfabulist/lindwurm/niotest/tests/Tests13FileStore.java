@@ -5,8 +5,6 @@ import de.pfabulist.lindwurm.niotest.tests.topics.FileStores;
 import de.pfabulist.lindwurm.niotest.tests.topics.SizeLimit;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 import de.pfabulist.unchecked.Filess;
-import de.pfabulist.unchecked.Unchecked;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -17,15 +15,12 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
-import java.util.IntSummaryStatistics;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 import static de.pfabulist.unchecked.Unchecked.u;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;

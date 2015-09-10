@@ -1,8 +1,10 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
+import org.junit.rules.Timeout;
 
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
@@ -48,6 +50,10 @@ public abstract class Tests00Setup {
     @Rule
     public TestName testMethodName = new TestName();
 
+    @Rule
+    @SuppressFBWarnings()
+    public Timeout globalTimeout = Timeout.seconds( 40 );
+
     protected Tests00Setup( FSDescription description ) {
         this.description = description;
         FS = description.get( Path.class, "playground" ).getFileSystem();
@@ -56,15 +62,16 @@ public abstract class Tests00Setup {
     @Before
     public void setup() {
         description.markHits( testMethodName );
+        String name = testMethodName.getMethodName();
 
         if( null != annotated.getCats() ) {
             for( int i = 0; i < annotated.getCats().value().length; i++ ) {
                 Class<?> top = annotated.getCats().value()[ i ];
-                assumeThat( "test: " + testMethodName.getMethodName() + " not run because FS is/has  not: " + top.getSimpleName(), description.provides( top ), is( true ));
+                assumeThat( "test: " + name + " not run because FS is/has  not: " + top.getSimpleName(), description.provides( top ), is( true ));
             }
         }
 
-        assumeThat( "known bug" ,description.isBug( testMethodName ), is( false ) );
+        assumeThat( "known bug: " +  name,description.isBug( testMethodName ), is( false ) );
 
     }
 

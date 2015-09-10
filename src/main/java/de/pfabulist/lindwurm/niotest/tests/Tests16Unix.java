@@ -1,28 +1,29 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.os.OS;
+import de.pfabulist.kleinod.os.PathLimits;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileOwnerView;
+import de.pfabulist.lindwurm.niotest.tests.topics.MaxFilename;
+import de.pfabulist.lindwurm.niotest.tests.topics.NotOSX;
 import de.pfabulist.lindwurm.niotest.tests.topics.OwnerView;
 import de.pfabulist.lindwurm.niotest.tests.topics.PermissionChecks;
 import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
 import de.pfabulist.lindwurm.niotest.tests.topics.Principals;
 import de.pfabulist.lindwurm.niotest.tests.topics.Unix;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.UserPrincipal;
 import java.nio.file.attribute.UserPrincipalLookupService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.containsString;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -105,7 +106,7 @@ public abstract class Tests16Unix extends Tests13FileStore {
     @Test
     @Category( { Posix.class, Unix.class, Principals.class } )
     public void testFilesHaveOwners() throws IOException {
-        assertThat( Files.getOwner( fileTA() ) ).isNotNull();
+        assertThat( Files.getOwner( getFile() ) ).isNotNull();
     }
 
     @Test
@@ -122,6 +123,19 @@ public abstract class Tests16Unix extends Tests13FileStore {
         UserPrincipal owner = Files.getOwner( FS.getPath( "" ).toAbsolutePath() );
 
         assertThat( lookupService.lookupPrincipalByName( owner.getName() ) ).isEqualTo( owner );
+    }
+
+    @Test
+    @Category( { Unix.class, NotOSX.class, MaxFilename.class } )
+    public void testFilenameTooLongBecauseUnicode() throws IOException {
+        String str = new String( Character.toChars( 0x10400 ) );
+        PathLimits limits = new PathLimits( new OS() );
+
+        String fname = longFileName( limits.getMaxPathLength() - str.length()  );
+
+        assertThat( fname.length() ).isLessThan( limits.filenameCount( fname ) );
+
+        assertThatThrownBy( () -> Files.write( absT().resolve( fname ), CONTENT ) ).isInstanceOf( FileSystemException.class );
     }
 
     // ?? should be true for osx

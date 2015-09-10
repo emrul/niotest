@@ -1,7 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.lindwurm.niotest.tests.topics.*;
-import org.hamcrest.MatcherAssert;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -15,11 +15,9 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.function.Function;
 
-import static de.pfabulist.kleinod.text.Strings.getBytes;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.fail;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -118,45 +116,54 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 
     @Test
     public void testCheckAccessUnnormalizedPath() throws IOException {
-        // expect no throw
-        FS.provider().checkAccess( unnormalize( getFile() ) );
+        try {
+            FS.provider().checkAccess( unnormalize( getFile() ) );
+        } catch( Exception e ) {
+            fail( "checkAccess fails to normalize" );
+        }
     }
 
     @Test
     @Category( WorkingDirectoryInPlaygroundTree.class )
     public void testCheckAccessRelativePath() throws IOException {
-        // expect no throw
-        FS.provider().checkAccess( relativize( getFile() ) );
+        try {
+            FS.provider().checkAccess( relativize( getFile() ) );
+        } catch( IOException e ) {
+            fail( "checkAccess does not work with relative paths" );
+        }
     }
 
     @Test
     public void testCheckAccessSupportesRead() throws IOException {
-        // should not throw UnsupportedOperationException
         try {
             FS.provider().checkAccess( getFile(), AccessMode.READ );
         } catch( AccessDeniedException e ) {
             //
+        } catch( UnsupportedOperationException e ) {
+            fail( "checkAccess must support READ" );
         }
     }
 
     @Test
     @Category( Writable.class )
     public void testCheckAccessSupportesWrite() throws IOException {
-        // should not throw UnsupportedOperationException
         try {
             FS.provider().checkAccess( fileTAB(), AccessMode.WRITE );
         } catch( AccessDeniedException e ) {
             //
+        } catch( UnsupportedOperationException e ) {
+            fail( "checkAccess must support WRITE" );
         }
     }
 
     @Test
     public void testCheckAccessSupportesExecute() throws IOException {
-        // should not throw UnsupportedOperationException
         try {
             FS.provider().checkAccess( getFile(), AccessMode.EXECUTE );
         } catch( AccessDeniedException e ) {
             //
+        } catch( UnsupportedOperationException e ) {
+            fail( "checkAccess must support EXECUTE" );
         }
     }
 
@@ -224,12 +231,20 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Test
     @Category( FileStores.class )
     public void testGetFileStoreUnnormalizedPath() throws IOException {
-        FS.provider().getFileStore( unnormalize( getFile() ) );
+        try {
+            FS.provider().getFileStore( unnormalize( getFile() ) );
+        } catch( Exception e ) {
+            fail( "getFileStore should accept unnormalized paths" );
+        }
     }
 
     @Test
     public void testIsHiddenUnnormalizedPath() throws IOException {
-        FS.provider().isHidden( unnormalize( getFile() ) );
+        try {
+            FS.provider().isHidden( unnormalize( getFile() ) );
+        } catch( Exception e ) {
+            fail( "isHidden should accept unnormalized paths" );
+        }
     }
 
     @Test
@@ -257,24 +272,40 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 
     @Test
     @Category( MaxFilename.class )
-    public void testMaxFilenameHasNoEffectOnPathConstruction() throws IOException {
-        getNonEmptyDir().resolve( tooLongFileName() );
+    public void testTooLongFilenameHasNoEffectOnPathConstruction() throws IOException {
+        try {
+            getEmptyDir().resolve( tooLongFileName() );
+        } catch( Exception e ) {
+            fail( "too long paths should be buildable" );
+        }
+    }
+
+    @Test
+    @Category({ MaxPath.class,  Writable.class })  //todo absTToolongPath for readonlies
+    public void testTooLongPathHasNoEffectOnPathConstruction() throws IOException {
+        try {
+            absTTooLongPath();
+        } catch( Exception e ) {
+            fail( "too long paths should be buildable" );
+        }
     }
 
     @Test
     @Category( { Writable.class, MaxFilename.class } )
-    public void testMaxFilenameWorks() throws IOException {
+    public void testWriteToMaxFilenameWorks() throws IOException {
         Path loong = absTLongFilename();
         Files.createDirectories( loong.getParent() );
         Files.write( loong, CONTENT );
+        assertThat( Files.readAllBytes( loong ) ).isEqualTo( CONTENT );
     }
 
     @Test
     @Category( { Writable.class, MaxPath.class } )
-    public void testMaxPathWorks() throws IOException {
+    public void testWriteToMaxPathWorks() throws IOException {
         Path loong = absTLongPath();
         Files.createDirectories( loong.getParent() );
         Files.write( loong, CONTENT );
+        assertThat( Files.readAllBytes( loong ) ).isEqualTo( CONTENT );
     }
 
     @Test
@@ -287,24 +318,26 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 
     @Test
     @Category( { Writable.class, MaxPath.class, LimitedPath.class } )
-    public void testMaxPathWriteTooLongThrows() throws IOException {
+    public void testCreateDirWithTooLongPathThrows() throws IOException {
         Path loong = absTTooLongPath();
         Files.createDirectories( loong.getParent() );
-        assertThatThrownBy( () -> Files.write( loong, CONTENT )).isInstanceOf( FileSystemException.class );
+        assertThatThrownBy( () -> Files.write( loong, CONTENT ) ).isInstanceOf( FileSystemException.class );
     }
 
     @Test
     @Category( { Writable.class, MaxFilename.class } )
-    public void testMaxFilenameDirOfLongWorks() throws IOException {
+    public void testCreateDirWitMaxFilenameWorks() throws IOException {
         Path loong = absTLongFilename();
         Files.createDirectories( loong );
+        assertThat( loong ).exists();
     }
 
     @Test
     @Category( { Writable.class, MaxPath.class } )
-    public void testMaxPathDirOfLongWorks() throws IOException {
+    public void testCreateDirOfMaxPathWorks() throws IOException {
         Path loong = absTLongPath();
         Files.createDirectories( loong );
+        assertThat( loong ).exists();
     }
 
     @Test( expected = FileSystemException.class )
@@ -319,7 +352,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     public void testMaxPathDirTooLongThrows() throws IOException {
         Path loong = absTTooLongPath();
         Files.createDirectories( loong.getParent() );
-        assertThatThrownBy( () -> Files.createDirectory( loong )).isInstanceOf( FileSystemException.class );
+        assertThatThrownBy( () -> Files.createDirectory( loong ) ).isInstanceOf( FileSystemException.class );
     }
 
     @Test
@@ -328,6 +361,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
         Path loong = absTLongFilename();
         Files.createDirectories( loong.getParent() );
         Files.copy( fileTAB(), loong );
+        assertThat( loong ).exists();
     }
 
     @Test
@@ -336,6 +370,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
         Path loong = absTLongPath();
         Files.createDirectories( loong.getParent() );
         Files.copy( fileTAB(), loong );
+        assertThat( loong ).exists();
     }
 
     @Test( expected = FileSystemException.class )
@@ -350,15 +385,15 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     public void testMaxPathCopyTooLongThrows() throws IOException {
         Path loong = absTTooLongPath();
         Files.createDirectories( loong.getParent() );
-        assertThatThrownBy( () -> Files.copy( fileTAB(), loong )).isInstanceOf( FileSystemException.class );
+        assertThatThrownBy( () -> Files.copy( fileTAB(), loong ) ).isInstanceOf( FileSystemException.class );
     }
 
     @Test
     @Category( { Writable.class, HardLink.class, MaxFilename.class } )
     public void testMaxFilenameHardLinkWorks() throws IOException {
         Path loong = absTLongFilename();
-        System.out.println( loong.toString().length());
         Files.createLink( loong, fileTAB() );
+        assertThat( loong ).exists();
     }
 
     @Test
@@ -367,6 +402,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
         Path loong = absTLongPath();
         Files.createDirectories( loong.getParent() );
         Files.createLink( loong, fileTAB() );
+        assertThat( loong ).exists();
     }
 
     @Test( expected = FileSystemException.class )
@@ -381,7 +417,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     public void testMaxPathHardLinkTooLongThrows() throws IOException {
         Path loong = absTTooLongPath();
         Files.createDirectories( loong.getParent() );
-        assertThatThrownBy(  () -> Files.createLink( loong, fileTAB() )).isInstanceOf( FileSystemException.class );
+        assertThatThrownBy( () -> Files.createLink( loong, fileTAB() ) ).isInstanceOf( FileSystemException.class );
     }
 
     @Test
@@ -389,6 +425,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     public void testMaxFilenameMoveWorks() throws IOException {
         Path loong = absTLongFilename();
         Files.move( fileTAB(), loong );
+        assertThat( loong ).exists();
     }
 
     @Test
@@ -397,6 +434,8 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
         Path loong = absTLongPath();
         Files.createDirectories( loong.getParent() );
         Files.move( fileTAB(), loong );
+        assertThat( loong ).exists();
+
     }
 
     @Test( expected = FileSystemException.class )
@@ -421,28 +460,27 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     //    Non-case-preserving	Impossible	       FAT12, FAT16 only when without long filename support.
 
     @Test
-    @Category( CaseInsensitive.class )
+    @Category({ CaseInsensitive.class, Writable.class  })
     public void testCaseInsensitiveWriting() throws IOException {
         Files.write( absTA(), CONTENT );
         Files.write( mixCase( absTA() ), CONTENT_OTHER );
 
-        MatcherAssert.assertThat( Files.readAllBytes( absTA() ), is( CONTENT_OTHER ) );
+        assertThat( Files.readAllBytes( absTA() ) ).isEqualTo( CONTENT_OTHER );
     }
 
     @Test
-    @Category( CaseInsensitive.class )
+    @Category({ CaseInsensitive.class, Writable.class })
     public void testCaseInsensitivePathsPointToSameFile() throws IOException {
 
         Path file = dirTA().resolve( nameD() );
 
         // create file where last filename is mixed case
         Files.write( mixCase( file ), CONTENT );
-
-        Files.isSameFile( file, mixCase( file ) );
+        assertThat( Files.isSameFile( file, mixCase( file ) ) ).isTrue();
     }
 
     @Test
-    @Category( { CasePreserving.class, CaseInsensitive.class } )
+    @Category( { CasePreserving.class, CaseInsensitive.class, Writable.class } )
     public void testCasePreserving() throws IOException {
 
         Path file = dirTA().resolve( nameD() );
@@ -461,7 +499,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     @Test
-    @Category( { CasePreserving.class, CaseInsensitive.class } )
+    @Category( { CasePreserving.class, CaseInsensitive.class, Writable.class } )
     public void testCaseRememberingOverwriteDoesNotOverwriteRememberedName() throws IOException {
         Path file = dirTA().resolve( nameD() );
 
@@ -471,8 +509,8 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 
         try( DirectoryStream<Path> dstr = Files.newDirectoryStream( file.getParent() ) ) {
             Path kid = dstr.iterator().next();
-            MatcherAssert.assertThat( kid.toString().toLowerCase(), is( file.toString().toLowerCase() ) );
-            MatcherAssert.assertThat( kid.toString(), not( is( file.toString() ) ) );
+            assertThat( kid.toString().toLowerCase() ).isEqualTo( file.toString().toLowerCase() );
+            assertThat( kid.toString() ).isNotEqualTo( file.toString() );
         }
     }
 
@@ -578,21 +616,14 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     public String maxFileName() {
-        return longFileName( getMaxFilenameLength());
+        return longFileName( getMaxFilenameLength() );
     }
 
     public String longFileName( int len ) {
-        String ret = "";
-        String ch = (String) description.get( ONE_CHAR_COUNT );
-
-        for( int i = 0; i < len; i++ ) {
-            ret += ch;
-        }
-
-        return ret;
-
+        return longFileName( len, (String) description.get( ONE_CHAR_COUNT ) );
     }
 
+    @SuppressFBWarnings()
     public String longFileName( int len, String one ) {
         String ret = "";
 
@@ -608,28 +639,28 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
         return maxPath( getMaxPathLength() );
     }
 
-
+    @SuppressFBWarnings()
     public Path maxPath( int len ) {
         Path ret = absT();
         Function<String, Integer> counting = (Function<String, Integer>) description.get( GET_PATH_LENGTH );
         int max = len - counting.apply( ret.toString() ) - 1;
         int maxFN = getMaxFilenameLength();
 
-        String fname = longFileName(  maxFN / 8 ); // a must always work
+        String fname = longFileName( maxFN / 8 ); // a must always work
 
         String str = "";
 
-        while (  counting.apply( str ) < (max - maxFN - 1) ) {
-            System.out.println(" dddddd ");
-            str += (str.isEmpty() ? "" : FS.getSeparator()) + fname;
+        while( counting.apply( str ) < ( max - maxFN - 1 ) ) {
+            // System.out.println(" dddddd ");
+            str += ( str.isEmpty() ? "" : FS.getSeparator() ) + fname;
         }
 
         String foo = longFileName( max - counting.apply( str ) - 1, "b" );
 
-        System.out.println(max - counting.apply( str ) - 1);
-        System.out.println("++++++++++++++ " + counting.apply( ret.resolve( str ).toString() ) + " " + ret.resolve( str ).toString().length());
+//        System.out.println(max - counting.apply( str ) - 1);
+//        System.out.println("++++++++++++++ " + counting.apply( ret.resolve( str ).toString() ) + " " + ret.resolve( str ).toString().length());
 
-        if ( foo.length() > 0 ) {
+        if( foo.length() > 0 ) {
             str += FS.getSeparator() + foo;
         }
 
@@ -639,7 +670,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 //        ret = ret.resolve( "ab" ).resolve( str );
         ret = ret.resolve( str );
 
-        System.out.println("++++++++++++++ " + counting.apply( ret.toString() ) + " " + ret.toString().length());
+//        System.out.println("++++++++++++++ " + counting.apply( ret.toString() ) + " " + ret.toString().length());
 
         return ret;
     }
@@ -702,6 +733,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     // todo work with unicode
+    @SuppressFBWarnings()
     public String mixCase( String inStr ) {
         String mix = "";
 

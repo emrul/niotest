@@ -1,6 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests.attributes;
 
 import de.pfabulist.lindwurm.niotest.tests.topics.Topic;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -37,6 +38,7 @@ import java.util.function.Function;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressFBWarnings()
 public class AttributeDescription {
 
     private final String name;

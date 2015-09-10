@@ -50,7 +50,7 @@ public class JimTest extends AllTests {
                 playground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/play" ) ).
                 time().noLastAccessTime().next().
                 closable().playground( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/play" ) ).
-                pathConstraints().noMaxFilenameLength().next().
+                pathConstraints().noMaxFilenameLength().noMaxPathLength().next().
                 //symlinks().toOtherProviders(false).relativeTargets(false).yes().
                 watchable().delay( 5500 ).
                 fileStores().sizeLimitedPlayground( Jimfs.newFileSystem( Configuration.unix().toBuilder().setMaxSize( 38000L ).build() ).getPath( "/play" ) ).next().
@@ -76,9 +76,11 @@ public class JimTest extends AllTests {
                 bug( "testTransferFromPositionBeyondFileSizeDoesNothing" ).
                 bug( "testAppendAndTruncateExistingThrows" ).
                 bug( "testTruncateOnAppendChannelThrows" ).
-                nitpick( "testReadChannelOfDir", "who cares" ).
+                nitpick( "testReadChannelOfDirDoesNotThrow", "who cares" ).
                 nitpick( "testRegisterWatchServiceOfClosedFS", "different exception" ).
                 nitpick( "testAppendAndReadThrows", "IllegalArg instead Unsupported" ).
+                fastOnly().
+
                 done();
 
 //                new FSDescription().

@@ -1,6 +1,5 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import de.pfabulist.lindwurm.niotest.tests.topics.CasePreserving;
 import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
 import de.pfabulist.lindwurm.niotest.tests.topics.RootComponent;
 import de.pfabulist.lindwurm.niotest.tests.topics.UNC;
@@ -16,6 +15,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.attribute.DosFileAttributeView;
 
+import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -277,7 +277,11 @@ public abstract class Tests17Windows extends Tests16Unix {
     @Test
     @Category({ Windows.class, UNC.class })
     public void testWindowsdUNCPlenty() throws IOException {
-        FS.getPath( "\\//////\\\\localhost\\////foo" );
+        try {
+            FS.getPath( "\\//////\\\\localhost\\////foo" );
+        } catch( InvalidPathException e ) {
+            fail( "UNC paths are valid in Windows" );
+        }
     }
 
     @Test

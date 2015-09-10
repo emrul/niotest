@@ -60,7 +60,10 @@ public class MarschallWindowsTest extends AllTests {
                                     //addFileAttributeView( FileOwnerAttributeView.class ).
                                     build( "marschall" ).getPath( "play" ).toAbsolutePath() ).
                 time().noLastAccessTime().next().
-                pathConstraints().noMaxFilenameLength().noMaxPathLength().next().
+                pathConstraints().
+                    noMaxFilenameLength().
+                    //noMaxPathLength().
+                    next().
                 closable().no().
                 hardlinks().no().
                 symlinks().noDirs().next().
@@ -76,7 +79,7 @@ public class MarschallWindowsTest extends AllTests {
                 bugScheme( "RelSymLink", true ).
                 bug( "testAppendAndReadThrows" ).
                 bug( "testEveryChannelWriteUpdatesLastModifiedTime" ).
-                bug( "testGetNameOfDefaultPathIsItself" ).
+                //bug( "testGetNameOfDefaultPathIsItself" ).
                 bug( "testPathMatcherKnowsGlob" ).
                 bug( "testPathMatherGlob" ).
                 bug( "testReadCreateNonExistingFileThrows" ).
@@ -94,12 +97,15 @@ public class MarschallWindowsTest extends AllTests {
                 bug( "testPathToUriAndBackIsSame" ).
                 bug( "testPathWithWitespaceToUriAndBack" ).
                 bug( "testAppendAndTruncateExistingThrows" ).
-                bug( "testCasePreserving" ). // todo report
+                //bug( "testCasePreserving" ). // todo report
                 nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                 nitpick( "testGetPathOtherURI", "different exception" ).
                 nitpick( "testRegisterOnClosedWatchService", "different exception" ).
                 bug( "testTransferFromSourceWithLessThanRequestedBytesGetsWhatsThere" ).
                 bug( "testTransferFromPositionBeyondFileSizeDoesNothing" ).
+
+                fastOnly().
+
                 done();
 
 //                new FSDescription().

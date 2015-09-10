@@ -4,7 +4,6 @@ import de.pfabulist.lindwurm.niotest.tests.topics.Topic;
 
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**

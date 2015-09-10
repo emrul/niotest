@@ -7,6 +7,7 @@ import de.pfabulist.lindwurm.niotest.tests.Tests10PathWithContent;
 import de.pfabulist.lindwurm.niotest.tests.topics.CaseInsensitive;
 import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
 import de.pfabulist.lindwurm.niotest.tests.topics.NonCasePreserving;
+import de.pfabulist.lindwurm.niotest.tests.topics.NotOSX;
 import de.pfabulist.lindwurm.niotest.tests.topics.PermissionChecks;
 import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
 import de.pfabulist.lindwurm.niotest.tests.topics.Windows;
@@ -94,6 +95,7 @@ public class UnixBuilder<T> extends DescriptionBuilder<T>{
         descr.props.put( Tests10PathWithContent.GET_PATH_LENGTH, (Function<String,Integer>)pathLimits::pathCount );
 
         descr.addTopic( CaseInsensitive.class );
+        descr.removeTopic( NotOSX.class );
 
         // todo : is seperator (in a way)
         return this;

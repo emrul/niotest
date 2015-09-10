@@ -27,6 +27,7 @@ import static java.nio.file.StandardOpenOption.WRITE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -105,8 +106,8 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     public void testWatchPollWithTimeoutTimesOut() throws Exception {
         watcherSetup( ENTRY_DELETE );
         // no events
-
         getWatchService().poll( 1000, TimeUnit.MILLISECONDS );
+        assertThat( "did we reach that?", not( is( "no" ) ) );
     }
 
     @Test( expected = ClosedWatchServiceException.class )

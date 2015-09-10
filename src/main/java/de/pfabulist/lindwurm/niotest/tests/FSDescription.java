@@ -152,13 +152,13 @@ public class FSDescription {
     public void printUnused() {
         for ( String bug : bugs ) {
             if ( !usedBugs.contains( bug )) {
-                System.out.println( "not found method called " + bug );
+                System.out.println( "not found method called " + bug ); // NOPMD
             }
         }
 
         for ( String scheme : bugSchemes ) {
             if ( !usedSchemes.contains( scheme )) {
-                System.out.println( "bug scheme did not apply :  " + scheme );
+                System.out.println( "bug scheme did not apply :  " + scheme );  // NOPMD
             }
         }
     }
@@ -175,7 +175,7 @@ public class FSDescription {
         public Path                  play;
         public Path fileA;
         public Path dirB;
-        public Path                  pathCf;
+        //public Path                  pathCf;
         public SeekableByteChannel readChannel;
         public URI uri;
         public DirectoryStream<Path> dirStream;

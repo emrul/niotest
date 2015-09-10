@@ -78,12 +78,11 @@ public class CombinedBuilder {
     }
 
     public CombinedBuilder waitForFile( Path path ) {
-        //        Path p = Paths.get("/Users/openCage/tmp/vvm.start" );
         while ( !Files.exists( path )) {
             try {
                 Thread.sleep( 2000 );
             } catch( InterruptedException e ) {
-                e.printStackTrace();
+
             }
         }
 
