@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.crypt.Hash;
 import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescription;
 import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
 import de.pfabulist.lindwurm.niotest.tests.topics.Topic;
@@ -65,6 +66,8 @@ public class FSDescription {
     private Set<String> usedBugs = new HashSet<>();
     private Set<String> usedSchemes = new HashSet<>();
     public final Map<String,AttributeDescription> attributeDescriptions = new HashMap<>();
+
+    protected final Map<Integer,Path> longPaths = new HashMap<>();
 
     public FSDescription() {
         attributeDescriptions.put( "basic", attributeBuilding( Basic.class, "basic", BasicFileAttributeView.class, BasicFileAttributes.class ).

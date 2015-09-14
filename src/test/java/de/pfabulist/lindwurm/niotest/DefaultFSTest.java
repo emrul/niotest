@@ -74,14 +74,14 @@ public class DefaultFSTest extends AllTests {
                     bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFile2IsNot" ).
-                    bug( "testWatchTwoModifiesOneKey", os.isUnix() ).
-                    bug( "testWatchSeveralEventsInOneDir", os.isUnix() ).
-                    bug( "testWatchAModify", os.isUnix() ).
-                    bug( "testWatchATruncate", os.isUnix() ).
+                    bug( "testWatchTwoModifiesOneKey" ).
+                    bug( "testWatchSeveralEventsInOneDir" ).
+                    bug( "testWatchAModify" ).
+                    bug( "testWatchATruncate" ).
                     bug( "testDeleteWatchedDirCancelsKeys" ).
-                    bug( "testIsSameFileWithSpecialUnnormalizedPath", os.isUnix() ).
-                    bug( "testCopySymLinkToItself", os.isUnix() ).
-                    bug( "testCopyBrokenSymLinkToItself", os.isUnix() ).
+                    bug( "testIsSameFileWithSpecialUnnormalizedPath" ).
+                    bug( "testCopySymLinkToItself" ).
+                    bug( "testCopyBrokenSymLinkToItself" ).
                     bug( "testSymLinkToUnnormalizedRelPath" ).
                     bug( "testMovedWatchedDirCancelsKeys" ).
                     bug( "testTruncateOnAppendChannelThrows" ).

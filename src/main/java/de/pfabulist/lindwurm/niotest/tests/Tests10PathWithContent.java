@@ -53,7 +53,6 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     public static final String ONE_CHAR_COUNT = "oneCharCount";
     public static final String GET_FILENAME_LENGTH = "filenameLenth";
     public static final String GET_PATH_LENGTH = "pathLength";
-    private Path maxPath;
 
     public Tests10PathWithContent( FSDescription capa ) {
         super( capa );
@@ -624,7 +623,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     public String longFileName( int len ) {
-        return (String) description.get( ONE_CHAR_COUNT );
+        return longFileName( len, (String) description.get( ONE_CHAR_COUNT ));
     }
 
     @SuppressFBWarnings()
@@ -646,44 +645,54 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @SuppressFBWarnings()
     public Path maxPath( int len ) {
 
-        if ( maxPath == null ) {
+        Path ret = description.longPaths.get( len );
 
-            Path ret = getCommon();
-            Function<String, Integer> counting = (Function<String, Integer>) s -> getBytes(s).length;
-            //(Function<String, Integer>) description.get( GET_PATH_LENGTH );
-            int max = len - counting.apply(ret.toString()) - 1;
-            int maxFN = getMaxFilenameLength();
-
-            String fname = longFileName(maxFN / 8); // a must always work
-
-            String str = "";
-
-            while (counting.apply(str) < (max - maxFN - 1)) {
-                // System.out.println(" dddddd ");
-                str += (str.isEmpty() ? "" : FS.getSeparator()) + fname;
+        if ( ret != null ) {
+            try {
+                Files.deleteIfExists( ret );
+            } catch( IOException e ) {
+                //
             }
 
-            String foo = longFileName(max - counting.apply(str) - 1, "b");
+            return ret;
+        }
+
+        ret = getCommon();
+
+        Function<String, Integer> counting = //(Function<String, Integer>) s -> getBytes(s).length;
+            (Function<String, Integer>) description.get( GET_PATH_LENGTH );
+        int max = len - counting.apply(ret.toString()) - 1;
+        int maxFN = getMaxFilenameLength();
+
+        String fname = longFileName(maxFN / 8); // a must always work
+
+        String str = "";
+
+        while (counting.apply(str) < (max - maxFN - 1)) {
+            str += (str.isEmpty() ? "" : FS.getSeparator()) + fname;
+        }
+
+        String foo = longFileName(max - counting.apply(str) - 1, "b");
 
 //        System.out.println(max - counting.apply( str ) - 1);
 //        System.out.println("++++++++++++++ " + counting.apply( ret.resolve( str ).toString() ) + " " + ret.resolve( str ).toString().length());
 
-            if (foo.length() > 0) {
-                str += FS.getSeparator() + foo;
-            }
+        if (foo.length() > 0) {
+            str += FS.getSeparator() + foo;
+        }
 
-            //str += FS.getSeparator() + "-";
-            //str += FS.getSeparator() + longFileName( max - counting.apply( str ) - 1);
+        //str += FS.getSeparator() + "-";
+        //str += FS.getSeparator() + longFileName( max - counting.apply( str ) - 1);
 
 //        ret = ret.resolve( "ab" ).resolve( str );
-            ret = ret.resolve(str);
+        ret = ret.resolve(str);
+
+        description.longPaths.put( len, ret );
 
 //        System.out.println("++++++++++++++ " + counting.apply( ret.toString() ) + " " + ret.toString().length());
 
-            maxPath = ret;
-        }
 
-        return maxPath;
+        return ret;
     }
 
 //    public String longFileName() {
