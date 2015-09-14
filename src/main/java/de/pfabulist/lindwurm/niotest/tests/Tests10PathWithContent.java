@@ -15,6 +15,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.function.Function;
 
+import static de.pfabulist.kleinod.text.Strings.getBytes;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.fail;
@@ -52,6 +53,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     public static final String ONE_CHAR_COUNT = "oneCharCount";
     public static final String GET_FILENAME_LENGTH = "filenameLenth";
     public static final String GET_PATH_LENGTH = "pathLength";
+    private Path maxPath;
 
     public Tests10PathWithContent( FSDescription capa ) {
         super( capa );
@@ -321,13 +323,14 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     public void testCreateDirWithTooLongPathThrows() throws IOException {
         Path loong = absTTooLongPath();
         Files.createDirectories( loong.getParent() );
-        assertThatThrownBy( () -> Files.write( loong, CONTENT ) ).isInstanceOf( FileSystemException.class );
+        assertThatThrownBy( () -> Files.write( loong, CONTENT ) ).isInstanceOf( IOException.class );
     }
 
     @Test
     @Category( { Writable.class, MaxFilename.class } )
-    public void testCreateDirWitMaxFilenameWorks() throws IOException {
+    public void testCreateDirWithMaxFilenameWorks() throws IOException {
         Path loong = absTLongFilename();
+        System.out.println( loong.toString().length());
         Files.createDirectories( loong );
         assertThat( loong ).exists();
     }
@@ -336,6 +339,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, MaxPath.class } )
     public void testCreateDirOfMaxPathWorks() throws IOException {
         Path loong = absTLongPath();
+        System.out.println( loong.toString().length());
         Files.createDirectories( loong );
         assertThat( loong ).exists();
     }
@@ -352,7 +356,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     public void testMaxPathDirTooLongThrows() throws IOException {
         Path loong = absTTooLongPath();
         Files.createDirectories( loong.getParent() );
-        assertThatThrownBy( () -> Files.createDirectory( loong ) ).isInstanceOf( FileSystemException.class );
+        assertThatThrownBy( () -> Files.createDirectory( loong ) ).isInstanceOf( IOException.class );
     }
 
     @Test
@@ -385,7 +389,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     public void testMaxPathCopyTooLongThrows() throws IOException {
         Path loong = absTTooLongPath();
         Files.createDirectories( loong.getParent() );
-        assertThatThrownBy( () -> Files.copy( fileTAB(), loong ) ).isInstanceOf( FileSystemException.class );
+        assertThatThrownBy( () -> Files.copy( fileTAB(), loong ) ).isInstanceOf( IOException.class );
     }
 
     @Test
@@ -450,7 +454,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     public void testMaxPathMoveTooLongThrows() throws IOException {
         Path loong = absTTooLongPath();
         Files.createDirectories( loong.getParent() );
-        assertThatThrownBy( () -> Files.move( fileTAB(), loong ) ).isInstanceOf( FileSystemException.class );
+        assertThatThrownBy( () -> Files.move( fileTAB(), loong ) ).isInstanceOf( IOException.class );
     }
 
     //    Examples of systems with various case-sensitivity and case-preservation exist among file systems:
@@ -620,7 +624,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     public String longFileName( int len ) {
-        return longFileName( len, (String) description.get( ONE_CHAR_COUNT ) );
+        return (String) description.get( ONE_CHAR_COUNT );
     }
 
     @SuppressFBWarnings()
@@ -641,38 +645,45 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 
     @SuppressFBWarnings()
     public Path maxPath( int len ) {
-        Path ret = absT();
-        Function<String, Integer> counting = (Function<String, Integer>) description.get( GET_PATH_LENGTH );
-        int max = len - counting.apply( ret.toString() ) - 1;
-        int maxFN = getMaxFilenameLength();
 
-        String fname = longFileName( maxFN / 8 ); // a must always work
+        if ( maxPath == null ) {
 
-        String str = "";
+            Path ret = getCommon();
+            Function<String, Integer> counting = (Function<String, Integer>) s -> getBytes(s).length;
+            //(Function<String, Integer>) description.get( GET_PATH_LENGTH );
+            int max = len - counting.apply(ret.toString()) - 1;
+            int maxFN = getMaxFilenameLength();
 
-        while( counting.apply( str ) < ( max - maxFN - 1 ) ) {
-            // System.out.println(" dddddd ");
-            str += ( str.isEmpty() ? "" : FS.getSeparator() ) + fname;
-        }
+            String fname = longFileName(maxFN / 8); // a must always work
 
-        String foo = longFileName( max - counting.apply( str ) - 1, "b" );
+            String str = "";
+
+            while (counting.apply(str) < (max - maxFN - 1)) {
+                // System.out.println(" dddddd ");
+                str += (str.isEmpty() ? "" : FS.getSeparator()) + fname;
+            }
+
+            String foo = longFileName(max - counting.apply(str) - 1, "b");
 
 //        System.out.println(max - counting.apply( str ) - 1);
 //        System.out.println("++++++++++++++ " + counting.apply( ret.resolve( str ).toString() ) + " " + ret.resolve( str ).toString().length());
 
-        if( foo.length() > 0 ) {
-            str += FS.getSeparator() + foo;
-        }
+            if (foo.length() > 0) {
+                str += FS.getSeparator() + foo;
+            }
 
-        //str += FS.getSeparator() + "-";
-        //str += FS.getSeparator() + longFileName( max - counting.apply( str ) - 1);
+            //str += FS.getSeparator() + "-";
+            //str += FS.getSeparator() + longFileName( max - counting.apply( str ) - 1);
 
 //        ret = ret.resolve( "ab" ).resolve( str );
-        ret = ret.resolve( str );
+            ret = ret.resolve(str);
 
 //        System.out.println("++++++++++++++ " + counting.apply( ret.toString() ) + " " + ret.toString().length());
 
-        return ret;
+            maxPath = ret;
+        }
+
+        return maxPath;
     }
 
 //    public String longFileName() {

@@ -129,7 +129,7 @@ public abstract class Tests16Unix extends Tests13FileStore {
     @Category( { Unix.class, NotOSX.class, MaxFilename.class } )
     public void testFilenameTooLongBecauseUnicode() throws IOException {
         String str = new String( Character.toChars( 0x10400 ) );
-        PathLimits limits = new PathLimits( new OS() );
+        PathLimits limits = new PathLimits( OS.UNIX );
 
         String fname = longFileName( limits.getMaxPathLength() - str.length()  );
 

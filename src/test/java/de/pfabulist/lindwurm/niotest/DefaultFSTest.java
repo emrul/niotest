@@ -113,7 +113,13 @@ public class DefaultFSTest extends AllTests {
                     windows().next().
                     playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
                     time().noLastAccessTime().next().
-                    pathConstraints().noMaxFilenameLength().noMaxPathLength().next().
+                    pathConstraints().
+                        pathLength( 32000).
+                        //filenameLength( 100 ).
+
+                        //noMaxFilenameLength().
+                        //noMaxPathLength().
+                        next().
                     closable().no().
                     hardlinks().no().
                     fileStores().noLimitedPlayground().notExclusive().next().
@@ -123,7 +129,7 @@ public class DefaultFSTest extends AllTests {
                     uri( Tests05URI::toURIWithoutPath ).next().
 
                     bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
-                    bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
+                    bug( "testEveryChannelWriteUpdatesLastModifiedTime" ).
                     bug( "testMovedWatchedDirCancelsKeys" ).
                     bug( "testTruncateOnAppendChannelThrows" ).
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
