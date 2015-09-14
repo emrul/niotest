@@ -1,6 +1,5 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import de.pfabulist.kleinod.crypt.Hash;
 import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescription;
 import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
 import de.pfabulist.lindwurm.niotest.tests.topics.Topic;
@@ -68,6 +67,8 @@ public class FSDescription {
     public final Map<String,AttributeDescription> attributeDescriptions = new HashMap<>();
 
     protected final Map<Integer,Path> longPaths = new HashMap<>();
+
+    protected final Map<Object,Object> rem = new HashMap<>();
 
     public FSDescription() {
         attributeDescriptions.put( "basic", attributeBuilding( Basic.class, "basic", BasicFileAttributeView.class, BasicFileAttributes.class ).

@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.collection.P;
 import de.pfabulist.lindwurm.niotest.tests.topics.*;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Test;
@@ -15,7 +16,6 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.function.Function;
 
-import static de.pfabulist.kleinod.text.Strings.getBytes;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.fail;
@@ -329,7 +329,6 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, MaxFilename.class } )
     public void testCreateDirWithMaxFilenameWorks() throws IOException {
         Path loong = absTLongFilename();
-        System.out.println( loong.toString().length());
         Files.createDirectories( loong );
         assertThat( loong ).exists();
     }
@@ -338,7 +337,6 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, MaxPath.class } )
     public void testCreateDirOfMaxPathWorks() throws IOException {
         Path loong = absTLongPath();
-        System.out.println( loong.toString().length());
         Files.createDirectories( loong );
         assertThat( loong ).exists();
     }
@@ -628,11 +626,20 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 
     @SuppressFBWarnings()
     public String longFileName( int len, String one ) {
-        String ret = "";
+
+        String ret = (String)description.rem.get( P.of( len, one ));
+
+        if ( ret != null ) {
+            return ret;
+        }
+
+        ret = "";
 
         for( int i = 0; i < len; i++ ) {
             ret += one;
         }
+
+        description.rem.put( P.of( len, one ), ret );
 
         return ret;
 
@@ -659,8 +666,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 
         ret = getCommon();
 
-        Function<String, Integer> counting = //(Function<String, Integer>) s -> getBytes(s).length;
-            (Function<String, Integer>) description.get( GET_PATH_LENGTH );
+        Function<String, Integer> counting = (Function<String, Integer>) description.get( GET_PATH_LENGTH );
         int max = len - counting.apply(ret.toString()) - 1;
         int maxFN = getMaxFilenameLength();
 

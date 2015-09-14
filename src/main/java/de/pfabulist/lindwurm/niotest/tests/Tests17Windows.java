@@ -1,7 +1,5 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import de.pfabulist.kleinod.os.OS;
-import de.pfabulist.kleinod.os.PathLimits;
 import de.pfabulist.lindwurm.niotest.tests.topics.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -186,16 +184,6 @@ public abstract class Tests17Windows extends Tests16Unix {
 
         Files.setAttribute( absTA(), "dos:hidden", false );
         assertThat( Files.isHidden( fileTA() ), is(false) );
-    }
-
-    @Test
-    @Category({ Windows.class, MaxFilename.class, Writable.class })
-    public void testLoongFilenamewith2CharUnicodeWorks() throws IOException {
-        String str = new String( Character.toChars( 0x10400 ) );
-        PathLimits limits = new PathLimits( OS.WINDOWS );
-
-        String fname = longFileName( limits.getMaxPathLength() - str.length()  );
-
     }
 
 
