@@ -62,7 +62,7 @@ public class MarschallWindowsTest extends AllTests {
                 time().noLastAccessTime().next().
                 pathConstraints().
                     noMaxFilenameLength().
-                    //noMaxPathLength().
+                    noMaxPathLength(). // timeout
                     next().
                 closable().no().
                 hardlinks().no().
@@ -79,7 +79,7 @@ public class MarschallWindowsTest extends AllTests {
                 bugScheme( "RelSymLink", true ).
                 bug( "testAppendAndReadThrows" ).
                 bug( "testEveryChannelWriteUpdatesLastModifiedTime" ).
-                //bug( "testGetNameOfDefaultPathIsItself" ).
+                bug( "testGetNameOfDefaultPathIsItself" ).
                 bug( "testPathMatcherKnowsGlob" ).
                 bug( "testPathMatherGlob" ).
                 bug( "testReadCreateNonExistingFileThrows" ).
@@ -97,7 +97,7 @@ public class MarschallWindowsTest extends AllTests {
                 bug( "testPathToUriAndBackIsSame" ).
                 bug( "testPathWithWitespaceToUriAndBack" ).
                 bug( "testAppendAndTruncateExistingThrows" ).
-                //bug( "testCasePreserving" ). // todo report
+                bug( "testCasePreserving" ). // todo report its fat non-case-preserving + case-insensitive
                 nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                 nitpick( "testGetPathOtherURI", "different exception" ).
                 nitpick( "testRegisterOnClosedWatchService", "different exception" ).

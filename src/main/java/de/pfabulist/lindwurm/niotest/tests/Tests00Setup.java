@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.paths.Pathss;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Before;
 import org.junit.Rule;
@@ -73,6 +74,11 @@ public abstract class Tests00Setup {
 
         assumeThat( "known bug: " +  name,description.isBug( testMethodName ), is( false ) );
 
+        Pathss.deleteRecursive( getCommon() );
+    }
+
+    public Path getCommon() {
+        return description.get( Path.class, "playground" ).resolve( "niotestCommon" );
     }
 
 }
