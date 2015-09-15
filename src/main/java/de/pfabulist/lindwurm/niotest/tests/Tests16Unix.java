@@ -131,7 +131,7 @@ public abstract class Tests16Unix extends Tests13FileStore {
         String str = new String( Character.toChars( 0x10400 ) );
         PathLimits limits = new PathLimits( OS.UNIX );
 
-        String fname = longFileName( limits.getMaxPathLength() - str.length()  );
+        String fname = longFileName( limits.getMaxPathLength() - str.length(), str );
 
         assertThat( fname.length() ).isLessThan( limits.filenameCount( fname ) );
 
