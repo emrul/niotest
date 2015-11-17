@@ -4,6 +4,7 @@ import de.pfabulist.kleinod.os.OS;
 import de.pfabulist.kleinod.os.PathLimits;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileOwnerView;
+import de.pfabulist.lindwurm.niotest.tests.topics.HiddenDotFiles;
 import de.pfabulist.lindwurm.niotest.tests.topics.MaxFilename;
 import de.pfabulist.lindwurm.niotest.tests.topics.NotOSX;
 import de.pfabulist.lindwurm.niotest.tests.topics.OwnerView;
@@ -79,7 +80,7 @@ public abstract class Tests16Unix extends Tests13FileStore {
     }
 
     @Test
-    @Category( Unix.class )
+    @Category({ Unix.class, HiddenDotFiles.class })
     public void testDotFilesAreHidden() throws IOException {
         assertThat( Files.isHidden( getFile().resolve( ".dot" ) ) ).isTrue();
     }

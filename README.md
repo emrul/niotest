@@ -50,13 +50,21 @@ existing readonly objects.
 
 ## Releases
 
+### 0.32
+
+* configurable time to wait for attribute changes
+
 ### 0.31
 
-* (minor) refactored default-filesystem check
-* (minor) tagged some tests as slow
 * osx: max path length is measured in UTF8 bytes but filename is measured in UTF16 codepoints
        i.e path length measure is >= 2* the size of filename
        but this is only for max testing
+* configuration option to not test LastModifiedTime
+* (minor) refactored default-filesystem check
+* (minor) tagged some tests as slow
+* (minor) CONTENT20k changed to utf-8 safe values and renamed CONTENT_BIG
+* (minor) hidden dot files option
+* (minor) first sync testing
 
 ### 0.30
 

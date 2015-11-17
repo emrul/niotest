@@ -27,5 +27,4 @@ package de.pfabulist.lindwurm.niotest.tests.topics;
  * **** END LICENSE BLOCK ****
  */
 
-public class LastModifiedTime {
-}
+public interface LastModifiedTime extends Topic {}

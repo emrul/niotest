@@ -4,6 +4,7 @@ import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 import de.pfabulist.lindwurm.niotest.tests.topics.CreationTime;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileKeyT;
 import de.pfabulist.lindwurm.niotest.tests.topics.LastAccessTime;
+import de.pfabulist.lindwurm.niotest.tests.topics.LastModifiedTime;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -51,5 +52,16 @@ public class BasicAttributesBuilder<T> extends DescriptionBuilder<T> {
         descr.removeTopic( FileKeyT.class );
         return this;
     }
+
+    public BasicAttributesBuilder<T> noLastModifiedTime( ) {
+        descr.removeTopic( LastModifiedTime.class );
+        return this;
+    }
+
+    public BasicAttributesBuilder<T> attributeDelay( int delay) {
+        descr.props.put( "attributeDelay", delay );
+        return this;
+    }
+
 
 }

@@ -207,7 +207,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class } )
+    @Category( { SlowTest.class, Writable.class, Attributes.class, LastModifiedTime.class } )
     public void testCreateDirSetsModifiedTimeOfParent() throws IOException, InterruptedException {
         Path dir = dirTA();
         FileTime created = Files.getLastModifiedTime( dir );
@@ -229,7 +229,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class } )
+    @Category( { SlowTest.class, Writable.class, CreationTime.class } )
     public void testCreateDirSetsCreationTime() throws IOException, InterruptedException {
         Path dir = absTA();
         FileTime before = Files.getLastModifiedTime( dir.getParent() );
@@ -397,18 +397,27 @@ public abstract class Tests02Dir extends Tests01NoContent {
 
     @SuppressFBWarnings() protected static byte[] CONTENT;
     @SuppressFBWarnings() protected static byte[] CONTENT_OTHER;
-    @SuppressFBWarnings() protected static byte[] CONTENT20k;
+    @SuppressFBWarnings() protected static byte[] CONTENT_BIG;
     @SuppressFBWarnings() protected static byte[] CONTENT50;
 
     @BeforeClass
+    @SuppressFBWarnings
     public static void beforeDir() {
         CONTENT = getBytes( "hi there" );
         CONTENT_OTHER = getBytes( "what's up, huh, huh" );
 
-        CONTENT20k = new byte[ 20000 ];
-        for( int i = 0; i < 20000; i++ ) {
-            CONTENT20k[ i ] = (byte) ( i );
+
+        String str = new String( Character.toChars( 0x10400 ) );
+        for ( int i = 0; i < 12; i++ ) {
+            str = str + str;
         }
+
+        CONTENT_BIG = getBytes( str + "abcde" ); // not on 2^x bounderies
+
+
+//        for( int i = 0; i < 20000; i++ ) {
+//            CONTENT_BIG[ i ] = (byte) ( i );
+//        }
 
         CONTENT50 = new byte[ 50 ];
         for( int i = 0; i < 50; i++ ) {
@@ -520,7 +529,12 @@ public abstract class Tests02Dir extends Tests01NoContent {
 
     public void waitForAttribute() {
         try {
-            Thread.sleep( 2000 ); //capabilities.attributeDelay() );
+            Object del = description.props.get( "attributeDelay" );
+            if ( del != null ) {
+                Thread.sleep( (Integer)del );
+            } else {
+                Thread.sleep( 50 );
+            }
         } catch( InterruptedException e ) {
         }
     }

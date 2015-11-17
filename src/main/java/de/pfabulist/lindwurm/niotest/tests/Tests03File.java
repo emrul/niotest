@@ -1,10 +1,14 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.lindwurm.niotest.matcher.IteratorMatcher;
+import de.pfabulist.lindwurm.niotest.tests.topics.AllwaysSync;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
+import de.pfabulist.lindwurm.niotest.tests.topics.CreationTime;
 import de.pfabulist.lindwurm.niotest.tests.topics.LastAccessTime;
+import de.pfabulist.lindwurm.niotest.tests.topics.LastModifiedTime;
 import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
+import de.pfabulist.lindwurm.niotest.tests.topics.Synced;
 import de.pfabulist.lindwurm.niotest.tests.topics.Unix;
 import de.pfabulist.lindwurm.niotest.tests.topics.Windows;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
@@ -165,10 +169,14 @@ public abstract class Tests03File extends Tests02Dir {
 
         Path target = absTA();
 
-        Files.write( target, CONTENT20k, standardOpen );
+        Files.write( target, CONTENT_BIG, standardOpen );
         byte[] out = Files.readAllBytes( target );
 
-        assertThat( out, is( CONTENT20k ) );
+//        for ( int i = 0; i < 20000; i++ ) {
+//            assertThat( "- " + i + " -", out[i], is( CONTENT_BIG[i] ));
+//        }
+
+        assertThat( out, is( CONTENT_BIG ) );
     }
 
     //    @Test
@@ -194,9 +202,9 @@ public abstract class Tests03File extends Tests02Dir {
 //    public void testReadChunks() throws IOException {
 //
 //        Path target = absTA();
-//        Files.write( target, CONTENT20k, standardOpen );
+//        Files.write( target, CONTENT_BIG, standardOpen );
 //
-//        byte[] out = new byte[ 2 * CONTENT20k.length ];
+//        byte[] out = new byte[ 2 * CONTENT_BIG.length ];
 //        int sum = 0;
 //        try( SeekableByteChannel readChannel = Files.newByteChannel( target, READ ) ) {
 //
@@ -209,12 +217,12 @@ public abstract class Tests03File extends Tests02Dir {
 //
 //                sum += count;
 //
-//                assertThat( sum, lessThan( CONTENT20k.length + 200 ) );
+//                assertThat( sum, lessThan( CONTENT_BIG.length + 200 ) );
 //            }
 //        }
 //
-//        assertThat( sum, is( CONTENT20k.length ) );
-//        assertThat( Arrays.copyOfRange( out, 0, sum ), is( CONTENT20k ) );
+//        assertThat( sum, is( CONTENT_BIG.length ) );
+//        assertThat( Arrays.copyOfRange( out, 0, sum ), is( CONTENT_BIG ) );
 //    }
 
     @Test
@@ -413,7 +421,7 @@ public abstract class Tests03File extends Tests02Dir {
     }
 
     @Test
-    @Category( Writable.class )
+    @Category({ Writable.class, Attributes.class, CreationTime.class } )
     public void testOverwriteTruncateExistingDoesNotChangeCreationTime() throws IOException {
 
         Path there = fileTA();
@@ -456,7 +464,7 @@ public abstract class Tests03File extends Tests02Dir {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Attributes.class } )
+    @Category( { SlowTest.class, Writable.class, Attributes.class, LastModifiedTime.class } )
     public void testCreateFileSetsModifiedTimeOfParent() throws IOException, InterruptedException {
 
         Path file = absTA();
@@ -491,7 +499,7 @@ public abstract class Tests03File extends Tests02Dir {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Attributes.class } )
+    @Category( { SlowTest.class, Writable.class, Attributes.class, LastModifiedTime.class } )
     public void testCreateFileSetModifiedTime() throws Exception {
         Path file = absTA();
         FileTime parentCreated = Files.getLastModifiedTime( file.getParent() );
@@ -515,7 +523,7 @@ public abstract class Tests03File extends Tests02Dir {
 //    }
 
     @Test
-    @Category( { Writable.class, Attributes.class } )
+    @Category( { Writable.class, Attributes.class, LastModifiedTime.class } )
     public void testModifiedDateIsCloseToCurrentTime() throws Exception {
         Path file = fileTA();
         FileTime before = FileTime.from( Clock.systemUTC().instant() );
@@ -645,7 +653,7 @@ public abstract class Tests03File extends Tests02Dir {
     }
 
     @Test
-    @Category( Writable.class )
+    @Category({ Writable.class, Synced.class, AllwaysSync.class })
     public void testReadAndWrite() throws IOException {
         Path file = fileTA();
         try( SeekableByteChannel inout = FS.provider().newByteChannel( file, asSet( WRITE, READ ) ) ) {
@@ -743,7 +751,7 @@ public abstract class Tests03File extends Tests02Dir {
     }
 
     @Test
-    @Category( { SlowTest.class, Attributes.class, Writable.class } )
+    @Category( { SlowTest.class, Attributes.class, Writable.class, LastModifiedTime.class } )
     public void testEveryChannelWriteUpdatesLastModifiedTime() throws IOException, InterruptedException {
 
         Path file = fileTA();

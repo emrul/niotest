@@ -629,7 +629,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 
         String ret = (String)description.rem.get( P.of( len, one ));
 
-        if ( ret != null ) {
+        if ( ret != null    ) {
             return ret;
         }
 

@@ -300,7 +300,7 @@ public abstract class Tests06Attributes extends Tests05URI {
     }
 
     @Test
-    @Category( { Attributes.class, Writable.class } )
+    @Category( { Attributes.class, Writable.class, LastModifiedTime.class } )
     public void testSetLastModifiedTimeViaString() throws IOException {
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = getFile();
@@ -310,7 +310,7 @@ public abstract class Tests06Attributes extends Tests05URI {
     }
 
     @Test
-    @Category( { Attributes.class, Writable.class } )
+    @Category( { Attributes.class, Writable.class, LastModifiedTime.class } )
     public void testSetLastModifiedTimeViaFiles() throws IOException {
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = fileTA();
@@ -320,7 +320,7 @@ public abstract class Tests06Attributes extends Tests05URI {
     }
 
     @Test
-    @Category( { Attributes.class, Writable.class } )
+    @Category( { Attributes.class, Writable.class, LastModifiedTime.class } )
     public void testSetLastModifiedTimeViaView() throws IOException {
         FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
         final Path file = getFile();

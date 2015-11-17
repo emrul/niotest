@@ -2,6 +2,7 @@ package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.kleinod.collection.Sets;
 import de.pfabulist.lindwurm.niotest.tests.topics.CreationTime;
+import de.pfabulist.lindwurm.niotest.tests.topics.LastModifiedTime;
 import de.pfabulist.unchecked.Filess;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.Copy;
@@ -34,6 +35,10 @@ import static de.pfabulist.lindwurm.niotest.matcher.IteratorMatcher.isIn;
 import static de.pfabulist.lindwurm.niotest.matcher.PathExists.exists;
 import static de.pfabulist.lindwurm.niotest.matcher.PathIsDirectory.isDirectory;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -99,7 +104,7 @@ public abstract class Tests04Copy extends Tests03File {
     }
 
     @Test
-    @Category( { Writable.class, Copy.class, SlowTest.class, Attributes.class } )
+    @Category( { Writable.class, Copy.class, SlowTest.class, Attributes.class, CreationTime.class } )
     public void testCopyResultHasCreationTime() throws Exception {
         FileTime before = Files.getLastModifiedTime( srcFile() );
         waitForAttribute();
@@ -251,7 +256,7 @@ public abstract class Tests04Copy extends Tests03File {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Move.class, Attributes.class } )
+    @Category( { SlowTest.class, Writable.class, Move.class, Attributes.class, LastModifiedTime.class } )
     public void testMoveChangesModifiedTimeOfParent() throws IOException, InterruptedException {
         FileTime modi = Files.getLastModifiedTime( srcFile().getParent() );
         waitForAttribute();
@@ -260,7 +265,7 @@ public abstract class Tests04Copy extends Tests03File {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Move.class, Attributes.class } )
+    @Category( { SlowTest.class, Writable.class, Move.class, Attributes.class, LastModifiedTime.class } )
     public void testMoveChangesModifiedTimeOfTargetsParent() throws IOException, InterruptedException {
         FileTime modi = Files.getLastModifiedTime( tgt().getParent() );
         waitForAttribute();
@@ -345,7 +350,7 @@ public abstract class Tests04Copy extends Tests03File {
     @Category( { Writable.class, Delete.class } )
     public void testDeleteFileRemovesItFromParentsKids() throws IOException, InterruptedException {
         final Path file = fileTAB();
-        Files.write( file, CONTENT, standardOpen );
+//        Files.write( file, CONTENT, standardOpen );
         Files.delete( file );
         try( DirectoryStream<Path> kids = Files.newDirectoryStream( file.getParent() ) ) {
             assertThat( file, not( isIn( kids ) ) );
@@ -375,7 +380,7 @@ public abstract class Tests04Copy extends Tests03File {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Delete.class, Attributes.class } )
+    @Category( { SlowTest.class, Writable.class, Delete.class, Attributes.class, LastModifiedTime.class } )
     public void testDeleteFileChangesParentsModificationTime() throws IOException, InterruptedException {
         FileTime modified = Files.getLastModifiedTime( fileTAB().getParent() );
         waitForAttribute();
@@ -395,7 +400,7 @@ public abstract class Tests04Copy extends Tests03File {
     }
 
     @Test
-    @Category( { SlowTest.class, Writable.class, Delete.class, Attributes.class } )
+    @Category( { SlowTest.class, Writable.class, Delete.class, Attributes.class, LastModifiedTime.class } )
     public void testDeleteDirChangesParentsModificationTime() throws IOException, InterruptedException {
         FileTime modified = Files.getLastModifiedTime( dirTAB().getParent() );
         waitForAttribute();
@@ -412,7 +417,7 @@ public abstract class Tests04Copy extends Tests03File {
     // another parent of root problem
     @Test( expected = Exception.class )
     @Category( { Writable.class, Delete.class } )
-    public void testDeleteRootThrowa() throws IOException {
+    public void testDeleteRootThrows() throws IOException {
         Files.delete( defaultRoot() );
     }
 
@@ -420,7 +425,7 @@ public abstract class Tests04Copy extends Tests03File {
     @Category( { Writable.class, Delete.class } )
     public void testDeleteRecreate() throws IOException {
         Files.delete( fileTAB() );
-        Files.write( absTAB(), CONTENT, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE );
+        Files.write( absTAB(), CONTENT, CREATE_NEW, WRITE );
         assertThat( Files.readAllBytes( absTAB() ), is( CONTENT ) );
     }
 
@@ -429,23 +434,26 @@ public abstract class Tests04Copy extends Tests03File {
     @Category( { Writable.class, Delete.class } )
     public void testDeleteIfExistsRecreate() throws IOException {
         Files.deleteIfExists( fileTAB() );
-        Files.write( absTAB(), CONTENT, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING );
+        Files.write( absTAB(), CONTENT, CREATE, WRITE, TRUNCATE_EXISTING );
         assertThat( Files.readAllBytes( absTAB() ), is( CONTENT ) );
     }
 
     @Test
     @Category( { Writable.class, Move.class } )
-    public void testRenameSourceIsNoLongerKid() throws IOException {
-        Files.move( srcFile(), src().getParent().resolve( "tgt" ) );
+    public void testRenamingAFileRemovesNameFromParentsDirStream() throws IOException {
 
-        try( DirectoryStream<Path> kids = Files.newDirectoryStream( src().getParent() ) ) {
-            assertThat( src(), not( isIn( kids ) ) );
+        Path file = srcFile();
+
+        Files.move( file, file.getParent().resolve( "tgt" ) );
+
+        try( DirectoryStream<Path> kids = Files.newDirectoryStream( file.getParent() ) ) {
+            assertThat( file, not( isIn( kids ) ) );
         }
     }
 
     @Test
     @Category( { Writable.class, Move.class } )
-    public void testRenameTargetIsKid() throws IOException {
+    public void testRenamingAFileAddsNameToParentsDirStream() throws IOException {
         Path tgt = src().getParent().resolve( "tgt" );
         Files.move( srcFile(), tgt );
 
@@ -481,7 +489,7 @@ public abstract class Tests04Copy extends Tests03File {
     public void testDeleteWhileWriting() throws IOException {
         Path file = fileTA();
 
-        try( ByteChannel ch = Files.newByteChannel( file, Sets.asSet( StandardOpenOption.WRITE ) ) ) {
+        try( ByteChannel ch = Files.newByteChannel( file, Sets.asSet( WRITE ) ) ) {
             Files.delete( file );
             assertThat( file, Matchers.not( exists() ) );
 
@@ -496,7 +504,7 @@ public abstract class Tests04Copy extends Tests03File {
     public void testMoveWhileWriting() throws IOException {
         Path file = fileTA();
 
-        try( ByteChannel ch = Files.newByteChannel( file, Sets.asSet( StandardOpenOption.WRITE ) ) ) {
+        try( ByteChannel ch = Files.newByteChannel( file, Sets.asSet( WRITE ) ) ) {
 
             Files.move( file, absTB() );
             assertThat( file, Matchers.not( exists() ) );

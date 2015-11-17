@@ -97,6 +97,8 @@ public class MarschallWindowsTest extends AllTests {
                 bug( "testPathToUriAndBackIsSame" ).
                 bug( "testPathWithWitespaceToUriAndBack" ).
                 bug( "testAppendAndTruncateExistingThrows" ).
+                bug( "testRenamingAFileAddsNameToParentsDirStream" ).      // reported
+                bug( "testRenamingAFileRemovesNameFromParentsDirStream" ). // reported
                 bug( "testCasePreserving" ). // todo report its fat non-case-preserving + case-insensitive
                 nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                 nitpick( "testGetPathOtherURI", "different exception" ).

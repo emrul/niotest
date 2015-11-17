@@ -1,5 +1,8 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
+import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.AllwaysSync;
+
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
@@ -27,5 +30,14 @@ package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
  * **** END LICENSE BLOCK ****
  */
 
-public class SyncBuilder<T> {
+public class SyncBuilder<T> extends DescriptionBuilder<T>{
+    public SyncBuilder( FSDescription descr, T t ) {
+        super( descr, t );
+    }
+
+    public SyncBuilder<T> notAllways() {
+        descr.removeTopic( AllwaysSync.class );
+        return this;
+
+    }
 }

@@ -6,6 +6,7 @@ import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 import de.pfabulist.lindwurm.niotest.tests.Tests10PathWithContent;
 import de.pfabulist.lindwurm.niotest.tests.topics.CaseInsensitive;
 import de.pfabulist.lindwurm.niotest.tests.topics.DosAttributesT;
+import de.pfabulist.lindwurm.niotest.tests.topics.HiddenDotFiles;
 import de.pfabulist.lindwurm.niotest.tests.topics.NonCasePreserving;
 import de.pfabulist.lindwurm.niotest.tests.topics.NotOSX;
 import de.pfabulist.lindwurm.niotest.tests.topics.PermissionChecks;
@@ -103,5 +104,10 @@ public class UnixBuilder<T> extends DescriptionBuilder<T>{
 
     public UnixBuilder<T> osx() {
         return hfsPlus(); // default for osx
+    }
+
+    public UnixBuilder<T> noHiddenDotFiles() {
+        descr.removeTopic( HiddenDotFiles.class );
+        return this;
     }
 }

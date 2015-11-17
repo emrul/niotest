@@ -27,5 +27,5 @@ package de.pfabulist.lindwurm.niotest.tests.topics;
  * **** END LICENSE BLOCK ****
  */
 
-public interface Synced {
+public interface Synced extends Topic {
 }

@@ -70,7 +70,7 @@ public class DefaultFSTest extends AllTests {
                     closable().no().
                     watchable().delay( 12000 ).
                     otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
-                    time().noLastAccessTime().noCreationTime().next().
+                    time().noLastAccessTime().noCreationTime().attributeDelay( 2000 ).next().
                     bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFile2IsNot" ).
@@ -87,9 +87,8 @@ public class DefaultFSTest extends AllTests {
                     bug( "testTruncateOnAppendChannelThrows" ).
                     nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
 
-                    fastOnly().
-
-                            done();
+                    //fastOnly().
+                    done();
 
         } else if( os.isUnix() ) {
             descr = build().
@@ -98,7 +97,7 @@ public class DefaultFSTest extends AllTests {
                     fileStores().noLimitedPlayground().notExclusive().next().
                     closable().no().
                     otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
-                    time().noLastAccessTime().noCreationTime().next().
+                    time().noLastAccessTime().noCreationTime().attributeDelay( 2000 ).next().
                     bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
                     bug( "testWatchSeveralEventsInOneDir" ).
                     bug( "testCopySymLinkToItself" ).
@@ -112,7 +111,7 @@ public class DefaultFSTest extends AllTests {
             descr = build().
                     windows().next().
                     playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
-                    time().noLastAccessTime().next().
+                    time().noLastAccessTime().attributeDelay( 2000 ).next().
                     pathConstraints().
                         pathLength( 32000).
                         //filenameLength( 100 ).

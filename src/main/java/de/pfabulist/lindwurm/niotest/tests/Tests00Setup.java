@@ -1,10 +1,8 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.junit.rules.Timeout;
 
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
@@ -50,9 +48,9 @@ public abstract class Tests00Setup {
     @Rule
     public TestName testMethodName = new TestName();
 
-    @Rule
-    @SuppressFBWarnings()
-    public Timeout globalTimeout = Timeout.seconds( 40 );
+//    @Rule
+//    @SuppressFBWarnings()
+//    public Timeout globalTimeout = Timeout.seconds( 40 );
 
     protected Tests00Setup( FSDescription description ) {
         this.description = description;

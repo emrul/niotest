@@ -135,7 +135,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
         FileStore store = FS.provider().getFileStore( file );
         long before = store.getUnallocatedSpace();
         for ( int i = 0; i < 10; i++ ) {
-            Files.write( file, CONTENT20k, StandardOpenOption.APPEND );
+            Files.write( file, CONTENT_BIG, StandardOpenOption.APPEND );
         }
 
         assertThat( store.getUsableSpace(), lessThanOrEqualTo( before ) );
@@ -156,10 +156,10 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
         FileStore store = sizeLimitedRoot().getFileSystem().provider().getFileStore( sizeLimitedRoot() );
 
         while( store.getUsableSpace() > 20000 ) {
-            Files.write( sizeLimitedRoot().resolve( UUID.randomUUID().toString() ), CONTENT20k );
+            Files.write( sizeLimitedRoot().resolve( UUID.randomUUID().toString() ), CONTENT_BIG );
         }
 
-        assertThatThrownBy( () -> Files.write( sizeLimitedRoot().resolve( UUID.randomUUID().toString() ), CONTENT20k ) ).
+        assertThatThrownBy( () -> Files.write( sizeLimitedRoot().resolve( UUID.randomUUID().toString() ), CONTENT_BIG ) ).
                 isInstanceOf( IOException.class );
     }
 
@@ -170,10 +170,10 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
         FileStore store = sizeLimitedRoot().getFileSystem().provider().getFileStore( sizeLimitedRoot() );
 
         while( store.getUsableSpace() > 20000 ) {
-            Files.write( sizeLimitedRoot().resolve( UUID.randomUUID().toString() ), CONTENT20k );
+            Files.write( sizeLimitedRoot().resolve( UUID.randomUUID().toString() ), CONTENT_BIG );
         }
 
-        assertThatThrownBy( () -> Files.write( fileInLimitedPlayground(), CONTENT20k, StandardOpenOption.APPEND ) ).
+        assertThatThrownBy( () -> Files.write( fileInLimitedPlayground(), CONTENT_BIG, StandardOpenOption.APPEND ) ).
                 isInstanceOf( IOException.class );
     }
 
@@ -184,7 +184,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
         FileStore store = sizeLimitedRoot().getFileSystem().provider().getFileStore( sizeLimitedRoot() );
 
         while( store.getUsableSpace() > 20000 ) {
-            Files.write( sizeLimitedRoot().resolve( UUID.randomUUID().toString() ), CONTENT20k );
+            Files.write( sizeLimitedRoot().resolve( UUID.randomUUID().toString() ), CONTENT_BIG );
         }
 
         Path target = sizeLimitedRoot().resolve( "target" );
@@ -221,7 +221,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
 
         if ( !Files.exists( ret )) {
             try {
-                Files.write( ret, CONTENT20k );
+                Files.write( ret, CONTENT_BIG );
             } catch( IOException e ) {
                 throw u( e );
             }

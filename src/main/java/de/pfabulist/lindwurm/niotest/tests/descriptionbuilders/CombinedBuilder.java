@@ -1,6 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
+import de.pfabulist.lindwurm.niotest.tests.topics.Principals;
 import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
 
 import java.nio.file.Files;
@@ -95,6 +96,12 @@ public class CombinedBuilder {
         return this;
     }
 
+    public CombinedBuilder noPrincipals() {
+        descr.removeTopic( Principals.class );
+        return this;
+    }
+
+
 
     // ----
 
@@ -164,4 +171,8 @@ public class CombinedBuilder {
     }
 
     public TestEnvironmentBuilder<CombinedBuilder> testEnv() { return new TestEnvironmentBuilder(descr, this); }
+
+    public SyncBuilder<CombinedBuilder> sync() {
+        return new SyncBuilder( descr, this );
+    }
 }
