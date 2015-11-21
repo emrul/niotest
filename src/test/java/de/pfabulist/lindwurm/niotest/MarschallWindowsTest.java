@@ -78,31 +78,17 @@ public class MarschallWindowsTest extends AllTests {
                             remove( "owner", FileOwnerView.class ).next().
                 bugScheme( "RelSymLink", true ).
                 bug( "testAppendAndReadThrows" ).
-                bug( "testEveryChannelWriteUpdatesLastModifiedTime" ).
                 bug( "testGetNameOfDefaultPathIsItself" ).
-                bug( "testPathMatcherKnowsGlob" ).
-                bug( "testPathMatherGlob" ).
-                bug( "testReadCreateNonExistingFileThrows" ).
                 bug( "testCopyIntoItself" ).
                 bug( "testCopyNonEmptyDirDoesNotCopyKids" ).
-                bug( "testUnsupportedAttributeViewReturnsNull" ).
                 bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).
-                bug( "testIsSameFileOfDifferentPathNonExistingFile2IsNot" ).
-                bug( "testCopyToSymLink" ).
                 bug( "testSymLinkToUnnormalizedRelPath" ).
-                bug( "testIsSameFileOtherProvider2" ).
-                bug( "testIsSameFileOnEqualPathElementsOtherProvider" ).
                 bug( "testGetFileStoreOfNonExistent" ).
                 bug( "testGetFileStoreOfBrokenSymLink" ).
                 bug( "testPathToUriAndBackIsSame" ).
                 bug( "testPathWithWitespaceToUriAndBack" ).
                 bug( "testAppendAndTruncateExistingThrows" ).
-                bug( "testRenamingAFileAddsNameToParentsDirStream" ).      // reported
-                bug( "testRenamingAFileRemovesNameFromParentsDirStream" ). // reported
-                bug( "testCasePreserving" ). // todo report its fat non-case-preserving + case-insensitive
-                nitpick( "testIsSameFileOtherProvider", "strange anyway" ).
                 nitpick( "testGetPathOtherURI", "different exception" ).
-                nitpick( "testRegisterOnClosedWatchService", "different exception" ).
                 bug( "testTransferFromSourceWithLessThanRequestedBytesGetsWhatsThere" ).
                 bug( "testTransferFromPositionBeyondFileSizeDoesNothing" ).
 
