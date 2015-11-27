@@ -72,8 +72,8 @@ public class MarschallWindowsTest extends AllTests {
                 attributes().add( attributeBuilding( DosAttributesT.class, "dos", DosFileAttributeView.class, DosFileAttributes.class ).
                                           addAttribute( "hidden", DosFileAttributes::isHidden ).
                                           addAttribute( "archive", DosFileAttributes::isArchive ).
-                                          addAttribute( "system", DosFileAttributes::isSystem )
-                                  // .addAttribute( "readonly", DosFileAttributes::isReadOnly ) not supported by Marschal
+                                          addAttribute( "system", DosFileAttributes::isSystem ).
+                                          addAttribute( "readonly", DosFileAttributes::isReadOnly )
                                   ).
                             remove( "owner", FileOwnerView.class ).next().
                 bugScheme( "RelSymLink", true ).
@@ -85,10 +85,7 @@ public class MarschallWindowsTest extends AllTests {
                 bug( "testSymLinkToUnnormalizedRelPath" ).
                 bug( "testGetFileStoreOfNonExistent" ).
                 bug( "testGetFileStoreOfBrokenSymLink" ).
-                bug( "testPathToUriAndBackIsSame" ).
-                bug( "testPathWithWitespaceToUriAndBack" ).
                 bug( "testAppendAndTruncateExistingThrows" ).
-                nitpick( "testGetPathOtherURI", "different exception" ).
                 bug( "testTransferFromSourceWithLessThanRequestedBytesGetsWhatsThere" ).
                 bug( "testTransferFromPositionBeyondFileSizeDoesNothing" ).
 
