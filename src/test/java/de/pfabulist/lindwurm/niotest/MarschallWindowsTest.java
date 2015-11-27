@@ -69,14 +69,8 @@ public class MarschallWindowsTest extends AllTests {
                 symlinks().noDirs().next().
                 watchable().no().
                 fileStores().noLimitedPlayground().next().
-                attributes().add( attributeBuilding( DosAttributesT.class, "dos", DosFileAttributeView.class, DosFileAttributes.class ).
-                                          addAttribute( "hidden", DosFileAttributes::isHidden ).
-                                          addAttribute( "archive", DosFileAttributes::isArchive ).
-                                          addAttribute( "system", DosFileAttributes::isSystem ).
-                                          addAttribute( "readonly", DosFileAttributes::isReadOnly )
-                                  ).
-                            remove( "owner", FileOwnerView.class ).next().
-                bugScheme( "RelSymLink", true ).
+                attributes().remove( "owner", FileOwnerView.class ).next().
+                bugScheme( "RelSymLink" ).
                 bug( "testAppendAndReadThrows" ).
                 bug( "testGetNameOfDefaultPathIsItself" ).
                 bug( "testCopyIntoItself" ).
@@ -93,29 +87,6 @@ public class MarschallWindowsTest extends AllTests {
 
                 done();
 
-//                new FSDescription().
-//                windows().UNCPaths( false ).yes().
-//                closable().no().
-//                hardLinks().no().
-//                watchService().no().
-//                symLinks().toDirs( false ).toOtherProviders(false).yes().
-//                pathConstraints().no().
-//                bug( "testCopyIntoItself").
-//                bug( "testCopyNonEmptyDirDoesNotCopyKids" ).
-//                bug( "testAppendAndReadThrows" ).
-//                bug( "testCopyToSymLink").
-//                bug("testGetNameOfDefaultPathIsItself")
-////                unix(true).
-//                watchService().delay(5500).yes().
-//                symLinks().toOtherProviders(false).yes().
-//                time().lastAccessTime(false).yes().
-//                bugScheme("Unnormalized").
-//                bugScheme("TooLong").
-//                nitpick("testAppendAndReadThrows").
-//                nitpick("testSetUnsupportedAttributeThrows" ).
-//                nitpick("testReadUnsupportedAttributesThrows" ).
-//                nitpick( "testGetUnsupportedAttributeThrows").
-//                bug("testClosedFSGetFileStore")
 
     }
 

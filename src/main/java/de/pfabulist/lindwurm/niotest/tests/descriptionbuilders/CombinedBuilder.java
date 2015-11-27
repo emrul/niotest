@@ -78,6 +78,11 @@ public class CombinedBuilder {
         return this;
     }
 
+    public CombinedBuilder bugScheme( String scheme) {
+        descr.addBugScheme( scheme );
+        return this;
+    }
+
     public CombinedBuilder waitForFile( Path path ) {
         while ( !Files.exists( path )) {
             try {

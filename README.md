@@ -11,7 +11,7 @@ Niotest is a framework for testing java 7 nio2 based virtual filesystem as speci
     <dependency>
         <groupId>de.pfabulist.lindwurm</groupId>
         <artifactId>niotest</artifactId>
-        <version>0.29</version>
+        <version>0.32.1</version>
     </dependency>
 
 ### Design

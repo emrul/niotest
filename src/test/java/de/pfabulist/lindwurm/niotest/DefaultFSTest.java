@@ -95,6 +95,7 @@ public class DefaultFSTest extends AllTests {
                     unix().noPermissionChecks().next().
                     playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
                     fileStores().noLimitedPlayground().notExclusive().next().
+                    watchable().delay( 12000 ).
                     closable().no().
                     otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
                     time().noLastAccessTime().noCreationTime().attributeDelay( 2000 ).next().
@@ -111,6 +112,7 @@ public class DefaultFSTest extends AllTests {
             descr = build().
                     windows().next().
                     playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
+                    watchable().delay( 12000 ).
                     time().noLastAccessTime().attributeDelay( 2000 ).next().
                     pathConstraints().
                         pathLength( 32000).
