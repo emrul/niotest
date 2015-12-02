@@ -150,7 +150,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     }
 
     @Test
-    @Category( { FileStores.class, SizeLimit.class, Exclusive.class } )
+    @Category( { FileStores.class, SizeLimit.class, Exclusive.class, Writable.class } )
     public void testFileStoreLimitPreventsFileCreation() throws IOException {
 
         FileStore store = sizeLimitedRoot().getFileSystem().provider().getFileStore( sizeLimitedRoot() );
@@ -164,7 +164,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     }
 
     @Test
-    @Category( { FileStores.class, SizeLimit.class, Exclusive.class } )
+    @Category( { FileStores.class, SizeLimit.class, Exclusive.class, Writable.class } )
     public void testFileStoreLimitPreventsFileModification() throws IOException {
 
         FileStore store = sizeLimitedRoot().getFileSystem().provider().getFileStore( sizeLimitedRoot() );

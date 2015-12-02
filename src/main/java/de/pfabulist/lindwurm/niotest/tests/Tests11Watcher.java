@@ -102,7 +102,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test( timeout = 30000 )
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchPollWithTimeoutTimesOut() throws Exception {
         watcherSetup( ENTRY_DELETE );
         // no events
@@ -111,7 +111,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test( expected = ClosedWatchServiceException.class )
-    @Category( { Watchable.class } )
+    @Category( { Watchable.class, Writable.class } )
     public void testRegisterOnClosedWatchService() throws IOException {
         WatchService watcher = FS.newWatchService();
         watcher.close();
@@ -119,13 +119,13 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test( expected = ClosedWatchServiceException.class )
-    @Category( { Watchable.class, Closable.class } )
+    @Category( { Watchable.class, Writable.class, Closable.class } )
     public void testRegisterWatchServiceOfClosedFS() throws Exception {
         getClosedDirB().register( getClosedFSWatchService(), ENTRY_DELETE );
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchADeleteFromAMove() throws Exception {
         Path toBeMoved = watchedFileA();
         watcherSetup( ENTRY_DELETE );
@@ -134,7 +134,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchAModify() throws Exception {
         Path toBeModified = watchedFileA();
         watcherSetup( ENTRY_MODIFY );
@@ -159,7 +159,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
 //
     // todo how long to wait?
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchReadIsNotModify() throws Exception {
         Path toBeModified = watchedFileA();
         watcherSetup( ENTRY_MODIFY );
@@ -187,7 +187,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test( timeout = 30000 )
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testNotResetWatchKeyDoesNotQue() throws Exception {
         watcherSetup( ENTRY_CREATE );
         watchedFileA();
@@ -200,7 +200,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test( timeout = 30000 )
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testResetWatchKeyDoesQue() throws Exception {
         watcherSetup( ENTRY_CREATE );
         watchedFileA();
@@ -215,7 +215,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchSeveralEventsInOneDir() throws Exception {
         Path toBeModified = watchedFileA();
         Path toBeCreated = watchedAbsB();
@@ -247,7 +247,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
 //    }
 
     @Test( timeout = 20000 )
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchACreateBy2WatchServies() throws Exception {
 
         Path toBeCreated = watchedAbsA();
@@ -262,7 +262,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchACreate() throws Exception {
         Path toBeCreated = watchedAbsA();
         watcherSetup( ENTRY_CREATE );
@@ -272,7 +272,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class, Writable.class } )
     public void testWatchACreateDir() throws Exception {
         Path toBeCreated = watchedAbsA();
         watcherSetup( ENTRY_CREATE );
@@ -281,7 +281,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class, Writable.class } )
     public void testWatchACreateFromCopy() throws Exception {
         watcherSetup( ENTRY_CREATE );
         Files.copy( fileTB(), watchedAbsA() );
@@ -290,7 +290,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class, Writable.class } )
     public void testWatchACreateFromMove() throws Exception {
         watcherSetup( ENTRY_CREATE );
         Files.move( fileTAB(), watchedAbsA() );
@@ -319,7 +319,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
 ////    }
 //
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testCanceledWatchKeyDoesNotWatch() throws Exception {
         WatchKey key = watcherSetup( ENTRY_CREATE );
         key.cancel();
@@ -329,7 +329,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchATruncate() throws Exception {
         Path file = watchedFileA();
         watcherSetup( ENTRY_MODIFY );
@@ -341,7 +341,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchServiceTakeBlocks() throws Exception {
         Path dir = dirTA();
         final WatchService watcher = dir.getFileSystem().newWatchService();
@@ -366,7 +366,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testCloseAWatchServiceReleasesBlockedTreads() throws Exception {
         Path dir = dirTB();
         final WatchService watcher = dir.getFileSystem().newWatchService();
@@ -392,7 +392,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testCloseAWatchServiceCancelsKeys() throws Exception {
         Path dir = dirTA();
         final WatchService watcher = dir.getFileSystem().newWatchService();
@@ -406,7 +406,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testPollAnEmptyWatchServiceReturnsNull() throws Exception {
         Path dir = dirTA();
         final WatchService watcher = dir.getFileSystem().newWatchService();
@@ -416,7 +416,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testWatchKeyPollEventsEmptiesQue() throws Exception {
         Path dir = dirTA();
         Path toBeDeleted = dirTAB();
@@ -434,7 +434,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     }
 
     @Test
-    @Category( { SlowTest.class, Watchable.class } )
+    @Category( { SlowTest.class, Watchable.class, Writable.class } )
     public void testDeleteWatchedDirCancelsKeys() throws Exception {
         WatchKey key = watcherSetup( ENTRY_CREATE );
         Files.delete( watchedDir() );

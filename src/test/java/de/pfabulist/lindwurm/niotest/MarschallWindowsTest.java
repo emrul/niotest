@@ -58,7 +58,7 @@ public class MarschallWindowsTest extends AllTests {
                                     newWindows().
                                     addFileAttributeView( UserDefinedFileAttributeView.class ).
                                     //addFileAttributeView( FileOwnerAttributeView.class ).
-                                    build( "marschall" ).getPath( "play" ).toAbsolutePath() ).
+                                    build( "marschallw" ).getPath( "play" ).toAbsolutePath() ).
                 time().noLastAccessTime().next().
                 pathConstraints().
                     noMaxFilenameLength().
@@ -82,8 +82,8 @@ public class MarschallWindowsTest extends AllTests {
                 bug( "testAppendAndTruncateExistingThrows" ).
                 bug( "testTransferFromSourceWithLessThanRequestedBytesGetsWhatsThere" ).
                 bug( "testTransferFromPositionBeyondFileSizeDoesNothing" ).
+                bug( "testEveryChannelWriteUpdatesLastModifiedTime" ).
 
-                fastOnly().
 
                 done();
 
