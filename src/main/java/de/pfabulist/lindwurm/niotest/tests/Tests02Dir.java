@@ -58,6 +58,7 @@ import static org.junit.Assert.assertThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings( "PMD.ExcessivePublicCount" )
 public abstract class Tests02Dir extends Tests01NoContent {
 
     public Tests02Dir( FSDescription capa ) {
@@ -287,6 +288,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
 
     @Test
     @Category( { SlowTest.class, Writable.class, Attributes.class, LastAccessTime.class } )
+    @SuppressWarnings( "PMD.UnusedLocalVariable" )
     public void testReadDirStreamSetsLastAccessTime() throws Exception {
 
         Path dir = fileTAB().getParent();
@@ -303,6 +305,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
 
     @Test
     @Category( { SlowTest.class, Writable.class, Attributes.class, LastAccessTime.class } )
+    @SuppressWarnings( "PMD.UnusedLocalVariable" )
     public void testReadEmptyDirStreamSetsLastAccessTime() throws Exception {
         Path dir = dirTA();
         FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
@@ -324,10 +327,11 @@ public abstract class Tests02Dir extends Tests01NoContent {
         FileTime before = Files.readAttributes( dir.getParent(), BasicFileAttributes.class ).lastAccessTime();
         waitForAttribute();
 
-        try( DirectoryStream<Path> kids = Files.newDirectoryStream( dir ) ) {
-            for( Path kid : kids ) {
-            }
-        }
+        Files.list( dir ).forEach( p -> {} );
+//        try( DirectoryStream<Path> kids = Files.newDirectoryStream( dir ) ) {
+//            for( Path kid : kids ) {
+//            }
+//        }
 
         assertThat( Files.readAttributes( dir.getParent(), BasicFileAttributes.class ).lastAccessTime(), is( before ) );
     }
@@ -352,6 +356,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
 //    }
 
     @Test
+    @SuppressWarnings( "PMD.UnusedLocalVariable" )
     public void testCloseDirStreamInTheMiddleOfIteration() throws Exception {
 
         Path dir = getNonEmptyDir();

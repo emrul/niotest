@@ -57,6 +57,7 @@ import static org.junit.Assert.fail;
  */
 
 @Category( Basic.class )
+@SuppressWarnings( "PMD.ExcessivePublicCount" )
 public abstract class Tests01NoContent extends Tests00Setup {
 
     public Tests01NoContent( FSDescription capa ) {

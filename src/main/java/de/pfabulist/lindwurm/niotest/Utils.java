@@ -1,6 +1,7 @@
 package de.pfabulist.lindwurm.niotest;
 
 import de.pfabulist.unchecked.Filess;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.nio.file.Path;
 
@@ -34,6 +35,7 @@ public class Utils {
 
     private Utils() {}
 
+    @SuppressWarnings( "PMD.UnusedLocalVariable" )
     public static <E> int getSize( Iterable<E> it ) {
         int size = 0;
         for( E e : it ) { // NOSONAR

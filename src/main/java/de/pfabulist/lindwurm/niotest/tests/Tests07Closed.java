@@ -237,6 +237,7 @@ public abstract class Tests07Closed extends Tests06Attributes {
 
     @Test( expected = ClosedDirectoryStreamException.class )
     @Category( Closable.class )
+    @SuppressWarnings( "PMD.UnusedLocalVariable" )
     public void testReadFromDirStreamOfClosedFSThrows() throws IOException {
         for ( Path kid : getClosedDirStream()) {
         }

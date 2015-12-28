@@ -46,6 +46,7 @@ import static org.junit.Assert.fail;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings( "PMD.ExcessivePublicCount" )
 public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 
     public static final String MAX_FILENAME_LENGTH = "getMaxFilenameLength";

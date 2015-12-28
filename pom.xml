@@ -27,13 +27,13 @@
     <parent>
         <groupId>de.pfabulist</groupId>
         <artifactId>opencage-parent</artifactId>
-        <version>3.0</version>
+        <version>3.1</version>
         <relativePath>../opencage-parent/pom.xml</relativePath>
     </parent>
 
     <groupId>de.pfabulist.lindwurm</groupId>
     <artifactId>niotest</artifactId>
-    <version>0.32.2</version>
+    <version>0.32.3</version>
 
     <name>niotest</name>
     <description>A test suit for java 7 nio2 based virtual filesystems</description>
@@ -66,13 +66,13 @@
         <dependency>
             <groupId>de.pfabulist</groupId>
             <artifactId>kleinod</artifactId>
-            <version>0.28</version>
+            <version>0.29</version>
         </dependency>
 
         <dependency>
             <groupId>de.pfabulist</groupId>
             <artifactId>unchecked</artifactId>
-            <version>1.1</version>
+            <version>1.1.1</version>
         </dependency>
 
         <dependency>
@@ -116,12 +116,6 @@
             <!--it's a testing framework => scope is compile-->
             <scope>compile</scope>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>com.google.code.findbugs</groupId>-->
-            <!--<artifactId>annotations</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
 
 
     </dependencies>

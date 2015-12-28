@@ -84,6 +84,7 @@ import static org.junit.Assume.assumeThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings( "PMD.ExcessivePublicCount" )
 public abstract class Tests03File extends Tests02Dir {
 
     @Test( expected = NoSuchFileException.class )

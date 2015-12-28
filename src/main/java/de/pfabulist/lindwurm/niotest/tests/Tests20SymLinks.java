@@ -57,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings( "PMD.ExcessivePublicCount" )
 public abstract class Tests20SymLinks extends Tests19HardLinks {
 
     public Tests20SymLinks( FSDescription capa ) {

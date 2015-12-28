@@ -51,6 +51,7 @@ import static org.junit.Assert.fail;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings( "PMD.ExcessivePublicCount" )
 public abstract class Tests06Attributes extends Tests05URI {
 
     public Tests06Attributes( FSDescription capa ) {
@@ -236,7 +237,7 @@ public abstract class Tests06Attributes extends Tests05URI {
         } );
     }
 
-    public static interface UnsiView extends BasicFileAttributeView {
+    public interface UnsiView extends BasicFileAttributeView {
     }
 
     @Test
@@ -245,7 +246,7 @@ public abstract class Tests06Attributes extends Tests05URI {
         assertThat( FS.provider().getFileAttributeView( pathDefault(), UnsiView.class ), nullValue() );
     }
 
-    public static interface UnsiAttris extends BasicFileAttributes {
+    public interface UnsiAttris extends BasicFileAttributes {
     }
 
     @Test( expected = UnsupportedOperationException.class )

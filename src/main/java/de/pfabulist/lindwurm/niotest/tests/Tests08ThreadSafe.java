@@ -49,6 +49,7 @@ public abstract class Tests08ThreadSafe extends Tests07Closed {
         }
 
         @Override
+        @SuppressWarnings( "PMD.UnusedLocalVariable" )
         public Long call() throws Exception {
             long sum = 0;
             try( DirectoryStream<Path> stream = Files.newDirectoryStream( parent ) ) {

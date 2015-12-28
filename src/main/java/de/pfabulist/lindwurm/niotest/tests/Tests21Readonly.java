@@ -92,13 +92,11 @@ public abstract class Tests21Readonly extends Tests20SymLinks {
 
     @Test
     @Category( { Readonly.class } )
-    @SuppressFBWarnings() // todo be more specifc
-    public void testReadDirFromReadonly() throws IOException {
-        try( DirectoryStream<Path> stream = Files.newDirectoryStream( getNonEmptyDir() ) ) {
-            for( Path kid : stream ) {
-            }
-        } catch( Exception exp ) {
-            fail( "readonly: new dirstream should be possible" );
+    public void testReadDirFromReadonly()  {
+        try {
+            Files.list( getNonEmptyDir() ).forEach( p -> {} );
+        } catch( IOException e ) {
+            fail( "read or readonly dir should work" );
         }
     }
 
