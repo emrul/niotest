@@ -1,8 +1,8 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.nio.Filess;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
-import de.pfabulist.unchecked.Filess;
 import de.pfabulist.lindwurm.niotest.tests.topics.Copy;
 import de.pfabulist.lindwurm.niotest.tests.topics.Delete;
 import de.pfabulist.lindwurm.niotest.tests.topics.DirSymLink;
@@ -27,6 +27,7 @@ import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
+import static de.pfabulist.kleinod.nio.PathIKWID.childGetParent;
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-@SuppressWarnings( "PMD.ExcessivePublicCount" )
+@SuppressWarnings({ "PMD.ExcessivePublicCount", "PMD.TooManyMethods" })
 public abstract class Tests20SymLinks extends Tests19HardLinks {
 
     public Tests20SymLinks( FSDescription capa ) {
@@ -628,7 +629,7 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
     @Category( { SymLink.class } )
     public void testRelSymLinkIsRelativeToLink() throws IOException {
         Files.createSymbolicLink( symLink(), FS.getPath( ".." ).resolve( nameA() ) );
-        Files.write( symLink().getParent().getParent().resolve( nameA() ), CONTENT_OTHER );
+        Files.write( childGetParent( childGetParent(symLink())).resolve( nameA() ), CONTENT_OTHER );
 //        assertThat( symLink() ).hasBinaryContent( CONTENT_OTHER );
         assertThat( Files.readAllBytes( symLink() ) ).isEqualTo( CONTENT_OTHER );
 
@@ -643,6 +644,15 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
         Files.move( symLink(), to );
         Files.write( to, CONTENT );
         assertThat( Files.isSameFile( to, absTA() )).isTrue();
+    }
+
+    @Test
+    @Category( { SymLink.class, Writable.class } )
+    public void testMoveLinkToNonExistingPath() throws IOException {
+        Files.createSymbolicLink( symLink(), absAB() );
+        Path to = dirTB().resolve( nameB() );
+        Files.move( symLink(), to );
+        assertThat( to ).existsNoFollowLinks();
     }
 
 //    //Todo
@@ -714,7 +724,7 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
     @Category( { SymLink.class } )
     public void testSymLinkToUnnormalizedRelPath() throws IOException {
         Files.createSymbolicLink( symLink(), FS.getPath( nameA() ).resolve( ".." ) );
-        Files.createSymbolicLink( symLink().getParent().resolve( nameA() ), targetFile() );
+        Files.createSymbolicLink( childGetParent( symLink() ).resolve( nameA() ), targetFile() );
 
         // System.out.println( symLink().toRealPath());
         // System.out.println( targetFile().getParent().toRealPath());
@@ -775,7 +785,7 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
             return target;
         }
 
-        Filess.createDirectories( target.getParent() );
+        Filess.createDirectories( childGetParent( target ));
         Filess.write( target, CONTENT );
         return target;
     }
@@ -784,7 +794,7 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
         Path target = otherProviderAbsA().resolve( nameB() );
 
         if( !Files.exists( target ) ) {
-            Filess.createDirectories( target.getParent() );
+            Filess.createDirectories( childGetParent( target ) );
             Filess.write( target, CONTENT );
         }
 
@@ -807,7 +817,7 @@ public abstract class Tests20SymLinks extends Tests19HardLinks {
     }
 
     private Path targetDir() {
-        Path target = targetDirKid().getParent();
+        Path target = childGetParent( targetDirKid());
         if( !Files.exists( target ) ) {
             Filess.createDirectories( target );
             Filess.write( targetDirKid(), CONTENT ); // one kid

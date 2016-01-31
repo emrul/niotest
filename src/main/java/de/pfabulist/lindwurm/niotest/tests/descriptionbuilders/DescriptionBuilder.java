@@ -2,6 +2,8 @@ package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 
+import javax.annotation.Nullable;
+
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
@@ -29,10 +31,11 @@ import de.pfabulist.lindwurm.niotest.tests.FSDescription;
  * **** END LICENSE BLOCK ****
  */
 
+@SuppressWarnings( "PMD.AbstractClassWithoutAbstractMethod" ) // design wants this class not to be used directly
 public abstract class DescriptionBuilder<T> {
 
     protected final FSDescription descr;
-    protected final T t;
+    protected final @Nullable T t;
 
     public DescriptionBuilder( FSDescription descr ) {
         this.descr = descr;

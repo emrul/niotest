@@ -1,10 +1,12 @@
 package de.pfabulist.lindwurm.zero;
 
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -33,10 +35,11 @@ import java.util.Iterator;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings({ "PMD.ExcessivePublicCount", "PMD.TooManyMethods" })
 public class NullPath implements Path {
 
     private final NullFS fileSystem;
-    private boolean absolute;
+    private final boolean absolute;
 
     public NullPath(NullFS nullFS, boolean absolute) {
         fileSystem = nullFS;
@@ -160,35 +163,37 @@ public class NullPath implements Path {
 
     @Override
     public WatchKey register(WatchService watcher, WatchEvent.Kind<?>... events) throws IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public Iterator<Path> iterator() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return Collections.emptyIterator();
     }
 
     @Override
     public int compareTo(Path other) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
+    public boolean equals( Object o) {
+        if( this == o ) {
+            return true;
+        }
+        if( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
 
         NullPath paths = (NullPath) o;
 
-        if (absolute != paths.absolute) {return false; }
-        if (fileSystem != null ? !fileSystem.equals(paths.fileSystem) : paths.fileSystem != null) {return false; }
+        return absolute == paths.absolute && fileSystem.equals( paths.fileSystem );
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = fileSystem != null ? fileSystem.hashCode() : 0;
+        int result = fileSystem.hashCode();
         result = 31 * result + (absolute ? 1 : 0);
         return result;
     }

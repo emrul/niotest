@@ -3,8 +3,10 @@ package de.pfabulist.lindwurm.niotest.tests;
 import de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescription;
 import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
 import de.pfabulist.lindwurm.niotest.tests.topics.Topic;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.rules.TestName;
 
+import javax.annotation.Nullable;
 import java.net.URI;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.DirectoryStream;
@@ -28,7 +30,7 @@ import static de.pfabulist.lindwurm.niotest.tests.attributes.AttributeDescriptio
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -59,16 +61,20 @@ public class FSDescription {
     private final Set<String> bugs = new HashSet<>();
     private final Set<String> bugSchemes = new HashSet<>();
 
-    public ClosedFSVars closedFSVars;
-    public Path otherProviderPlayground;
+    public
+    @Nullable
+    ClosedFSVars closedFSVars;
+    public
+    @Nullable
+    Path otherProviderPlayground;
 
-    private Set<String> usedBugs = new HashSet<>();
-    private Set<String> usedSchemes = new HashSet<>();
-    public final Map<String,AttributeDescription> attributeDescriptions = new HashMap<>();
+    private final Set<String> usedBugs = new HashSet<>();
+    private final Set<String> usedSchemes = new HashSet<>();
+    public final Map<String, AttributeDescription> attributeDescriptions = new HashMap<>();
 
-    protected final Map<Integer,Path> longPaths = new HashMap<>();
+    protected final Map<Integer, Path> longPaths = new HashMap<>();
 
-    protected final Map<Object,Object> rem = new HashMap<>();
+    protected final Map<Object, Object> rem = new HashMap<>();
 
     public FSDescription() {
         attributeDescriptions.put( "basic", attributeBuilding( Basic.class, "basic", BasicFileAttributeView.class, BasicFileAttributes.class ).
@@ -79,18 +85,18 @@ public class FSDescription {
                 addAttribute( "isDirectory", BasicFileAttributes::isDirectory ).
                 addAttribute( "isSymbolicLink", BasicFileAttributes::isSymbolicLink ).
                 addAttribute( "isOther", BasicFileAttributes::isOther ).
-                build());
+                build() );
     }
 
     public <T> T get( Class<T> klass, String key ) {
         Object val = props.get( key );
 
-        if ( val == null ) {
+        if( val == null ) {
             throw new IllegalStateException( "niotest error: no value for " + key );
         }
 
-        if ( val.getClass().isAssignableFrom( klass )) {
-            throw new IllegalStateException( "niotest error: wrong class for: " + key + " expected: " + klass + " got: " + val.getClass());
+        if( val.getClass().isAssignableFrom( klass ) ) {
+            throw new IllegalStateException( "niotest error: wrong class for: " + key + " expected: " + klass + " got: " + val.getClass() );
         }
 
         return klass.cast( val );
@@ -98,11 +104,11 @@ public class FSDescription {
 
     public int getInt( String key ) {
         Object ret = props.get( key );
-        if ( ret == null ) {
+        if( ret == null ) {
             return 0;
         }
 
-        return (Integer)ret;
+        return (Integer) ret;
     }
 
     public FSDescription addTopic( Class<? extends Topic> clazz ) {
@@ -120,13 +126,13 @@ public class FSDescription {
         return !notProvidedTopics.contains( clazz );
     }
 
-    public Object get( String key ) {
+    public @Nullable Object get( String key ) {
         return props.get( key );
     }
 
     public boolean isBug( TestName testMethodName ) {
         return bugs.contains( testMethodName.getMethodName() ) ||
-               bugSchemes.stream().anyMatch( scheme -> testMethodName.getMethodName().contains( scheme ) );
+                bugSchemes.stream().anyMatch( scheme -> testMethodName.getMethodName().contains( scheme ) );
 
     }
 
@@ -141,52 +147,52 @@ public class FSDescription {
     public void markHits( TestName testMethodName ) {
         Optional<String> found = bugs.stream().filter( name -> name.equals( testMethodName.getMethodName() ) ).findFirst();
 
-        if ( found.isPresent() ) {
+        if( found.isPresent() ) {
             usedBugs.add( found.get() );
             return;
         }
 
-        Optional<String> usedScheme =  bugSchemes.stream().filter( scheme -> testMethodName.getMethodName().contains( scheme ) ).findFirst();
+        Optional<String> usedScheme = bugSchemes.stream().filter( scheme -> testMethodName.getMethodName().contains( scheme ) ).findFirst();
 
-        if ( usedScheme.isPresent()) {
-            usedSchemes.add( usedScheme.get());
+        if( usedScheme.isPresent() ) {
+            usedSchemes.add( usedScheme.get() );
         }
     }
 
+    @SuppressWarnings( "PMD.SystemPrintln" ) // thats the point here
     public void printUnused() {
-        for ( String bug : bugs ) {
-            if ( !usedBugs.contains( bug )) {
-                System.out.println( "not found method called " + bug ); // NOPMD
+        for( String bug : bugs ) {
+            if( !usedBugs.contains( bug ) ) {
+                System.out.println( "not found method called " + bug );
             }
         }
 
-        for ( String scheme : bugSchemes ) {
-            if ( !usedSchemes.contains( scheme )) {
-                System.out.println( "bug scheme did not apply :  " + scheme );  // NOPMD
+        for( String scheme : bugSchemes ) {
+            if( !usedSchemes.contains( scheme ) ) {
+                System.out.println( "bug scheme did not apply :  " + scheme );
             }
         }
     }
 
     public Stream<AttributeDescription> getAttributeDescriptions() {
-        return attributeDescriptions.values().stream().filter( ad -> !notProvidedTopics.contains( ad.getTopic()) );
+        return attributeDescriptions.values().stream().filter( ad -> !notProvidedTopics.contains( ad.getTopic() ) );
 
     }
 
-
     public static class ClosedFSVars {
 
-        public FileSystem fs;
-        public Path                  play;
-        public Path fileA;
-        public Path dirB;
+        public @Nullable FileSystem fs;
+        public Path play;
+        public @Nullable Path fileA;
+        public @Nullable Path dirB;
         //public Path                  pathCf;
-        public SeekableByteChannel readChannel;
-        public URI uri;
-        public DirectoryStream<Path> dirStream;
-        public WatchService watchService;
-        public FileSystemProvider provider;
+        public @Nullable SeekableByteChannel readChannel;
+        public @Nullable URI uri;
+        public @Nullable DirectoryStream<Path> dirStream;
+        public @Nullable WatchService watchService;
+        public @Nullable FileSystemProvider provider;
 
-        public ClosedFSVars(Path play) {
+        public ClosedFSVars( Path play ) {
             this.play = play;
         }
     }

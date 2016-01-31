@@ -1,10 +1,10 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.nio.Filess;
 import de.pfabulist.lindwurm.niotest.tests.topics.Exclusive;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileStores;
 import de.pfabulist.lindwurm.niotest.tests.topics.SizeLimit;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
-import de.pfabulist.unchecked.Filess;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -18,14 +18,8 @@ import java.nio.file.attribute.BasicFileAttributeView;
 import java.util.UUID;
 
 import static de.pfabulist.unchecked.Unchecked.u;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.collection.IsEmptyIterable.emptyIterable;
-import static org.hamcrest.core.Is.is;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -53,6 +47,7 @@ import static org.hamcrest.core.Is.is;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings({ "PMD.TooManyMethods" })
 public abstract class Tests13FileStore extends Tests12DifferentFS {
 
     public Tests13FileStore( FSDescription capa ) {
@@ -62,7 +57,8 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     @Test
     @Category( FileStores.class )
     public void testFileStoreIterable() {
-        assertThat( FS.getFileStores(), not( emptyIterable() ) );
+        assertThat( FS.getFileStores() ).isNotEmpty();
+//        assertThat( FS.getFileStores(), not( emptyIterable() ) );
     }
 
     @Test( expected = NoSuchFileException.class )
@@ -75,7 +71,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     @Category( FileStores.class )
     public void testFileStoresHaveAName() {
         for( FileStore store : FS.getFileStores() ) {
-            assertThat( store.name(), notNullValue() );
+            assertThat( store.name()).isNotNull();
         }
     }
 
@@ -83,7 +79,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     @Category( FileStores.class )
     public void testFileStoresHaveAType() {
         for( FileStore store : FS.getFileStores() ) {
-            assertThat( store.type(), notNullValue() );
+            assertThat( store.type()).isNotNull();
         }
     }
 
@@ -91,7 +87,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     @Category( FileStores.class )
     public void testFileStoreTotalSpaceIsNonNegative() throws IOException {
         for( FileStore store : FS.getFileStores() ) {
-            assertThat( store.getTotalSpace(), greaterThanOrEqualTo( 0L ) );
+            assertThat( store.getTotalSpace()).isGreaterThanOrEqualTo( 0L );
         }
     }
 
@@ -99,7 +95,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     @Category( FileStores.class )
     public void testFileStoreUsableSpaceIsSmallerThanTotal() throws IOException {
         for( FileStore store : FS.getFileStores() ) {
-            assertThat( store.getTotalSpace(), greaterThanOrEqualTo( store.getUsableSpace() ) );
+            assertThat( store.getTotalSpace()).isGreaterThanOrEqualTo( store.getUsableSpace() );
         }
     }
 
@@ -107,7 +103,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     @Category( FileStores.class )
     public void testFileStoreUnallocatedSpaceIsSmallerUsableSpace() throws IOException {
         for( FileStore store : FS.getFileStores() ) {
-            assertThat( store.getUnallocatedSpace(), greaterThanOrEqualTo( store.getUsableSpace() ) );
+            assertThat( store.getUnallocatedSpace()).isGreaterThanOrEqualTo( store.getUsableSpace() );
         }
     }
 
@@ -125,7 +121,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
         long before = store.getUnallocatedSpace();
         Files.write( file, CONTENT50 );
 
-        assertThat( store.getUnallocatedSpace(), lessThanOrEqualTo( before ) );
+        assertThat( store.getUnallocatedSpace()).isLessThanOrEqualTo( before );
     }
 
     @Test
@@ -138,7 +134,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
             Files.write( file, CONTENT_BIG, StandardOpenOption.APPEND );
         }
 
-        assertThat( store.getUsableSpace(), lessThanOrEqualTo( before ) );
+        assertThat( store.getUsableSpace()).isLessThanOrEqualTo( before );
     }
 
     @Test
@@ -146,7 +142,7 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     public void testFileStoreShowsThatBasicFileAttributeViewIsSupported() throws IOException {
         FileStore store = FS.provider().getFileStore( FS.getPath( "" ).toAbsolutePath() );
 
-        assertThat( store.supportsFileAttributeView( BasicFileAttributeView.class ), is( true ) );
+        assertThat( store.supportsFileAttributeView( BasicFileAttributeView.class )).isTrue();
     }
 
     @Test
@@ -199,12 +195,12 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
 
         FileStore store = sizeLimitedRoot().getFileSystem().provider().getFileStore( sizeLimitedRoot() );
 
-        assertThat( store.getUsableSpace(), greaterThanOrEqualTo( (long) CONTENT.length ) );
+        assertThat( store.getUsableSpace()).isGreaterThanOrEqualTo( (long) CONTENT.length );
 
         Path file = sizeLimitedRoot().resolve( UUID.randomUUID().toString() );
         Files.write( file, CONTENT );
 
-        assertThat( Files.readAllBytes( file ), is( CONTENT ) );
+        assertThat( Files.readAllBytes( file )).isEqualTo( CONTENT );
     }
 
 

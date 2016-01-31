@@ -1,9 +1,9 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.nio.Filess;
 import de.pfabulist.lindwurm.niotest.tests.topics.Delete;
 import de.pfabulist.lindwurm.niotest.tests.topics.Move;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
-import de.pfabulist.unchecked.Filess;
 import de.pfabulist.lindwurm.niotest.tests.topics.HardLink;
 import de.pfabulist.lindwurm.niotest.tests.topics.SlowTest;
 import org.junit.Test;
@@ -17,10 +17,8 @@ import java.nio.file.ProviderMismatchException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
-import static de.pfabulist.lindwurm.niotest.matcher.PathExists.exists;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -48,6 +46,7 @@ import static org.hamcrest.core.Is.is;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings( { "PMD.ExcessivePublicCount", "PMD.TooManyMethods" } )
 public abstract class Tests19HardLinks extends Tests18FileChannels {
 
     public Tests19HardLinks( FSDescription capa ) {
@@ -58,7 +57,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     @Category( { HardLink.class, Writable.class } )
     public void testHardLinkCreate() throws IOException {
         Files.createLink( link(), orig() );
-        assertThat( link(), exists() );
+        assertThat( link() ).exists();
     }
 
     @Test
@@ -66,7 +65,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     public void testHardLinkChangeOneChangesTheOther() throws IOException {
         Files.createLink( link(), orig() );
         Files.write( link(), CONTENT_OTHER );
-        assertThat( Files.readAllBytes( orig() ), is( CONTENT_OTHER ) );
+        assertThat( Files.readAllBytes( orig() ) ).isEqualTo( CONTENT_OTHER );
     }
 
     @Test
@@ -74,7 +73,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     public void testHardLinkDeleteOrigDoesNotAffectTheOther() throws IOException {
         Files.createLink( link(), orig() );
         Files.delete( orig() );
-        assertThat( Files.readAllBytes( link() ), is( CONTENT ) );
+        assertThat( Files.readAllBytes( link() ) ).isEqualTo( CONTENT );
     }
 
     @Test
@@ -82,7 +81,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     public void testHardLinkDeleteLinkDoesNotAffectTheOther() throws IOException {
         Files.createLink( link(), orig() );
         Files.delete( link() );
-        assertThat( Files.readAllBytes( orig() ), is( CONTENT ) );
+        assertThat( Files.readAllBytes( orig() ) ).isEqualTo( CONTENT );
     }
 
     @Test
@@ -93,25 +92,25 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
         waitForAttribute();
 
         Files.write( link(), CONTENT_OTHER );
-        assertThat( Files.getLastModifiedTime( orig() ), greaterThan( before ) );
+        assertThat( Files.getLastModifiedTime( orig() ) ).isGreaterThan( before );
     }
 
-    @Test( expected = FileAlreadyExistsException.class )
+    @Test
     @Category( { HardLink.class, Writable.class } )
     public void testHardLinkToExistingFileThrows() throws IOException, InterruptedException {
-        Files.createLink( fileTB(), orig() );
+        assertThatThrownBy( () -> Files.createLink( fileTB(), orig() ) ).isInstanceOf( FileAlreadyExistsException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( { HardLink.class, Writable.class } )
     public void testHardLinkToOtherProviderThrows() throws IOException {
-        Files.createLink( link(), otherProviderFileA() );
+        assertThatThrownBy( () -> Files.createLink( link(), otherProviderFileA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
     // todo
 //    @Test( expected = Exception.class )
 //    @Category({ HardLink.class})  public void testHardLinkToOtherThrows() throws IOException {
-//        assumeThat( capabilities.has2ndFileSystem(), is(true));
+//        assumeThat( capabilities.has2ndFileSystem()).isEqualTo(true));
 //
 //        Path orig = getPathOtherPAf();
 //        Path link = getPathPAC();
@@ -122,7 +121,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     @Category( { HardLink.class, Writable.class } )
     public void testHardLinkToDirThrows() throws IOException {
         Files.createLink( link(), orig() );
-        assertThat( link(), exists() );
+        assertThat( link() ).exists();
     }
 
     @Test
@@ -131,7 +130,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
         Files.createLink( link(), orig() );
         Files.createLink( link2(), link() );
 
-        assertThat( link2(), exists() );
+        assertThat( link2() ).exists();
     }
 
     @Test
@@ -140,7 +139,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
         Files.createLink( link(), fileTA() );
         Files.createLink( link2(), fileTA() );
 
-        assertThat( link2(), exists() );
+        assertThat( link2() ).exists();
     }
 
     @Test
@@ -148,7 +147,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     public void testIsSameFileWithHardLink() throws IOException {
         Files.createLink( link(), orig() );
 
-        assertThat( Files.isSameFile( link(), orig() ), is( true ) );
+        assertThat( Files.isSameFile( link(), orig() ) ).isTrue();
     }
 
     @Test
@@ -159,14 +158,14 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
         Object fk1 = Files.readAttributes( orig(), BasicFileAttributes.class ).fileKey();
         Object fk2 = Files.readAttributes( link(), BasicFileAttributes.class ).fileKey();
 
-        assertThat( fk1, is( fk2 ) );
+        assertThat( fk1 ).isEqualTo( fk2 );
     }
 
     @Test
     @Category( { HardLink.class, Writable.class } )
     public void testHardLinkToRelative() throws IOException {
         Files.createLink( link(), relativize( orig() ) );
-        assertThat( Files.isSameFile( link(), orig() ), is( true ) );
+        assertThat( Files.isSameFile( link(), orig() ) ).isEqualTo( true );
     }
 
     @Test
@@ -174,7 +173,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
     public void testMoveHardLinkToRelDoesNotMoveTarget() throws IOException {
         Files.createLink( link(), relativize( orig() ) );
         Files.move( link(), dirTB().resolve( nameC() ) );
-        assertThat( Files.isSameFile( dirTB().resolve( nameC() ), orig() ), is( true ) );
+        assertThat( Files.isSameFile( dirTB().resolve( nameC() ), orig() ) ).isEqualTo( true );
 
     }
 

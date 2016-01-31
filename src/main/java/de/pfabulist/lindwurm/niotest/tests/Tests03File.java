@@ -1,5 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.nio.FileTimeComparator;
+import de.pfabulist.kleinod.nio.Filess;
 import de.pfabulist.lindwurm.niotest.matcher.IteratorMatcher;
 import de.pfabulist.lindwurm.niotest.tests.topics.AllwaysSync;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
@@ -12,7 +14,6 @@ import de.pfabulist.lindwurm.niotest.tests.topics.Synced;
 import de.pfabulist.lindwurm.niotest.tests.topics.Unix;
 import de.pfabulist.lindwurm.niotest.tests.topics.Windows;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
-import de.pfabulist.unchecked.Filess;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -38,10 +39,8 @@ import java.util.Arrays;
 import java.util.Set;
 
 import static de.pfabulist.kleinod.collection.Sets.asSet;
+import static de.pfabulist.kleinod.nio.PathIKWID.childGetParent;
 import static de.pfabulist.kleinod.text.Strings.getBytes;
-import static de.pfabulist.lindwurm.niotest.matcher.ExceptionMatcher.throwsException;
-import static de.pfabulist.lindwurm.niotest.matcher.FileTimeMatcher.isCloseTo;
-import static de.pfabulist.lindwurm.niotest.matcher.PathExists.exists;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
@@ -51,12 +50,9 @@ import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.Collections.singleton;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.number.OrderingComparison.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeThat;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -84,7 +80,7 @@ import static org.junit.Assume.assumeThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-@SuppressWarnings( "PMD.ExcessivePublicCount" )
+@SuppressWarnings( { "PMD.ExcessivePublicCount", "PMD.TooManyMethods" } )
 public abstract class Tests03File extends Tests02Dir {
 
     @Test( expected = NoSuchFileException.class )
@@ -103,7 +99,7 @@ public abstract class Tests03File extends Tests02Dir {
     public void testWriteWithoutOptionsCreatesTheFile() throws IOException {
         Path target = absTA();
         Files.write( target, CONTENT );
-        assertThat( target, exists() );
+        assertThat( target ).exists();
     }
 
     @Test( expected = IllegalArgumentException.class )
@@ -117,7 +113,7 @@ public abstract class Tests03File extends Tests02Dir {
     public void testChannelGetSize() throws IOException {
         Path target = getFile();
         try( SeekableByteChannel channel = Files.newByteChannel( target, READ ) ) {
-            assertThat( channel.size(), is( Files.size( target ) ) );
+            assertThat( channel.size() ).isEqualTo( Files.size( target ) );
         }
     }
 
@@ -130,7 +126,7 @@ public abstract class Tests03File extends Tests02Dir {
 //             write
 //
 //        }
-//        assertThat( target, exists() );
+//        assertThat( target).exists();
 //    }
 
     @Test
@@ -138,7 +134,7 @@ public abstract class Tests03File extends Tests02Dir {
     public void testWriteWithoutOptionsOverwritesExisting() throws IOException {
         Path target = fileTA();
         Files.write( target, CONTENT_OTHER );
-        assertThat( Files.readAllBytes( target ), is( CONTENT_OTHER ) );
+        assertThat( Files.readAllBytes( target ) ).isEqualTo( CONTENT_OTHER );
     }
 
     @Test
@@ -149,7 +145,7 @@ public abstract class Tests03File extends Tests02Dir {
         Files.write( target, CONTENT, standardOpen );
         byte[] out = Files.readAllBytes( target );
 
-        assertThat( out, is( CONTENT ) );
+        assertThat( out ).isEqualTo( CONTENT );
     }
 
     @Test
@@ -159,9 +155,7 @@ public abstract class Tests03File extends Tests02Dir {
 
         Files.write( file, CONTENT, standardOpen );
 
-        try( DirectoryStream<Path> kids = Files.newDirectoryStream( file.getParent() ) ) {
-            assertThat( file, IteratorMatcher.isIn( kids ) );
-        }
+        assertThat( Files.list( childGetParent( file )).filter( file::equals ).findAny()).isPresent();
     }
 
     @Test
@@ -174,10 +168,10 @@ public abstract class Tests03File extends Tests02Dir {
         byte[] out = Files.readAllBytes( target );
 
 //        for ( int i = 0; i < 20000; i++ ) {
-//            assertThat( "- " + i + " -", out[i], is( CONTENT_BIG[i] ));
+//            assertThat( "- " + i + " -", out[i]).isEqualTo( CONTENT_BIG[i] ));
 //        }
 
-        assertThat( out, is( CONTENT_BIG ) );
+        assertThat( out ).isEqualTo( CONTENT_BIG );
     }
 
     //    @Test
@@ -222,8 +216,8 @@ public abstract class Tests03File extends Tests02Dir {
 //            }
 //        }
 //
-//        assertThat( sum, is( CONTENT_BIG.length ) );
-//        assertThat( Arrays.copyOfRange( out, 0, sum ), is( CONTENT_BIG ) );
+//        assertThat( sum).isEqualTo( CONTENT_BIG.length ) );
+//        assertThat( Arrays.copyOfRange( out, 0, sum )).isEqualTo( CONTENT_BIG ) );
 //    }
 
     @Test
@@ -232,7 +226,7 @@ public abstract class Tests03File extends Tests02Dir {
         Path target = getFile();
         long size = Files.size( target );
 
-        assumeThat( size, greaterThan( 3L ) );
+        assertThat( size ).isGreaterThan( 3L );
 
         byte[] out = new byte[ (int) ( size * 2 ) ];
         int sum = 0;
@@ -247,12 +241,12 @@ public abstract class Tests03File extends Tests02Dir {
 
                 sum += count;
 
-                assertThat( sum, lessThan( (int) size + 20 ) );
+                assertThat( sum ).isLessThan( (int) size + 20 );
             }
         }
 
-        assertThat( sum, is( (int) size ) );
-        assertThat( Arrays.copyOfRange( out, 0, sum ), is( Files.readAllBytes( target ) ) );
+        assertThat( sum ).isEqualTo( (int) size );
+        assertThat( Arrays.copyOfRange( out, 0, sum ) ).isEqualTo( Files.readAllBytes( target ) );
     }
 
     @Test
@@ -263,14 +257,14 @@ public abstract class Tests03File extends Tests02Dir {
         Filess.write( target, Arrays.copyOfRange( CONTENT, 0, 3 ) );
         Filess.write( target, Arrays.copyOfRange( CONTENT, 3, CONTENT.length ), APPEND );
 
-        assertThat( Filess.readAllBytes( target ), is( CONTENT ) );
+        assertThat( Filess.readAllBytes( target ) ).isEqualTo( CONTENT );
     }
 
     @Test
     public void testClosedChannelIsClosed() throws IOException {
         try( SeekableByteChannel read = Files.newByteChannel( getFile() ) ) {
             read.close();
-            assertThat( read.isOpen(), is( false ) );
+            assertThat( read.isOpen() ).isEqualTo( false );
         }
     }
 
@@ -278,7 +272,8 @@ public abstract class Tests03File extends Tests02Dir {
     public void testReadFromClosedChannelThrows() throws IOException {
         try( SeekableByteChannel read = Files.newByteChannel( getFile() ) ) {
             read.close();
-            assertThat( () -> read.read( ByteBuffer.allocate( 30 ) ), throwsException( ClosedChannelException.class ) );
+            assertThatThrownBy( () -> read.read( ByteBuffer.allocate( 30 ) ) ).
+                    isInstanceOf( ClosedChannelException.class );
         }
     }
 
@@ -287,7 +282,8 @@ public abstract class Tests03File extends Tests02Dir {
     public void testWriteToClosedChannelThrows() throws IOException {
         try( SeekableByteChannel write = Files.newByteChannel( fileTA(), WRITE ) ) {
             write.close();
-            assertThat( () -> write.write( ByteBuffer.allocate( 30 ) ), throwsException( ClosedChannelException.class ) );
+            assertThatThrownBy( () -> write.write( ByteBuffer.allocate( 30 ) ) ).
+                    isInstanceOf( ClosedChannelException.class );
         }
     }
 
@@ -296,7 +292,7 @@ public abstract class Tests03File extends Tests02Dir {
     public void testWriteFileAndSize() throws IOException {
         Path target = absTA();
         Files.write( target, CONTENT, standardOpen );
-        assertThat( Files.readAttributes( target, BasicFileAttributes.class ).size(), is( (long) CONTENT.length ) );
+        assertThat( Files.readAttributes( target, BasicFileAttributes.class ).size() ).isEqualTo( (long) CONTENT.length );
     }
 
     @Test
@@ -309,21 +305,27 @@ public abstract class Tests03File extends Tests02Dir {
         long oldSize = atti.size();
         Files.write( file, CONTENT_OTHER, APPEND );
 
-        assertThat( atti.size(), is( oldSize ) );
+        assertThat( atti.size() ).isEqualTo( oldSize );
     }
 
-    @Test( expected = NoSuchFileException.class )
+    @Test
     @Category( Writable.class )
     public void testWriteNonExistent() throws IOException {
-        try( SeekableByteChannel ch = FS.provider().newByteChannel( absTA(), singleton( WRITE ) ) ) {}
+
+        assertThatThrownBy( () -> {
+            try( SeekableByteChannel ch = FS.provider().newByteChannel( absTA(), singleton( WRITE ) ) ) {
+            }
+        } ).
+                isInstanceOf( NoSuchFileException.class );
     }
 
     @Test
     @Category( Writable.class )
     public void testWriteNothingOverExistingFileDoesNotChangeIt() throws IOException {
         Path there = fileTA();
-        try( SeekableByteChannel ch = FS.provider().newByteChannel( there, singleton( WRITE ) ) ) {}
-        assertThat( Files.size( there ), is( (long) CONTENT.length ) );
+        try( SeekableByteChannel ch = FS.provider().newByteChannel( there, singleton( WRITE ) ) ) {
+        }
+        assertThat( Files.size( there ) ).isEqualTo( (long) CONTENT.length );
     }
 
     @Test
@@ -331,7 +333,7 @@ public abstract class Tests03File extends Tests02Dir {
     public void testWriteAndCreateNonExistentCreatesIt() throws IOException {
         try( SeekableByteChannel ch = FS.provider().newByteChannel( absTA(), asSet( WRITE, CREATE ) ) ) {
         }
-        assertThat( absTA(), exists() );
+        assertThat( absTA() ).exists();
     }
 
     @Test
@@ -343,7 +345,7 @@ public abstract class Tests03File extends Tests02Dir {
         try( SeekableByteChannel ch = FS.provider().newByteChannel( there, asSet( WRITE, CREATE ) ) ) {
         }
 
-        assertThat( there, exists() );
+        assertThat( there ).exists();
     }
 
     @Test
@@ -352,32 +354,38 @@ public abstract class Tests03File extends Tests02Dir {
         Path there = fileTA();
         Files.write( there, CONTENT, APPEND );
 
-        assertThat( Files.size( there ), is( CONTENT.length * 2L ) );
+        assertThat( Files.size( there ) ).isEqualTo( CONTENT.length * 2L );
 
         byte[] out = Files.readAllBytes( there );
 
-        assertThat( Arrays.copyOfRange( out, 0, CONTENT.length ), is( CONTENT ) );
-        assertThat( Arrays.copyOfRange( out, CONTENT.length, 2 * CONTENT.length ), is( CONTENT ) );
+        assertThat( Arrays.copyOfRange( out, 0, CONTENT.length ) ).isEqualTo( CONTENT );
+        assertThat( Arrays.copyOfRange( out, CONTENT.length, 2 * CONTENT.length ) ).isEqualTo( CONTENT );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( Writable.class )
     public void testAppendAndReadThrows() throws IOException {
-        try( SeekableByteChannel ch = FS.provider().newByteChannel( fileTA(), asSet( APPEND, READ ) ) ) {
-        }
+        assertThatThrownBy( () -> {
+            try( SeekableByteChannel ch = FS.provider().newByteChannel( fileTA(), asSet( APPEND, READ ) ) ) {
+            }
+        } ).
+                isInstanceOf( IllegalArgumentException.class );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( Writable.class )
     public void testAppendAndTruncateExistingThrows() throws IOException {
-        try( SeekableByteChannel ch = FS.provider().newByteChannel( fileTA(), asSet( APPEND, TRUNCATE_EXISTING ) ) ) {
-        }
+        assertThatThrownBy( () -> {
+            try( SeekableByteChannel ch = FS.provider().newByteChannel( fileTA(), asSet( APPEND, TRUNCATE_EXISTING ) ) ) {
+            }
+        } ).
+                isInstanceOf( IllegalArgumentException.class );
     }
 
-    @Test( expected = NoSuchFileException.class)
+    @Test
     @Category( Writable.class )
     public void testAppendDoesNotCreateNewFile() throws IOException {
-        Files.write( absTA(), CONTENT, APPEND );
+        assertThatThrownBy( () -> Files.write( absTA(), CONTENT, APPEND ) ).isInstanceOf( NoSuchFileException.class );
     }
 
     @Test
@@ -387,25 +395,30 @@ public abstract class Tests03File extends Tests02Dir {
         Path notthere = absTA();
         try( SeekableByteChannel ch = FS.provider().newByteChannel( notthere, asSet( WRITE, CREATE_NEW ) ) ) {
         }
-        assertThat( notthere, exists() );
+        assertThat( notthere ).exists();
     }
 
-    @Test( expected = FileAlreadyExistsException.class )
+    @Test
     @Category( Writable.class )
     public void testWriteOnlyNew() throws IOException {
 
         Path there = fileTA();
-        try( SeekableByteChannel ch = FS.provider().newByteChannel( there, asSet( WRITE, CREATE_NEW ) ) ) {
-        }
+        assertThatThrownBy( () -> {
+            try( SeekableByteChannel ch = FS.provider().newByteChannel( there, asSet( WRITE, CREATE_NEW ) ) ) {
+            }
+        } ).
+                isInstanceOf( FileAlreadyExistsException.class );
     }
 
-    @Test( expected = FileAlreadyExistsException.class )
+    @Test
     @Category( Writable.class )
     public void testWriteOnlyNewIfCreateIsThereToo() throws IOException {
 
         Path there = fileTA();
-        try( SeekableByteChannel ch = FS.provider().newByteChannel( there, asSet( WRITE, CREATE_NEW, CREATE ) ) ) {
-        }
+        assertThatThrownBy( () -> {
+            try( SeekableByteChannel ch = FS.provider().newByteChannel( there, asSet( WRITE, CREATE_NEW, CREATE ) ) ) {
+            }
+        } ).isInstanceOf( FileAlreadyExistsException.class );
     }
 
     @Test
@@ -417,12 +430,12 @@ public abstract class Tests03File extends Tests02Dir {
         try( SeekableByteChannel ch = FS.provider().newByteChannel( there, asSet( WRITE, TRUNCATE_EXISTING ) ) ) {
         }
 
-        assertThat( there, exists() );
-        assertThat( Files.size( there ), is( 0L ) );
+        assertThat( there ).exists();
+        assertThat( Files.size( there ) ).isEqualTo( 0L );
     }
 
     @Test
-    @Category({ Writable.class, Attributes.class, CreationTime.class } )
+    @Category( { Writable.class, Attributes.class, CreationTime.class } )
     public void testOverwriteTruncateExistingDoesNotChangeCreationTime() throws IOException {
 
         Path there = fileTA();
@@ -432,7 +445,7 @@ public abstract class Tests03File extends Tests02Dir {
         try( SeekableByteChannel ch = FS.provider().newByteChannel( there, asSet( WRITE, TRUNCATE_EXISTING ) ) ) {
         }
 
-        assertThat( Files.readAttributes( there, BasicFileAttributes.class ).creationTime(), is( created ) );
+        assertThat( Files.readAttributes( there, BasicFileAttributes.class ).creationTime() ).isEqualTo( created );
     }
 
     @Test
@@ -447,21 +460,21 @@ public abstract class Tests03File extends Tests02Dir {
         try( SeekableByteChannel ch = FS.provider().newByteChannel( there, options ) ) {
         }
 
-        assertThat( Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ) );
+        assertThat( Files.readAttributes( there, BasicFileAttributes.class ).lastAccessTime() ).isGreaterThan( before );
     }
 
     @Test
     @Category( { SlowTest.class, Writable.class, Attributes.class } )
     public void testOverwriteDoesNotSetLastAccessTimeOfParent() throws IOException, InterruptedException {
         Path there = fileTA();
-        FileTime before = Files.readAttributes( there.getParent(), BasicFileAttributes.class ).lastAccessTime();
+        FileTime before = Files.readAttributes( childGetParent( there ), BasicFileAttributes.class ).lastAccessTime();
         waitForAttribute();
 
         Set<StandardOpenOption> options = asSet( WRITE, TRUNCATE_EXISTING );
         try( SeekableByteChannel ch = FS.provider().newByteChannel( there, options ) ) {
         }
 
-        assertThat( Files.readAttributes( there.getParent(), BasicFileAttributes.class ).lastAccessTime(), is( before ) );
+        assertThat( Files.readAttributes( there.getParent(), BasicFileAttributes.class ).lastAccessTime() ).isEqualTo( before );
     }
 
     @Test
@@ -469,14 +482,14 @@ public abstract class Tests03File extends Tests02Dir {
     public void testCreateFileSetsModifiedTimeOfParent() throws IOException, InterruptedException {
 
         Path file = absTA();
-        FileTime created = Files.getLastModifiedTime( file.getParent() );
+        FileTime created = Files.getLastModifiedTime( childGetParent( file ) );
 
         waitForAttribute();
 
         Files.write( file, CONTENT, standardOpen );
-        FileTime modified = Files.getLastModifiedTime( file.getParent() );
+        FileTime modified = Files.getLastModifiedTime( childGetParent( file ) );
 
-        assertThat( "created after modified", modified, greaterThan( created ) );
+        assertThat( modified ).isGreaterThan( created );
     }
 
     @Test
@@ -485,7 +498,7 @@ public abstract class Tests03File extends Tests02Dir {
         Path file = fileTA();
         BasicFileAttributes bfa = Files.readAttributes( file, BasicFileAttributes.class );
 
-        assertThat( bfa.lastAccessTime(), isCloseTo( bfa.creationTime() ) );
+        assertThat( bfa.lastAccessTime() ).usingComparator( FileTimeComparator.isWithIn( 2000 ) ).isEqualTo( bfa.creationTime() );
     }
 
     @Test
@@ -496,19 +509,19 @@ public abstract class Tests03File extends Tests02Dir {
         waitForAttribute();
 
         fileTAB();
-        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ) );
+        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime() ).isGreaterThan( before );
     }
 
     @Test
     @Category( { SlowTest.class, Writable.class, Attributes.class, LastModifiedTime.class } )
     public void testCreateFileSetModifiedTime() throws Exception {
         Path file = absTA();
-        FileTime parentCreated = Files.getLastModifiedTime( file.getParent() );
+        FileTime parentCreated = Files.getLastModifiedTime( childGetParent( file ) );
         waitForAttribute();
 
         fileTA(); // creates file
 
-        assertThat( Files.getLastModifiedTime( file ), greaterThan( parentCreated ) );
+        assertThat( Files.getLastModifiedTime( file ) ).isGreaterThan( parentCreated );
     }
 
     // todo: make this more specific or delete
@@ -520,7 +533,7 @@ public abstract class Tests03File extends Tests02Dir {
 //        waitForAttribute();
 //        FileTime notmodified = Files.getLastModifiedTime( file );
 //
-//        assertThat( notmodified, is( modified ) );
+//        assertThat( notmodified).isEqualTo( modified ) );
 //    }
 
     @Test
@@ -528,7 +541,8 @@ public abstract class Tests03File extends Tests02Dir {
     public void testModifiedDateIsCloseToCurrentTime() throws Exception {
         Path file = fileTA();
         FileTime before = FileTime.from( Clock.systemUTC().instant() );
-        assertThat( Files.getLastModifiedTime( file ), isCloseTo( before ) );
+        assertThat( Files.getLastModifiedTime( file ) ).usingComparator( FileTimeComparator.isWithIn( 2000 ) ).isEqualTo( before );
+
     }
 
     @Test
@@ -540,19 +554,19 @@ public abstract class Tests03File extends Tests02Dir {
 
         Files.readAllBytes( file );
 
-        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ) );
+        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime() ).isGreaterThan( before );
     }
 
     @Test
     @Category( { SlowTest.class, Writable.class, Attributes.class, LastAccessTime.class } )
     public void testReadFileDoesNotSetParentsLastAccessTime() throws Exception {
         Path file = fileTA();
-        FileTime before = Files.readAttributes( file.getParent(), BasicFileAttributes.class ).lastAccessTime();
+        FileTime before = Files.readAttributes( childGetParent( file ), BasicFileAttributes.class ).lastAccessTime();
         waitForAttribute();
 
         Files.readAllBytes( file );
 
-        assertThat( Files.readAttributes( file.getParent(), BasicFileAttributes.class ).lastAccessTime(), is( before ) );
+        assertThat( Files.readAttributes( childGetParent( file ), BasicFileAttributes.class ).lastAccessTime() ).isEqualTo( before );
     }
 
     @Test
@@ -566,8 +580,8 @@ public abstract class Tests03File extends Tests02Dir {
             ByteBuffer bb = ByteBuffer.allocate( CONTENT.length * 2 );
             int ret = channel.read( bb );
 
-            assertThat( ret, is( -1 ) );
-            assertThat( bb.position(), is( 0 ) );
+            assertThat( ret ).isEqualTo( -1 );
+            assertThat( bb.position() ).isEqualTo( 0 );
         }
     }
 
@@ -577,7 +591,7 @@ public abstract class Tests03File extends Tests02Dir {
         Path file = getFile();
         try( SeekableByteChannel out = FS.provider().newByteChannel( file, singleton( READ ) ) ) {
             out.position( 1 );
-            assertThat( out.position(), is( 1L ) );
+            assertThat( out.position() ).isEqualTo( 1L );
         }
     }
 
@@ -596,7 +610,7 @@ public abstract class Tests03File extends Tests02Dir {
             out.write( ByteBuffer.wrap( over ) );
         }
 
-        assertThat( Files.readAllBytes( file ), is( expected ) );
+        assertThat( Files.readAllBytes( file ) ).isEqualTo( expected );
     }
 
     @Test
@@ -608,9 +622,10 @@ public abstract class Tests03File extends Tests02Dir {
             out.write( ByteBuffer.wrap( "ha".getBytes( "UTF-8" ) ) );
         }
 
-        assertThat( Files.size( file ), is( 102L ) );
+        assertThat( Files.size( file ) ).isEqualTo( 102L );
     }
 
+    // todo
     // actually that should work: make the assert
 //    @Test( expected = UnsupportedOperationException.class )
 //    public void testWriteBeyondFileSizeUnsupported() throws IOException {
@@ -628,64 +643,62 @@ public abstract class Tests03File extends Tests02Dir {
         Path file = getFile();
         byte[] content = Files.readAllBytes( file );
 
-        assumeThat( content.length, greaterThan( 3 ) );
+        assertThat( content.length ).isGreaterThan( 3 );
 
         try( SeekableByteChannel channel = FS.provider().newByteChannel( file, singleton( READ ) ) ) {
             channel.position( 1 );
             ByteBuffer buffer = ByteBuffer.allocate( 2 );
             channel.read( buffer );
 
-            assertThat( buffer.array(), is( Arrays.copyOfRange( content, 1, 3 ) ) );
+            assertThat( buffer.array() ).isEqualTo( Arrays.copyOfRange( content, 1, 3 ) );
         }
     }
 
     @Test
     public void testRandomReadPosition() throws IOException {
         Path file = getFile();
-        assumeThat( Files.size( file ), greaterThan( 4L ) );
+        assertThat( Files.size( file ) ).isGreaterThan( 4L );
 
         try( SeekableByteChannel channel = FS.provider().newByteChannel( file, singleton( READ ) ) ) {
             channel.position( 1 );
             ByteBuffer buffer = ByteBuffer.allocate( 2 );
             channel.read( buffer );
 
-            assertThat( channel.position(), is( 3L ) );
+            assertThat( channel.position() ).isEqualTo( 3L );
         }
     }
 
     @Test
-    @Category({ Writable.class, Synced.class, AllwaysSync.class })
+    @Category( { Writable.class, Synced.class, AllwaysSync.class } )
     public void testReadAndWrite() throws IOException {
         Path file = fileTA();
         try( SeekableByteChannel inout = FS.provider().newByteChannel( file, asSet( WRITE, READ ) ) ) {
             inout.position( 1 );
             inout.write( ByteBuffer.wrap( "waa".getBytes( "UTF-8" ) ) );
 
-            assertThat( new String( Files.readAllBytes( file ), "UTF-8" ), is( "hwaahere" ) );
+            assertThat( new String( Files.readAllBytes( file ), "UTF-8" ) ).isEqualTo( "hwaahere" );
 
             inout.position( 2 );
             ByteBuffer buffer = ByteBuffer.allocate( 2 );
             inout.read( buffer );
-            assertThat( buffer.array()[ 0 ], is( getBytes("a")[ 0 ] ) );
+            assertThat( buffer.array()[ 0 ] ).isEqualTo( getBytes( "a" )[ 0 ] );
         }
     }
 
-    @Test( expected = NonReadableChannelException.class )
+    @Test
     @Category( Writable.class )
     public void testReadFromWriteOnlyChannelThrows() throws IOException {
         Path file = fileTA();
         try( SeekableByteChannel channel = FS.provider().newByteChannel( file, asSet( WRITE ) ) ) {
-
-            channel.read( ByteBuffer.allocate( 2 ) );
+            assertThatThrownBy( () -> channel.read( ByteBuffer.allocate( 2 ) ) ).isInstanceOf( NonReadableChannelException.class );
         }
     }
 
-    @Test( expected = NonWritableChannelException.class )
+    @Test
     public void testWriteToReadOnlyChannelThrows() throws IOException {
         Path file = getFile();
         try( SeekableByteChannel channel = FS.provider().newByteChannel( file, asSet( READ ) ) ) {
-
-            channel.write( ByteBuffer.allocate( 2 ) );
+            assertThatThrownBy( () -> channel.write( ByteBuffer.allocate( 2 ) ) ).isInstanceOf( NonWritableChannelException.class );
         }
     }
 
@@ -697,49 +710,53 @@ public abstract class Tests03File extends Tests02Dir {
             channel.truncate( 2 );
         }
 
-        assertThat( Files.size( file ), is( 2L ) );
+        assertThat( Files.size( file ) ).isEqualTo( 2L );
     }
 
-    @Test( expected = NonWritableChannelException.class )
+    @Test
     @Category( Writable.class )
     public void testTruncateOnReadChannelThrows() throws Exception {
         Path file = fileTA();
         try( SeekableByteChannel channel = FS.provider().newByteChannel( file, asSet( READ ) ) ) {
-            channel.truncate( 2 );
+            assertThatThrownBy( () -> channel.truncate( 2 ) ).isInstanceOf( NonWritableChannelException.class );
         }
     }
 
-    @Test( expected = ClosedChannelException.class )
+    @Test
     @Category( Writable.class )
     public void testTruncateOnClosedChannelThrows() throws Exception {
         Path file = fileTA();
         try( SeekableByteChannel channel = FS.provider().newByteChannel( file, asSet( WRITE ) ) ) {
             channel.close();
-            channel.truncate( 2 );
+            assertThatThrownBy( () -> channel.truncate( 2 ) ).isInstanceOf( ClosedChannelException.class );
         }
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( Writable.class )
     public void testTruncateToNegativeSizeThrows() throws Exception {
         Path file = fileTA();
         try( SeekableByteChannel channel = FS.provider().newByteChannel( file, asSet( WRITE ) ) ) {
-            channel.truncate( -7 );
+            assertThatThrownBy( () -> channel.truncate( -7 ) ).isInstanceOf( IllegalArgumentException.class );
         }
     }
 
-    @Test( expected = FileSystemException.class )
+    @Test
     @Category( Writable.class )
     public void testWriteChannelOfDir() throws IOException {
-        try( SeekableByteChannel channel = FS.provider().newByteChannel( dirTA(), asSet( WRITE ) ) ) {
-        }
+        assertThatThrownBy( () -> {
+            try( SeekableByteChannel channel = FS.provider().newByteChannel( dirTA(), asSet( WRITE ) ) ) {
+            }
+        } ).isInstanceOf( FileSystemException.class );
     }
 
-    @Test( expected = FileSystemException.class )
+    @Test
     @Category( Windows.class )
     public void testReadChannelOfDirThrows() throws IOException {
-        try( SeekableByteChannel channel = FS.provider().newByteChannel( getNonEmptyDir(), asSet( READ ) ) ) {
-        }
+        assertThatThrownBy( () -> {
+            try( SeekableByteChannel channel = FS.provider().newByteChannel( getNonEmptyDir(), asSet( READ ) ) ) {
+            }
+        } ).isInstanceOf( FileSystemException.class );
     }
 
     @Test
@@ -766,7 +783,9 @@ public abstract class Tests03File extends Tests02Dir {
                 channel.write( bb );
 
                 FileTime after = Files.getLastModifiedTime( file );
-                assertThat( after, greaterThan( before ) );
+
+                assertThat( after ).isGreaterThan( before );
+
                 before = after;
             }
         }
@@ -785,24 +804,26 @@ public abstract class Tests03File extends Tests02Dir {
                 channel.read( bb );
 
                 FileTime after = Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime();
-                assertThat( after, greaterThan( before ) );
+
+                assertThat( after ).isGreaterThan( before );
+
                 before = after;
             }
         }
     }
 
-    @Test( expected = FileSystemException.class )
+    @Test
     @Category( Writable.class )
     public void testCreateFileInFileThrows() throws IOException {
-        Files.write( fileTA().resolve( "foo" ), CONTENT );
+        assertThatThrownBy( () -> Files.write( fileTA().resolve( "foo" ), CONTENT )).isInstanceOf( FileSystemException.class );
     }
 
-    @Test( expected = FileSystemException.class )
+    @Test
     @Category( Writable.class )
-    public void testTruncateOnAppendChannelThrows() throws Exception{
+    public void testTruncateOnAppendChannelThrows() throws Exception {
         Path file = fileTA();
-        try( SeekableByteChannel channel =  FS.provider().newByteChannel( file, asSet( APPEND ) )) {
-            channel.truncate( 2 );
+        try( SeekableByteChannel channel = FS.provider().newByteChannel( file, asSet( APPEND ) ) ) {
+            assertThatThrownBy( () -> channel.truncate( 2 )).isInstanceOf( FileSystemException.class );
         }
     }
 
@@ -814,7 +835,7 @@ public abstract class Tests03File extends Tests02Dir {
 //            channel.position( 5 );
 //            channel.truncate( 2 );
 //
-//            assertThat( channel.position(), is(5L) );
+//            assertThat( channel.position()).isEqualTo(5L) );
 //        }
 //    }
 

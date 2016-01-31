@@ -37,6 +37,7 @@ import static org.junit.Assume.assumeThat;
  * **** END LICENSE BLOCK ****
  */
 
+@SuppressWarnings( "PMD.AbstractClassWithoutAbstractMethod" ) // framework design, this class should not be used directly
 public abstract class Tests00Setup {
 
     public final FSDescription description;

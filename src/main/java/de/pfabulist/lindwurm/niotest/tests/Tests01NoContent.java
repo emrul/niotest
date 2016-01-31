@@ -3,7 +3,6 @@ package de.pfabulist.lindwurm.niotest.tests;
 import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
 import de.pfabulist.lindwurm.niotest.tests.topics.NotDefaultFileSystem;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.hamcrest.core.IsNull;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -13,21 +12,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 
-import static de.pfabulist.lindwurm.niotest.matcher.ExceptionMatcher.throwsException;
-import static de.pfabulist.lindwurm.niotest.matcher.IteratorMatcher.isIn;
-import static de.pfabulist.lindwurm.niotest.matcher.PathAbsolute.absolute;
-import static de.pfabulist.lindwurm.niotest.matcher.PathAbsolute.relative;
-import static de.pfabulist.lindwurm.niotest.matcher.PathEndsWith.endsWith;
-import static de.pfabulist.lindwurm.niotest.matcher.PathStartsWith.startsWith;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static de.pfabulist.kleinod.nio.PathIKWID.absoluteGetRoot;
+import static de.pfabulist.kleinod.nio.PathIKWID.childGetParent;
+import static de.pfabulist.kleinod.nio.PathIKWID.namedGetFilename;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -66,8 +55,8 @@ public abstract class Tests01NoContent extends Tests00Setup {
 
     @Test
     public void testGetNameSimple() {
-        assertThat( relAB().getName( 0 ), is( relA() ) );
-        assertThat( relAB().getName( 1 ), is( relB() ) );
+        assertThat( relAB().getName( 0 ) ).isEqualTo( relA() );
+        assertThat( relAB().getName( 1 ) ).isEqualTo( relB() );
     }
 
     @Test( expected = IllegalArgumentException.class )
@@ -87,48 +76,48 @@ public abstract class Tests01NoContent extends Tests00Setup {
 
     @Test
     public void testGetNameOfDefaultPathIsItself() {
-        assertThat( pathDefault().getName( 0 ), is( pathDefault() ) );
+        assertThat( pathDefault().getName( 0 ) ).isEqualTo( pathDefault() );
     }
 
     @Test
     public void testResultOfGetNameIsRelative() {
-        assertThat( relAB().getName( 0 ), relative() );
+        assertThat( relAB().getName( 0 ) ).isRelative();
     }
 
     @Test
     public void testNameDoesNotIncludeSeparator() throws Exception {
-        assertThat( relAB().getName( 1 ).toString().contains( FS.getSeparator() ), is( false ) );
+        assertThat( relAB().getName( 1 ).toString() ).doesNotContain( FS.getSeparator() );
     }
 
     @Test
     public void testNameCountOfNameIs1() throws Exception {
-        assertThat( relABC().getName( 2 ).getNameCount(), is( 1 ) );
+        assertThat( relABC().getName( 2 ).getNameCount() ).isEqualTo( 1 );
     }
 
     @Test
     public void testGetNameCountSimple() {
-        assertThat( relAB().getNameCount(), is( 2 ) );
+        assertThat( relAB().getNameCount() ).isEqualTo( 2 );
     }
 
     @Test
     public void testGetNameIsIdempontent() {
-        assertThat( relA().getName( 0 ), is( relA() ) );
+        assertThat( relA().getName( 0 ) ).isEqualTo( relA() );
     }
 
     @Test
     public void testRootNameCountIs0() {
-        assertThat( defaultRoot().getNameCount(), is( 0 ) );
+        assertThat( defaultRoot().getNameCount() ).isEqualTo( 0 );
     }
 
     @Test
     public void testDefaultHasNameCount1() {
-        assertThat( pathDefault().getNameCount(), is( 1 ) );
+        assertThat( pathDefault().getNameCount() ).isEqualTo( 1 );
     }
 
     @Test
     public void testEndsWithSimple() {
-        assertThat( relABC(), endsWith( relBC() ) );
-        assertThat( relABC(), not( endsWith( relAB() ) ) );
+        assertThat( relABC().endsWith( relBC() ) ).isTrue();
+        assertThat( relABC().endsWith( relAB() ) ).isFalse();
     }
 
     @Test
@@ -137,8 +126,8 @@ public abstract class Tests01NoContent extends Tests00Setup {
         String bcStr = relBC().toString();
         String abStr = relAB().toString();
 
-        assertThat( abc, endsWith( bcStr ) );
-        assertThat( abc, not( endsWith( abStr ) ) );
+        assertThat( abc.endsWith( bcStr ) ).isTrue();
+        assertThat( abc.endsWith( abStr ) ).isFalse();
     }
 
     @Test
@@ -147,8 +136,8 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path bc = relBC();
         Path ab = relAB();
 
-        assertThat( abc, not( startsWith( bc ) ) );
-        assertThat( abc, startsWith( ab ) );
+        assertThat( abc.startsWith( bc ) ).isFalse();
+        assertThat( abc.startsWith( ab ) ).isTrue();
     }
 
     @Test
@@ -156,7 +145,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path abcAbso = absABC();
         Path abRel = relAB();
 
-        assertThat( abcAbso, not( startsWith( abRel ) ) );
+        assertThat( abcAbso.startsWith( abRel ) ).isFalse();
     }
 
     @Test
@@ -164,17 +153,17 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path abcAbso = absABC();
         Path abAbso = absAB();
 
-        assertThat( abcAbso.startsWith( abAbso ), is( true ) );
+        assertThat( abcAbso.startsWith( abAbso ) ).isTrue();
     }
 
     @Test
     public void testAbsolutePathDoesStartsWithRoot() {
-        assertThat( absABC(), startsWith( defaultRoot() ) );
+        assertThat( absABC().startsWith( defaultRoot() ) ).isTrue();
     }
 
     @Test
     public void testNoNonEmptyPathStartsWithDefault() {
-        assertThat( relABC(), not( startsWith( pathDefault() ) ) );
+        assertThat( relABC().startsWith( pathDefault() ) ).isFalse();
     }
 
     @Test
@@ -183,18 +172,18 @@ public abstract class Tests01NoContent extends Tests00Setup {
         String bcStr = relBC().toString();
         String abStr = relAB().toString();
 
-        assertThat( abc, not( startsWith( bcStr ) ) );
-        assertThat( abc.startsWith( abStr ), is( true ) );
+        assertThat( abc.startsWith( bcStr ) ).isFalse();
+        assertThat( abc.startsWith( abStr ) ).isTrue();
     }
 
     @Test
     public void testSubPathSimple() throws Exception {
-        assertEquals( relBC(), relABC().subpath( 1, 3 ) );
+        assertThat( relBC() ).isEqualTo( relABC().subpath( 1, 3 ) );
     }
 
     @Test
     public void testSubPathIsRelative() throws Exception {
-        assertThat( relABC().subpath( 1, 3 ), relative() );
+        assertThat( relABC().subpath( 1, 3 ) ).isRelative();
     }
 
     @Test( expected = IllegalArgumentException.class )
@@ -219,38 +208,38 @@ public abstract class Tests01NoContent extends Tests00Setup {
 
     @Test
     public void testFileNameHasNameCountOf1() {
-        assertThat( absAB().getFileName().getNameCount(), is( 1 ) );
+        assertThat( absAB().getFileName().getNameCount() ).isEqualTo( 1 );
     }
 
     @Test
     public void testGetFileNameIsIdempotent() throws Exception {
-        Path fileName = relAB().getFileName();
-        assertThat( fileName.getFileName(), is( fileName ) );
+        Path fileName = namedGetFilename( relAB() );
+        assertThat( fileName.getFileName() ).isEqualTo( fileName );
     }
 
     @Test
     public void testFileNameIsRelative() throws Exception {
-        assertThat( absAB().getFileName(), relative() );
+        assertThat( absAB().getFileName() ).isRelative();
     }
 
     @Test
     public void testRootHasNoFileName() throws Exception {
-        assertThat( defaultRoot().getFileName(), nullValue() );
+        assertThat( defaultRoot().getFileName() ).isNull();
     }
 
     @Test
     public void testFileNameStringIsPathPartString() {
-        assertThat( relA().getFileName().toString(), is( nameA() ) );
+        assertThat( relA().getFileName().toString() ).isEqualTo( nameA() );
     }
 
     @Test
     public void testFileNameIsLastName() throws Exception {
-        assertThat( relABC().getFileName(), is( relABC().getName( 2 ) ) );
+        assertThat( relABC().getFileName() ).isEqualTo( relABC().getName( 2 ) );
     }
 
     @Test
     public void testDefaultHasANameAndItsItself() throws Exception {
-        assertEquals( pathDefault(), pathDefault().getFileName() );
+        assertThat( pathDefault() ).isEqualTo( pathDefault().getFileName() );
     }
 
     @Test
@@ -258,28 +247,28 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path rel = pathDefault();
         Path res = rel.resolve( nameA() );
 
-        assertThat( res, endsWith( nameA() ) );
+        assertThat( res.endsWith( nameA() ) ).isTrue();
     }
 
     @Test
     public void testResolveOfARelativePathIsRelative() throws Exception {
-        assertThat( pathDefault().resolve( nameA() ), relative() );
+        assertThat( pathDefault().resolve( nameA() ) ).isRelative();
     }
 
     @Test
     public void testResolveOfAbsoluteIsAbsolute() throws Exception {
-        assertThat( absAB().resolve( nameA() ), absolute() );
+        assertThat( absAB().resolve( nameA() ) ).isAbsolute();
     }
 
     @Test
     public void testResolveWithDefaultIsNop() {
-        assertEquals( relABC(), relABC().resolve( pathDefault() ) );
+        assertThat( relABC() ).isEqualTo( relABC().resolve( pathDefault() ) );
     }
 
     @Test
     public void testResolveWithNameIsSameAsStr() throws Exception {
-        assertEquals( relAB().resolve( nameD() ),
-                      relAB().resolve( relD() ) );
+        assertThat( relAB().resolve( nameD() ) ).
+                isEqualTo( relAB().resolve( relD() ) );
 
     }
 
@@ -287,8 +276,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
     public void testResolveWorksLikeGetPathOnStringsWithSeparator() throws Exception {
         String str = nameA() + FS.getSeparator() + nameB();
 
-        assertEquals( pathDefault().resolve( str ),
-                      FS.getPath( str ) );
+        assertThat( pathDefault().resolve( str ) ).isEqualTo( FS.getPath( str ) );
 
     }
 
@@ -297,8 +285,8 @@ public abstract class Tests01NoContent extends Tests00Setup {
         String str = nameA() + FS.getSeparator() + nameB();
         Path asPath = FS.getPath( nameA() + FS.getSeparator() + nameB() );
 
-        assertEquals( pathDefault().resolve( str ),
-                      pathDefault().resolve( asPath ) );
+        assertThat( pathDefault().resolve( str ) ).isEqualTo(
+                pathDefault().resolve( asPath ) );
     }
 
     @Test
@@ -306,83 +294,100 @@ public abstract class Tests01NoContent extends Tests00Setup {
 
         Path two = relA().resolve( relB() );
 
-        assertEquals( relA().resolve( two ),
-                      relA().resolve( relA().resolve( relB() ) ) );
+        assertThat( relA().resolve( two ) ).isEqualTo(
+                relA().resolve( relA().resolve( relB() ) ) );
     }
 
     @Test
     public void testResolveWithAbsoluteArgReturnArg() throws Exception {
-        assertEquals( absAB(), relA().resolve( absAB() ) );
+        assertThat( absAB() ).isEqualTo( relA().resolve( absAB() ) );
     }
 
     @Test
-    public void testResolveSiblingIsGetParentResolve() throws Exception {
-        assertEquals( relAB().resolve( relA() ),
-                      relABC().resolveSibling( relA() ) );
+    public void testResolveSiblingIsGetParentResolve() {
+        assertThat( relABC().resolveSibling( relA() ) ).
+                isEqualTo( relAB().resolve( relA() ) );
     }
 
     @Test
     public void testResolveSiblingWithAbsoluteArgIsThatArg() throws Exception {
-        assertEquals( absAB(), relA().resolveSibling( absAB() ) );
+        assertThat( relA().resolveSibling( absAB() ) ).isEqualTo( absAB() );
     }
 
     @Test
     public void testResolveSiblingOnRootReturnsArg() throws Exception {
-        assertEquals( relAB(), defaultRoot().resolveSibling( relAB() ) );
+        assertThat( defaultRoot().resolveSibling( relAB() ) ).isEqualTo( relAB() );
     }
 
     @Test
     public void testResolveSiblingOnDefaultReturnsArg() throws Exception {
-        assertEquals( relAB(), pathDefault().resolveSibling( relAB() ) );
+        assertThat( pathDefault().resolveSibling( relAB() ) ).isEqualTo( relAB() );
     }
 
     @Test
     public void testResolveSiblingOnNameReturnsArg() throws Exception {
-        assertEquals( relAB(), relA().resolveSibling( relAB() ) );
+        assertThat( relA().resolveSibling( relAB() ) ).isEqualTo( relAB() );
     }
 
     @Test
     public void testResolveSiblingWorksWithStringAndPath() throws Exception {
-        assertEquals( relAB().resolveSibling( relB() ),
-                      relAB().resolveSibling( nameB() ) );
+        assertThat( relAB().resolveSibling( relB() ) ).isEqualTo(
+                relAB().resolveSibling( nameB() ) );
+    }
 
+    @Test
+    public void testResolveSiblingOnRootWithEmptyIsEmpty() throws Exception {
+        assertThat( defaultRoot().resolveSibling( pathDefault() ) ).
+                isEqualTo( pathDefault() );
+    }
+
+    @Test
+    public void testResolveSiblingOnEmptyWithEmptyIsEmpty() throws Exception {
+        assertThat( pathDefault().resolveSibling( pathDefault() ) ).
+                isEqualTo( pathDefault() );
+    }
+
+    @Test
+    public void testResolveSiblingOnChildWithEmptyIsParent() throws Exception {
+        assertThat( absABC().resolveSibling( pathDefault() ) ).
+                isEqualTo( absAB() );
     }
 
     @Test
     public void testGetPathIgnoresEmptyStringAsFirstParameter() throws Exception {
-        assertEquals( FS.getPath( nameA() ),
-                      FS.getPath( "", nameA() ) );
+        assertThat( FS.getPath( nameA() ) ).isEqualTo(
+                FS.getPath( "", nameA() ) );
 
     }
 
     @Test
     public void testGetPathIgnoresEmptyStringInAnyParameter() throws Exception {
-        assertEquals( FS.getPath( nameA() ),
-                      FS.getPath( "", "", nameA(), "", "" ) );
+        assertThat( FS.getPath( nameA() ) ).isEqualTo(
+                FS.getPath( "", "", nameA(), "", "" ) );
 
     }
 
     @Test
     public void testGetPathWithSeveralNamesIsSameAsWithOneStringWithSeparators() throws Exception {
-        assertEquals( FS.getPath( nameA(), nameB(), nameC() ),
-                      FS.getPath( nameA() + FS.getSeparator() + nameB() + FS.getSeparator() + nameC() ) );
+        assertThat( FS.getPath( nameA(), nameB(), nameC() ) ).isEqualTo(
+                FS.getPath( nameA() + FS.getSeparator() + nameB() + FS.getSeparator() + nameC() ) );
     }
 
     @Test
     public void testpathAllowsMixedArguments() throws Exception {
-        assertEquals( FS.getPath( nameA() + FS.getSeparator() + nameB(), nameC() ),
-                      FS.getPath( nameA(), nameB() + FS.getSeparator() + nameC() ) );
+        assertThat( FS.getPath( nameA() + FS.getSeparator() + nameB(), nameC() ) ).isEqualTo(
+                FS.getPath( nameA(), nameB() + FS.getSeparator() + nameC() ) );
     }
 
     @Test
     public void testpathAndToStringAreOpposites() throws Exception {
 
-        assertThat( FS.getPath( relABC().toString() ), is( relABC() ) );
-//        assertEquals( relABC(), FS.getPath( relABC().toString() ));
+        assertThat( FS.getPath( relABC().toString() ) ).isEqualTo( relABC() );
+//        assertThat( relABC(), FS.getPath( relABC().toString() ));
 
         String str = nameC() + FS.getSeparator() + nameD();
 
-        assertThat( FS.getPath( str ).toString(), is( str ) );
+        assertThat( FS.getPath( str ).toString() ).isEqualTo( str );
     }
 
     // todo default fs bugs, /
@@ -391,12 +396,12 @@ public abstract class Tests01NoContent extends Tests00Setup {
 //        Path proot = FS.getPath( FS.getSeparator() + "dud");
 //        System.out.println(proot);
 //        System.out.println(isRoot(proot) + " " + proot.isAbsolute());
-//        assertThat( isRoot( proot), is( true ));
+//        assertThat( isRoot( proot)).isEqualTo( true ));
 //    }
 
     @Test
     public void testGetPathNotStartingWithRootStringIsRelative() throws Exception {
-        assertThat( FS.getPath( nameC() ), relative() );
+        assertThat( FS.getPath( nameC() ) ).isRelative();
     }
 
     // only for unix systems
@@ -404,7 +409,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
 //    @Test
 //    public void testGetPathStartingWithRootStringIsAbsolute() throws Exception {
 //        assumeThat( capabilities.);
-//        assertThat( FS.getPath( FS.getSeparator() + getName(2)), absolute() );
+//        assertThat( FS.getPath( FS.getSeparator() + getName(2))).isAbsolute();
 //    }
 
     @Test
@@ -412,7 +417,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path shrt = FS.getPath( nameA() );
         Path lng = FS.getPath( nameA(), nameB(), nameC() );
 
-        assertEquals( lng, shrt.resolve( shrt.relativize( lng ) ) );
+        assertThat( lng ).isEqualTo( shrt.resolve( shrt.relativize( lng ) ) );
     }
 
     @Test
@@ -421,7 +426,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path lng = root.resolve( nameA() ).resolve( nameB() ).resolve( nameC() );
         Path lngRel = FS.getPath( nameA(), nameB(), nameC() );
 
-        assertEquals( lngRel, root.relativize( lng ) );
+        assertThat( lngRel ).isEqualTo( root.relativize( lng ) );
     }
 
     @Test
@@ -430,12 +435,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path abs = absABC();
         Path defAbs = pathDefault().toAbsolutePath();
 
-        assertThat( defAbs.relativize( abs ).toAbsolutePath().normalize(), is( abs ) );
-    }
-
-    @Test
-    public void testUnnormalizedBasedOnFile() {
-        assertThat( absABC().resolve( ".." ).resolve( nameC() ).normalize(), is( absABC() ) );
+        assertThat( defAbs.relativize( abs ).toAbsolutePath().normalize() ).isEqualTo( abs );
     }
 
     @Test( expected = IllegalArgumentException.class )
@@ -458,7 +458,8 @@ public abstract class Tests01NoContent extends Tests00Setup {
     public void testRelativizePathWithOtherRootFails() {
         for( Path root : FS.getRootDirectories() ) {
             if( !root.equals( defaultRoot() ) ) {
-                assertThat( () -> root.relativize( defaultRoot() ), throwsException( IllegalArgumentException.class ) );
+                assertThatThrownBy( () -> root.relativize( defaultRoot() ) ).
+                        isInstanceOf( IllegalArgumentException.class );
             }
         }
     }
@@ -466,61 +467,61 @@ public abstract class Tests01NoContent extends Tests00Setup {
     @Test
     public void testGetParent() {
         Path rel = FS.getPath( nameA() );
-        assertThat( rel.getParent(), nullValue() );
+        assertThat( rel.getParent() ).isNull();
 
         Path abs = FS.getPath( nameA(), nameC() ).toAbsolutePath();
-        assertEquals( abs, abs.resolve( nameA() ).getParent() );
+        assertThat( abs ).isEqualTo( abs.resolve( nameA() ).getParent() );
     }
 
     @Test
     public void testGetParentOfRootIsNull() throws Exception {
-        assertThat( defaultRoot().getParent(), IsNull.nullValue() );
+        assertThat( defaultRoot().getParent() ).isNull();
     }
 
     @Test
     public void testGetParentOfNameIsNull() throws Exception {
-        assertThat( relA().getParent(), nullValue() );
+        assertThat( relA().getParent() ).isNull();
     }
 
     @Test
     public void testGetParentOfDefaultIsNull() throws Exception {
-        assertThat( pathDefault().getParent(), nullValue() );
+        assertThat( pathDefault().getParent() ).isNull();
     }
 
     @Test
     public void testGetParentOfLongerRelativeNameIsNotNull() throws Exception {
-        assertThat( relAB().getParent(), notNullValue() );
+        assertThat( relAB().getParent() ).isNotNull();
     }
 
     @Test
     public void testGetParentIsInverseOfResolve() throws Exception {
-        assertEquals( relA(), relA().resolve( relB() ).getParent() );
-        assertEquals( relAB(), relAB().getParent().resolve( relB() ) );
+        assertThat( relA() ).isEqualTo( childGetParent( relA().resolve( relB() ) ) );
+        assertThat( relAB() ).isEqualTo( childGetParent( relAB() ).resolve( relB() ) );
     }
 
     @Test
     public void testGetParentOfRelativeIsRelative() throws Exception {
-        assertThat( relAB().getParent(), relative() );
+        assertThat( childGetParent( relAB() ) ).isRelative();
     }
 
     @Test
     public void testgetParentOfAbsoluteIsAbsolute() throws Exception {
-        assertThat( absAB().getParent(), absolute() );
+        assertThat( childGetParent( absAB() ) ).isAbsolute();
     }
 
     @Test
     public void testNormalizeWildAbsPaths() {
         Path abs = absAB();
 
-        assertThat( abs.resolve( ".." + FS.getSeparator() + "bb" + FS.getSeparator() + ".." + FS.getSeparator() + "." ).normalize(),
-                    is( abs.getParent() ) );
+        assertThat( abs.resolve( ".." + FS.getSeparator() + "bb" + FS.getSeparator() + ".." + FS.getSeparator() + "." ).normalize() ).
+                isEqualTo( childGetParent( abs ) );
 
-        assertEquals( "", relA().resolve( ".." ).normalize().toString() );
+        assertThat( relA().resolve( ".." ).normalize().toString() ).isEqualTo( "" );
     }
 
     @Test
     public void testNormalizeWildRelPaths() {
-        assertEquals( "", relA().resolve( ".." ).normalize().toString() );
+        assertThat( relA().resolve( ".." ).normalize().toString() ).isEqualTo( "" );
     }
 
     @Test
@@ -528,9 +529,8 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path path1 = relAB();
         Path path2 = path1.resolve( "." );
 
-        assertThat( path1, not( is( path2 ) ) );
-
-        assertThat( path1, is( path2.normalize() ) );
+        assertThat( path1 ).isNotEqualTo( path2 );
+        assertThat( path1 ).isEqualTo( path2.normalize() );
     }
 
     @Test
@@ -538,32 +538,32 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path path1 = relAB();
         Path path2 = path1.resolve( nameD() ).resolve( ".." );
 
-        assertThat( path1, not( is( path2 ) ) );
+        assertThat( path1 ).isNotEqualTo( path2 );
 
-        assertThat( path1, is( path2.normalize() ) );
+        assertThat( path1 ).isEqualTo( path2.normalize() );
     }
 
     @Test
     public void testNormalizeIsIdempotent() throws Exception {
         Path path = relABC().resolve( ".." ).resolve( nameC() );
-        assertThat( path.normalize().normalize(), is( path.normalize() ) );
+        assertThat( path.normalize().normalize() ).isEqualTo( path.normalize() );
     }
 
     @Test
     public void testNormlizeParentOfRoot() {
-        assertThat( defaultRoot().resolve( ".." ).normalize(), is( defaultRoot() ) );
+        assertThat( defaultRoot().resolve( ".." ).normalize() ).isEqualTo( defaultRoot() );
     }
 
     @Test
     public void testNormalizeRelativePath() {
         Path rel = FS.getPath( ".." ).resolve( nameA() );
-        assertThat( rel.normalize(), is( rel ) );
+        assertThat( rel.normalize() ).isEqualTo( rel );
     }
 
     @Test
     public void testNormalizeRelativePathEmptyHm() {
         Path rel = FS.getPath( nameA() ).resolve( ".." );
-        assertThat( rel.normalize(), is( pathDefault() ) );
+        assertThat( rel.normalize() ).isEqualTo( pathDefault() );
     }
 
     @Test
@@ -573,13 +573,13 @@ public abstract class Tests01NoContent extends Tests00Setup {
         for( Path kid : relABC() ) {
             switch( i ) {
                 case 0:
-                    assertThat( kid, is( relA() ) );
+                    assertThat( kid ).isEqualTo( relA() );
                     break;
                 case 1:
-                    assertThat( kid, is( relB() ) );
+                    assertThat( kid ).isEqualTo( relB() );
                     break;
                 case 2:
-                    assertThat( kid, is( relC() ) );
+                    assertThat( kid ).isEqualTo( relC() );
                     break;
                 default:
                     // nop
@@ -588,52 +588,52 @@ public abstract class Tests01NoContent extends Tests00Setup {
             i++;
         }
 
-        assertEquals( 3, i );
+        assertThat( i ).isEqualTo( 3 );
     }
 
     @Test
     public void testRootOfRelativeIsNull() {
-        assertThat( relABC().getRoot(), nullValue() );
+        assertThat( relABC().getRoot() ).isNull();
     }
 
     @Test
     public void testRootIsOneOfTheRoots() {
-        assertThat( defaultRoot(), isIn( FS.getRootDirectories() ) );
+        assertThat( defaultRoot() ).isIn( FS.getRootDirectories() );
     }
 
     @Test
     public void testRootOfAbsolutePathIsAbsolute() throws Exception {
-        assertThat( absAB().getRoot(), absolute() );
+        assertThat( absAB().getRoot() ).isAbsolute();
     }
 
     @Test
     public void testdefaultRootIsIdempotent() throws Exception {
-        assertEquals( defaultRoot(), defaultRoot().getRoot() );
+        assertThat( defaultRoot() ).isEqualTo( defaultRoot().getRoot() );
     }
 
     @Test
     public void testToAbsoluteProducesAnAbsolutePath() throws Exception {
-        assertThat( relABC().toAbsolutePath(), absolute() );
+        assertThat( relABC().toAbsolutePath() ).isAbsolute();
     }
 
     @Test
     public void testToAbsoluteIsIdempotent() throws Exception {
-        assertThat( absAB(), is( absAB().toAbsolutePath() ) );
+        assertThat( absAB() ).isEqualTo( absAB().toAbsolutePath() );
     }
 
     @Test
     public void testDefaultIsRelative() throws Exception {
-        assertThat( pathDefault(), relative() );
+        assertThat( pathDefault() ).isRelative();
     }
 
     @Test
     public void testRelativePathToStringDoesNotStartWithSeparator() throws Exception {
-        assertThat( relAB().toString().startsWith( FS.getSeparator() ), is( false ) );
+        assertThat( relAB().toString().startsWith( FS.getSeparator() ) ).isFalse();
     }
 
     @Test
     public void testPathWith2NamesHasSeparatorInToString() throws Exception {
-        assertThat( relAB().toString().contains( FS.getSeparator() ), is( true ) );
+        assertThat( relAB().toString().contains( FS.getSeparator() ) ).isTrue();
     }
 
     @Test
@@ -642,8 +642,10 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path myABC = FS.getPath( nameA(), nameB(), nameC() );
         Path otherABC = FileSystems.getDefault().getPath( nameA(), nameB(), nameC() );
 
-        assertThat( myABC, not( is( otherABC ) ) );
+        assertThat( myABC ).isNotEqualTo( otherABC );
     }
+
+// todo
 //
 //    @Test
 //    public void testCapi() throws Exception {
@@ -651,19 +653,19 @@ public abstract class Tests01NoContent extends Tests00Setup {
 //        Path upper = FS.getPath( "A", "B" );
 //        Path lower = FS.getPath( "a", "b" );
 //
-//        assertEquals( !p.getCapabilities().isCaseSensitive(),
+//        assertThat( !p.getCapabilities().isCaseSensitive(),
 //                upper.equals( lower ));
 //    }
 //
 //    @Test
 //    public void testFileNameAlpha() throws Exception {
-//        assertThat( p.getCapabilities().isCorrectFileName( "azYw" ), is( true ) );
+//        assertThat( p.getCapabilities().isCorrectFileName( "azYw" )).isEqualTo( true ) );
 //    }
 //
 //    @Test
 //    public void testGeneratedPathNamesAreOK() throws Exception {
 //        for ( int i = 0; i < 10; i++ ) {
-//            assertThat( p.getCapabilities().isCorrectFileName( nameStr[i] ), is( true ) );
+//            assertThat( p.getCapabilities().isCorrectFileName( nameStr[i] )).isEqualTo( true ) );
 //        }
 //    }
 
@@ -675,25 +677,17 @@ public abstract class Tests01NoContent extends Tests00Setup {
 
     @Test
     public void testPathMatcherKnowsGlob() {
-        try {
-            FS.getPathMatcher( "glob:*" );
-        } catch ( UnsupportedOperationException exp ) {
-            fail( "glob should be supported" );
-        }
+        assertThat( FS.getPathMatcher( "glob:*" ) ).isNotNull();
     }
 
     @Test
     public void testPathMatcherKnowsRegex() {
-        try {
-            FS.getPathMatcher( "regex:.*" );
-        } catch ( UnsupportedOperationException exp ) {
-            fail( "glob should be supported" );
-        }
+        assertThat( FS.getPathMatcher( "regex:.*" ) ).isNotNull();
     }
 
-    @Test( expected = UnsupportedOperationException.class )
+    @Test
     public void testPathMatcherThrowsOnUnknownSyntax() {
-        FS.getPathMatcher( "thisisarellysillysyntax:.*" );
+        assertThatThrownBy( () -> FS.getPathMatcher( "thisisarellysillysyntax:*" ) ).isInstanceOf( UnsupportedOperationException.class );
     }
 
     @Test
@@ -701,11 +695,12 @@ public abstract class Tests01NoContent extends Tests00Setup {
 
         PathMatcher pm = FS.getPathMatcher( "regex:.*" + nameC() + ".*" );
 
-        assertThat( pm.matches( FS.getPath( nameC() ).toAbsolutePath() ), is( true ) );
-        assertThat( pm.matches( FS.getPath( nameC() ) ), is( true ) );
-        assertThat( pm.matches( FS.getPath( nameC(), "da" ) ), is( true ) );
-        assertThat( pm.matches( FS.getPath( "du", nameC(), "da" ) ), is( true ) );
-        assertThat( pm.matches( FS.getPath( "du", nameC() + nameA(), "da" ) ), is( true ) );
+        assertThat( pm.matches( FS.getPath( nameC() ).toAbsolutePath() ) ).isTrue();
+        assertThat( pm.matches( FS.getPath( nameC() ) ) ).isTrue();
+        assertThat( pm.matches( FS.getPath( nameC(), "da" ) ) ).isTrue();
+        assertThat( pm.matches( FS.getPath( "du", nameC(), "da" ) ) ).isTrue();
+        assertThat( pm.matches( FS.getPath( "du", nameC() + nameA(), "da" ) ) ).isTrue();
+
     }
 
     @Test
@@ -713,58 +708,78 @@ public abstract class Tests01NoContent extends Tests00Setup {
 
         PathMatcher pm = FS.getPathMatcher( "glob:*.{" + nameC() + "," + nameD() + "}" );
 
-        assertThat( pm.matches( FS.getPath( /*nameA(), */nameE() + "." + nameD() ) ), is( true ) );
-        assertThat( pm.matches( FS.getPath( /*nameA(), */nameE() + "." + nameC() ) ), is( true ) );
-        assertThat( pm.matches( FS.getPath( /*nameA(), */nameE() + nameC() ) ), is( false ) );
+        assertThat( pm.matches( FS.getPath( /*nameA(), */nameE() + "." + nameD() ) ) ).isTrue();
+        assertThat( pm.matches( FS.getPath( /*nameA(), */nameE() + "." + nameC() ) ) ).isTrue();
+        assertThat( pm.matches( FS.getPath( /*nameA(), */nameE() + nameC() ) ) ).isFalse();
 
     }
 
-    @Test( expected = ClassCastException.class )
+    @Test
     @Category( NotDefaultFileSystem.class )
     public void testCompareToDifferentProviderThrows() throws Exception {
-        relABC().compareTo( FileSystems.getDefault().getPath( nameA() ) );
+        assertThatThrownBy( () -> relABC().compareTo( FileSystems.getDefault().getPath( nameA() ) ) ).isInstanceOf( ClassCastException.class );
     }
 
     @Test
     public void testCompareToOfEqualPathsIs0() throws Exception {
-        assertEquals( 0, relABC().compareTo( relABC() ) );
+        assertThat( relABC().compareTo( relABC() ) ).isEqualTo( 0 );
     }
 
     @Test
     public void testCompareToShortPathIsPositive() throws Exception {
-        assertTrue( relABC().compareTo( relAB() ) > 0 );
+        assertThat( relABC().compareTo( relAB() ) > 0 ).isTrue();
     }
 
     @Test
-    public void testCompareToLongetPathIsNegative() throws Exception {
-        assertTrue( relAB().compareTo( relABC() ) < 0 );
+    public void testCompareToLongerPathIsNegative() throws Exception {
+        assertThat( relAB().compareTo( relABC() ) < 0 ).isTrue();
     }
 
     @Test
-    @SuppressFBWarnings() // todo be more specific
+    public void testRelativePathIsNotEqualtoAbsoluteWithSamePathElements() throws Exception {
+        assertThat( relAB().compareTo( absAB() ) ).isNotEqualTo( 0 );
+    }
+
+    private int restrictTo1( int in ) {
+        return in < 0 ? -1 : 1;
+    }
+
+    @Test
+    public void testRelativePathsAreInDifferentSpaceThanAbsolutes() throws Exception {
+
+        int diff = restrictTo1( relABC().compareTo( absABC() ) );
+
+        assertThat( restrictTo1( relAB().compareTo( absABC() ) ) ).isEqualTo( diff );
+        assertThat( restrictTo1( relABC().compareTo( absAB() ) ) ).isEqualTo( diff );
+        assertThat( restrictTo1( relABC().compareTo( absD() ) ) ).isEqualTo( diff );
+    }
+
+
+    @Test
+    @SuppressFBWarnings( "RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" ) // how will findbugs know that there are no sideeffects ?
     public void testPathIsImmutableToToAbsolute() throws Exception {
         Path rel = relAB();
         rel.toAbsolutePath();
 
-        assertThat( rel, relative() );
+        assertThat( rel ).isRelative();
     }
 
     @Test
     public void testPathIsImmutableToNormalize() throws Exception {
         Path unnom = relAB().resolve( ".." );
-        assertTrue( unnom.toString().contains( ".." ) );
+        assertThat( unnom.toString().contains( ".." ) ).isTrue();
     }
 
     // only tests class Files
     @Test
     public void testNonExistingAbsolutePathIsNotAFile() throws IOException {
-        assertThat( Files.isRegularFile( relAB() ), is( false ) );
+        assertThat( Files.isRegularFile( relAB() ) ).isFalse();
     }
 
     // only tests class Files
     @Test
     public void testNonExistingRelativePathIsNotAFile() throws IOException {
-        assertThat( Files.isRegularFile( relA() ), is( false ) );
+        assertThat( Files.isRegularFile( relA() ) ).isFalse();
     }
 
     // todo
@@ -774,7 +789,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
 //        for ( Character ill : capabilities.getPathIllegalCharacters() ) {
 //            try {
 //                FS.getPath("" + ill);
-//                assertThat("illegal character allowed: <" + ill + ">", is(""));
+//                assertThat("illegal character allowed: <" + ill + ">").isEqualTo(""));
 //            } catch ( InvalidPathException e ) {
 //            }
 //        }
@@ -785,7 +800,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
         Path path = FS.getPath( nameD() + FS.getSeparator() + nameA() );
 
         for( Path elem : path ) {
-            assertThat( elem.toString(), not( containsString( FS.getSeparator() ) ) );
+            assertThat( elem.toString() ).doesNotContain( FS.getSeparator() );
         }
 
     }
@@ -811,7 +826,7 @@ public abstract class Tests01NoContent extends Tests00Setup {
     }
 
     public Path defaultRoot() {
-        return FS.getPath( "" ).toAbsolutePath().getRoot();
+        return absoluteGetRoot( FS.getPath( "" ).toAbsolutePath() );
     }
 
     public Path relA() {

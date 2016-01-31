@@ -1,9 +1,10 @@
 package de.pfabulist.lindwurm.niotest;
 
-import de.pfabulist.unchecked.Filess;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import de.pfabulist.kleinod.nio.Filess;
 
 import java.nio.file.Path;
+
+import static de.pfabulist.kleinod.nio.PathIKWID.childGetParent;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -50,7 +51,7 @@ public class Utils {
             ret = ret.resolve( name );
         }
 
-        Filess.createDirectories( ret.getParent() );
+        Filess.createDirectories( childGetParent( ret));
         Filess.write( ret, content );
 
         return ret;

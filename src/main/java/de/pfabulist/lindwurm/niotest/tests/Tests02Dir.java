@@ -1,10 +1,9 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.nio.Filess;
 import de.pfabulist.lindwurm.niotest.tests.topics.*;
-import de.pfabulist.unchecked.Filess;
 import de.pfabulist.lindwurm.niotest.Utils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -19,23 +18,15 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
+import static de.pfabulist.kleinod.nio.PathIKWID.childGetParent;
 import static de.pfabulist.kleinod.text.Strings.getBytes;
-import static de.pfabulist.lindwurm.niotest.matcher.ExceptionMatcher.throwsException;
-import static de.pfabulist.lindwurm.niotest.matcher.IteratorMatcher.isIn;
-import static de.pfabulist.lindwurm.niotest.matcher.PathAbsolute.absolute;
-import static de.pfabulist.lindwurm.niotest.matcher.PathAbsolute.relative;
-import static de.pfabulist.lindwurm.niotest.matcher.PathExists.exists;
-import static de.pfabulist.lindwurm.niotest.matcher.PathIsDirectory.isDirectory;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.number.OrderingComparison.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +49,7 @@ import static org.junit.Assert.assertThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-@SuppressWarnings( "PMD.ExcessivePublicCount" )
+@SuppressWarnings( { "PMD.ExcessivePublicCount", "PMD.TooManyMethods" } )
 public abstract class Tests02Dir extends Tests01NoContent {
 
     public Tests02Dir( FSDescription capa ) {
@@ -67,28 +58,29 @@ public abstract class Tests02Dir extends Tests01NoContent {
 
     @Test
     public void testDefaultIsDir() throws Exception {
-        assertThat( pathDefault(), isDirectory() );
+        assertThat( pathDefault() ).isDirectory();
     }
 
     @Test
     public void testContentOfNonEmptyDir() throws IOException {
-        try( DirectoryStream<Path> stream = Files.newDirectoryStream( getNonEmptyDir() ) ) {
-            assertThat( Utils.getSize( stream ), not( is( 0 ) ) );
-        }
+        assertThat( Files.list( getNonEmptyDir() ).findAny() ).isPresent();
+//        try( DirectoryStream<Path> stream = Files.newDirectoryStream( getNonEmptyDir() ) ) {
+//            assertThat( Utils.getSize( stream )).isNotEqualTo( 0 );
+//        }
     }
 
     @Test
     public void testIteratorCanOnlyBeCalledOnceOnDirStream() throws IOException {
         try( DirectoryStream<Path> stream = Files.newDirectoryStream( getNonEmptyDir() ) ) {
             stream.iterator();
-            assertThat( stream::iterator, throwsException( IllegalStateException.class ) );
+            assertThatThrownBy( stream::iterator ).isInstanceOf( IllegalStateException.class );
         }
     }
 
-    @Test( expected = UnsupportedOperationException.class )
+    @Test
     public void testDirStreamIteratorHasNoRemove() throws IOException {
         try( DirectoryStream<Path> stream = Files.newDirectoryStream( getNonEmptyDir() ) ) {
-            stream.iterator().remove();
+            assertThatThrownBy( () -> stream.iterator().remove() ).isInstanceOf( UnsupportedOperationException.class );
         }
     }
 
@@ -118,7 +110,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
         };
 
         try( DirectoryStream<Path> stream = Files.newDirectoryStream( dir, filter ) ) {
-            assertThat( Utils.getSize( stream ), is( unfilteredSize - 1 ) );
+            assertThat( Utils.getSize( stream ) ).isEqualTo( unfilteredSize - 1 );
         }
     }
 
@@ -129,23 +121,25 @@ public abstract class Tests02Dir extends Tests01NoContent {
         Path dir = dirTA().resolve( nameB() );
         Files.createDirectory( dir );
 
-        try( DirectoryStream<Path> kids = Files.newDirectoryStream( dir.getParent() ) ) {
-            assertThat( dir, isIn( kids ) );
-        }
+        assertThat( Files.list( childGetParent( dir ) ).filter( c -> c.equals( dir ) ).findAny() ).isPresent();
+
+//        try( DirectoryStream<Path> kids = Files.newDirectoryStream( childGetParent( dir ) ) ) {
+//            assertThat( dir, isIn( kids ) );
+//        }
     }
 
     @Test
     @Category( Writable.class )
     public void testNewDirectoryExists() throws IOException {
         Files.createDirectory( absTA() );
-        assertThat( absTA(), exists() );
+        assertThat( absTA() ).exists();
     }
 
     @Test
-    @Category( { Writable.class, WorkingDirectoryInPlaygroundTree.class })
+    @Category( { Writable.class, WorkingDirectoryInPlaygroundTree.class } )
     public void testNewRelDirectoryExists() throws IOException {
         Files.createDirectory( relTA() );
-        assertThat( relTA(), exists() );
+        assertThat( relTA() ).exists();
     }
 
     @Test
@@ -153,7 +147,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
     public void testCreateDirectoryTwiceThrows() throws IOException {
         Path newDir = absTA();
         Files.createDirectory( newDir );
-        assertThat( () -> Files.createDirectory( newDir ), throwsException( FileAlreadyExistsException.class ) );
+        assertThatThrownBy( () -> Files.createDirectory( newDir ) ).isInstanceOf( FileAlreadyExistsException.class );
     }
 
     @Test( expected = NoSuchFileException.class )
@@ -170,12 +164,12 @@ public abstract class Tests02Dir extends Tests01NoContent {
 
     @Test
     public void testRootisADir() throws IOException {
-        assertThat( defaultRoot(), isDirectory() );
+        assertThat( defaultRoot() ).isDirectory();
     }
 
     @Test
     public void testDefaultExists() throws Exception {
-        assertThat( pathDefault(), exists() );
+        assertThat( pathDefault() ).exists();
     }
 
     // todo defaultfs windows has e: not exists, and can create
@@ -188,17 +182,17 @@ public abstract class Tests02Dir extends Tests01NoContent {
 
     @Test
     public void testNonExistingAbsolutePathIsNotADirectory() throws IOException {
-        assertThat( getNonExistingPath(), not( isDirectory() ) );
+        assertThat( Files.isDirectory( getNonExistingPath() ) ).isFalse();
     }
 
     @Test
     public void testNonExistingAbsolutePathIsNotADirectoryEvenIfParent() throws IOException {
-        assertThat( getNonExistingPath().resolve( "child" ).getParent(), not( isDirectory() ) );
+        assertThat( Files.isDirectory( childGetParent( getNonExistingPath().resolve( "child" ) ) ) ).isFalse();
     }
 
     @Test
     public void testNonExistingRelativePathIsNotADirectory() throws IOException {
-        assertThat( getNonExistingPath(), not( isDirectory() ) );
+        assertThat( Files.isDirectory( getNonExistingPath() ) ).isFalse();
     }
 
     @Test( expected = FileAlreadyExistsException.class )
@@ -215,7 +209,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
         waitForAttribute();
 
         Files.createDirectory( dir.resolve( nameB() ) );
-        assertThat( Files.getLastModifiedTime( dir ), Matchers.greaterThan( created ) );
+        assertThat( Files.getLastModifiedTime( dir ) ).isGreaterThan( created );
     }
 
     @Test
@@ -226,28 +220,28 @@ public abstract class Tests02Dir extends Tests01NoContent {
         waitForAttribute();
 
         Files.createDirectory( dir.resolve( nameB() ) );
-        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ) );
+        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime() ).isGreaterThan( before );
     }
 
     @Test
     @Category( { SlowTest.class, Writable.class, CreationTime.class } )
     public void testCreateDirSetsCreationTime() throws IOException, InterruptedException {
         Path dir = absTA();
-        FileTime before = Files.getLastModifiedTime( dir.getParent() );
+        FileTime before = Files.getLastModifiedTime( childGetParent( dir ) );
         waitForAttribute();
 
         Files.createDirectory( dir );
 
         BasicFileAttributes atti = Files.readAttributes( dir, BasicFileAttributes.class );
 
-        assertThat( atti.creationTime(), greaterThan( before ) );
+        assertThat( atti.creationTime() ).isGreaterThan( before );
     }
 
     @Test
     public void testKidsOfAbsoluteDirAreAbsolute() throws Exception {
         try( DirectoryStream<Path> kids = Files.newDirectoryStream( getNonEmptyDir() ) ) {
             for( Path kid : kids ) {
-                assertThat( kid, absolute() );
+                assertThat( kid ).isAbsolute();
             }
         }
     }
@@ -255,9 +249,9 @@ public abstract class Tests02Dir extends Tests01NoContent {
     @Test
     @Category( WorkingDirectoryInPlaygroundTree.class )
     public void testKidsOfRelativeDirAreRelative() throws Exception {
-        try( DirectoryStream<Path> kids = Files.newDirectoryStream( relativize( getNonEmptyDir() ).getParent() ) ) {
+        try( DirectoryStream<Path> kids = Files.newDirectoryStream( childGetParent( relativize( getNonEmptyDir() ) ) ) ) {
             for( Path kid : kids ) {
-                assertThat( kid, relative() );
+                assertThat( kid ).isRelative();
             }
         }
     }
@@ -281,7 +275,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
 
         try( DirectoryStream<Path> kids = Files.newDirectoryStream( dir ) ) {
             for( Path kid : kids ) {
-                assertThat( kid, is( dir.resolve( kid.getFileName() ) ) );
+                assertThat( kid ).isEqualTo( dir.resolve( kid.getFileName() ) );
             }
         }
     }
@@ -291,7 +285,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
     @SuppressWarnings( "PMD.UnusedLocalVariable" )
     public void testReadDirStreamSetsLastAccessTime() throws Exception {
 
-        Path dir = fileTAB().getParent();
+        Path dir = childGetParent( fileTAB() );
         FileTime before = Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime();
         waitForAttribute();
 
@@ -300,7 +294,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
             }
         }
 
-        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ) );
+        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime() ).isGreaterThan( before );
     }
 
     @Test
@@ -316,7 +310,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
             }
         }
 
-        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime(), greaterThan( before ) );
+        assertThat( Files.readAttributes( dir, BasicFileAttributes.class ).lastAccessTime() ).isGreaterThan( before );
     }
 
     @Test
@@ -324,16 +318,13 @@ public abstract class Tests02Dir extends Tests01NoContent {
     // changed attis are only relevant in writable cases
     public void testReadDirStreamDoesNotSetParentsLastAccessTime() throws Exception {
         Path dir = dirTA();
-        FileTime before = Files.readAttributes( dir.getParent(), BasicFileAttributes.class ).lastAccessTime();
+        FileTime before = Files.readAttributes( childGetParent( dir ), BasicFileAttributes.class ).lastAccessTime();
         waitForAttribute();
 
-        Files.list( dir ).forEach( p -> {} );
-//        try( DirectoryStream<Path> kids = Files.newDirectoryStream( dir ) ) {
-//            for( Path kid : kids ) {
-//            }
-//        }
+        Files.list( dir ).forEach( p -> {
+        } );
 
-        assertThat( Files.readAttributes( dir.getParent(), BasicFileAttributes.class ).lastAccessTime(), is( before ) );
+        assertThat( Files.readAttributes( childGetParent( dir ), BasicFileAttributes.class ).lastAccessTime() ).isEqualTo( before );
     }
 
     // todo not fully defines
@@ -377,21 +368,23 @@ public abstract class Tests02Dir extends Tests01NoContent {
 
             }
 
-            assertThat( count, lessThan( size ) );
+            assertThat( count ).isLessThan( size );
         }
     }
 
     // todo should that work on unix
     // or only the open part ?
-    @Test( expected = Exception.class )
+    @Test
     public void testReadBytesFromDirectoryThrows() throws IOException {
-        Files.readAllBytes( dirTA() );
+        assertThatThrownBy( () -> Files.readAllBytes( dirTA() ) ).isInstanceOf( Exception.class );
     }
 
-    @Test( expected = NoSuchFileException.class )
+    @Test
     public void testNewDirectoryStreamFromNonExistingDirThrows() throws IOException {
-        try( DirectoryStream<Path> kids = Files.newDirectoryStream( getNonExistingPath() ) ) {
-        }
+        assertThatThrownBy( () -> {
+            try( DirectoryStream<Path> kids = Files.newDirectoryStream( getNonExistingPath() ) ) {
+            }
+        } ).isInstanceOf( NoSuchFileException.class );
 
     }
 
@@ -400,10 +393,14 @@ public abstract class Tests02Dir extends Tests01NoContent {
      * ------------------------------------------------------------------------------
      */
 
-    @SuppressFBWarnings() protected static byte[] CONTENT;
-    @SuppressFBWarnings() protected static byte[] CONTENT_OTHER;
-    @SuppressFBWarnings() protected static byte[] CONTENT_BIG;
-    @SuppressFBWarnings() protected static byte[] CONTENT50;
+    @SuppressFBWarnings()
+    protected static byte[] CONTENT;
+    @SuppressFBWarnings()
+    protected static byte[] CONTENT_OTHER;
+    @SuppressFBWarnings()
+    protected static byte[] CONTENT_BIG;
+    @SuppressFBWarnings()
+    protected static byte[] CONTENT50;
 
     @BeforeClass
     @SuppressFBWarnings
@@ -411,14 +408,12 @@ public abstract class Tests02Dir extends Tests01NoContent {
         CONTENT = getBytes( "hi there" );
         CONTENT_OTHER = getBytes( "what's up, huh, huh" );
 
-
         String str = new String( Character.toChars( 0x10400 ) );
-        for ( int i = 0; i < 12; i++ ) {
+        for( int i = 0; i < 12; i++ ) {
             str = str + str;
         }
 
         CONTENT_BIG = getBytes( str + "abcde" ); // not on 2^x bounderies
-
 
 //        for( int i = 0; i < 20000; i++ ) {
 //            CONTENT_BIG[ i ] = (byte) ( i );
@@ -512,7 +507,7 @@ public abstract class Tests02Dir extends Tests01NoContent {
 
     public Path relativize( Path path ) {
 
-  //      return path.getRoot().resolve( nameE()).relativize( path );
+        //      return path.absoluteGetRoot().resolve( nameE()).relativize( path );
         return pathDefault().toAbsolutePath().relativize( path );
     }
 
@@ -535,8 +530,8 @@ public abstract class Tests02Dir extends Tests01NoContent {
     public void waitForAttribute() {
         try {
             Object del = description.props.get( "attributeDelay" );
-            if ( del != null ) {
-                Thread.sleep( (Integer)del );
+            if( del != null ) {
+                Thread.sleep( (Integer) del );
             } else {
                 Thread.sleep( 50 );
             }

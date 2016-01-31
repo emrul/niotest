@@ -5,8 +5,11 @@ import de.pfabulist.lindwurm.niotest.tests.topics.NotDefaultFileSystem;
 import de.pfabulist.lindwurm.niotest.tests.topics.Readonly;
 import de.pfabulist.lindwurm.niotest.tests.topics.WorkingDirectoryInPlaygroundTree;
 
+import javax.annotation.Nonnull;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+
+import static de.pfabulist.kleinod.nio.PathIKWID.absoluteGetRoot;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -37,24 +40,27 @@ import java.nio.file.Path;
 
 public class Playground<T> extends DescriptionBuilder<T> {
 
-    public Playground( FSDescription description, T t  ) {
+    public Playground( FSDescription description, T t ) {
         super( description, t );
     }
 
-    public T set( Path root ) {
+    public T set( @Nonnull Path root ) {
         descr.removeTopic( Readonly.class );
         descr.props.put( "playground", root );
 
-        if ( !root.getRoot().equals( root.getFileSystem().getPath("").toAbsolutePath().getRoot())) {
+        if( !root.isAbsolute() ) {
+            throw new IllegalArgumentException( "root path must be nonull and absolute " + root );
+        }
+
+        if( !absoluteGetRoot( root ).equals( absoluteGetRoot( root.getFileSystem().getPath( "" ).toAbsolutePath() ))) {
             descr.removeTopic( WorkingDirectoryInPlaygroundTree.class );
         }
 
-        if ( root.getFileSystem().equals( FileSystems.getDefault() )) {
+        if( root.getFileSystem().equals( FileSystems.getDefault() ) ) {
             descr.removeTopic( NotDefaultFileSystem.class );
         }
 
         return t;
     }
-
 
 }

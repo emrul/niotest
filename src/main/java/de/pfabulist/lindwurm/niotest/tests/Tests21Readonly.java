@@ -47,6 +47,7 @@ import static org.junit.Assert.fail;
  * **** END LICENSE BLOCK ****
  */
 
+@SuppressWarnings({ "PMD.ExcessivePublicCount", "PMD.TooManyMethods" })
 public abstract class Tests21Readonly extends Tests20SymLinks {
 
     public Tests21Readonly( FSDescription capa ) {

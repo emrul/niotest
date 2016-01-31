@@ -11,10 +11,9 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.attribute.DosFileAttributeView;
 
+import static de.pfabulist.kleinod.nio.PathIKWID.childGetParent;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -42,6 +41,7 @@ import static org.hamcrest.core.IsNot.not;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings( { "PMD.ExcessivePublicCount", "PMD.TooManyMethods" } )
 public abstract class Tests17Windows extends Tests16Unix {
 
     public Tests17Windows( FSDescription capa ) {
@@ -51,24 +51,41 @@ public abstract class Tests17Windows extends Tests16Unix {
     @Test
     @Category( Windows.class )
     public void testCaseIgnorantPathsAreEqual() {
-        assertThat( absD().resolve( nameB() ), is( mixCase( absD().resolve( nameB() ) ) ) );
+        assertThat( absD().resolve( nameB() ) ).isEqualTo( mixCase( absD().resolve( nameB() ) ) );
     }
 
     @Test
     @Category( Windows.class )
     public void testCaseIgnorantPathHaveSameHashCode() throws IOException {
-        assertThat( absD().resolve( nameB() ).hashCode(), is( mixCase( absD().resolve( nameB() ) ).hashCode() ) );
+        assertThat( absD().resolve( nameB() ).hashCode() ).isEqualTo( mixCase( absD().resolve( nameB() ) ).hashCode() );
+    }
+
+    @Test
+    @Category( Windows.class )
+    public void testCaseIgnorantPathCompareTo0() throws IOException {
+        assertThat( absD().resolve( nameB() ).compareTo( mixCase( absD().resolve( nameB() ) ) ) ).isEqualTo( 0 );
+    }
+
+    @Test
+    @Category( Windows.class )
+    public void testCaseIgnorantPathKeepCompareSaneGreater() throws IOException {
+        assertThat( absABC().compareTo( mixCase( absAB()))).isGreaterThan( 0 );
+    }
+
+    @Test
+    @Category( Windows.class )
+    public void testCaseIgnorantPathKeepCompareSaneSmaller() throws IOException {
+        assertThat( absAB().compareTo( mixCase( absABC()))).isLessThan( 0 );
     }
 
 //    @Test @Category( Windows.class )
 //    public void testExistenceMixedCase() throws IOException {
-//        assumeThat( nameStrCase == null, is(false));
+//        assumeThat( nameStrCase == null).isEqualTo(false));
 //        getPathPABf();
 //
-//        assertThat(Files.exists(getPathPA().resolve(nameStrCase[1])), is(true));
+//        assertThat(Files.exists(getPathPA().resolve(nameStrCase[1]))).isEqualTo(true));
 //    }
 //
-
 
     @Test
     @Category( Windows.class )
@@ -79,124 +96,120 @@ public abstract class Tests17Windows extends Tests16Unix {
         // create file where last filename is mixed case
         Files.write( mixCase( file ), CONTENT );
 
-        try( DirectoryStream<Path> dstr = Files.newDirectoryStream( file.getParent() ) ) {
+        try( DirectoryStream<Path> dstr = Files.newDirectoryStream( childGetParent( file ) ) ) {
             Path kid = dstr.iterator().next();
-            assertThat( kid, is( file ) );
-            assertThat( kid.toString(), not( is( file.toString() ) ) );
+            assertThat( kid ).isEqualTo( file );
+            assertThat( kid.toString() ).isNotEqualTo( file.toString() );
         }
     }
-
-
 
     @Test
     @Category( Windows.class )
     public void testWindowsBase() {
-        assertThat( FS.getPath( "C:\\" ).isAbsolute(), is( true ) );
+        assertThat( FS.getPath( "C:\\" ).isAbsolute() ).isTrue();
     }
 
     @Test
-    @Category({ Windows.class, RootComponent.class })
+    @Category( { Windows.class, RootComponent.class } )
     public void testWindowsJustRootComponentIsRelative() {
-        assertThat( FS.getPath( "C:" ).isAbsolute(), is( false ) );
+        assertThat( FS.getPath( "C:" ).isAbsolute() ).isFalse();
     }
 
     @Test
-    @Category({ Windows.class, RootComponent.class })
+    @Category( { Windows.class, RootComponent.class } )
     public void testWindowsRelativeWithRootComponent() {
-        assertThat( FS.getPath( "C:foo" ).isAbsolute(), is( false ) );
+        assertThat( FS.getPath( "C:foo" ).isAbsolute() ).isFalse();
     }
 
     @Test
-    @Category({ Windows.class, RootComponent.class })
+    @Category( { Windows.class, RootComponent.class } )
     public void testWindowsFilenameOfPathWithRootComponentHasNoRootComponent() {
-        assertThat( FS.getPath( "C:\\foo\\duh" ).getFileName(), is( FS.getPath( "duh" ) ) );
+        assertThat( FS.getPath( "C:\\foo\\duh" ).getFileName() ).isEqualTo( FS.getPath( "duh" ) );
     }
 
     @Test
-    @Category({ Windows.class, RootComponent.class })
+    @Category( { Windows.class, RootComponent.class } )
     public void testWindowsToAbsoluteWithoutRootComponent() {
-        assertThat( FS.getPath( "C:\\foo\\duh" ).getFileName(), is( FS.getPath( "duh" ) ) );
+        assertThat( FS.getPath( "C:\\foo\\duh" ).getFileName() ).isEqualTo( FS.getPath( "duh" ) );
     }
 
     @Test
-    @Category({ Windows.class, RootComponent.class })
+    @Category( { Windows.class, RootComponent.class } )
     public void testWindowsDifferentRootComponentResolvesToArgument() {
-        assertThat( FS.getPath( "C:\\foo" ).resolve( "D:duh" ), is( FS.getPath( "D:duh" ) ) );
+        assertThat( FS.getPath( "C:\\foo" ).resolve( "D:duh" ) ).isEqualTo( FS.getPath( "D:duh" ) );
     }
 
     @Test
-    @Category({ Windows.class, RootComponent.class })
+    @Category( { Windows.class, RootComponent.class } )
     public void testWindowsSameRootComponentResolves() {
-        assertThat( FS.getPath( "C:\\foo" ).resolve( "C:duh" ), is( FS.getPath( "C:\\foo\\duh" ) ) );
+        assertThat( FS.getPath( "C:\\foo" ).resolve( "C:duh" ) ).isEqualTo( FS.getPath( "C:\\foo\\duh" ) );
     }
 
     @Test
-    @Category({ Windows.class, RootComponent.class })
+    @Category( { Windows.class, RootComponent.class } )
     public void testWindowsImpliedRootComponentResolvesNot() {
-        assertThat( FS.getPath( "\\foo" ).resolve( "C:duh" ), is( FS.getPath( "C:duh" ) ) );
+        assertThat( FS.getPath( "\\foo" ).resolve( "C:duh" ) ).isEqualTo( FS.getPath( "C:duh" ) );
     }
 
     @Test
-    @Category({ Windows.class, RootComponent.class })
+    @Category( { Windows.class, RootComponent.class } )
     public void testWindowsNoRootComponentResolves() {
-        assertThat( FS.getPath( "C:\\foo" ).resolve( "duh" ), is( FS.getPath( "C:\\foo\\duh" ) ) );
+        assertThat( FS.getPath( "C:\\foo" ).resolve( "duh" ) ).isEqualTo( FS.getPath( "C:\\foo\\duh" ) );
     }
 
     @Test
     @Category( Windows.class )
     public void testWindowsCaseDrive() {
-        assertThat( FS.getPath( "X:\\foo" ), is( FS.getPath( "x:\\foo" ) ) );
+        assertThat( FS.getPath( "X:\\foo" ) ).isEqualTo( FS.getPath( "x:\\foo" ) );
     }
 
     // oops wrong: default on windows can be on different drive
 //    @Test
 //    @Category( Windows.class )
 //    public void testWindowsRootOfDefaultIsC() {
-//        assertThat( FS.getPath( "" ).toAbsolutePath().getRoot(), is( FS.getPath( "C:\\" ) ) );
+//        assertThat( FS.getPath( "" ).toAbsolutePath().absoluteGetRoot()).isEqualTo( FS.getPath( "C:\\" ) ) );
 //    }
 
     //
 //    // todo setup with 2 exsiting paths in different compo
 ////    @Test @Category( Windows.class )
 ////    public void testWindowsIsSAmeFileDifferentRootComponent() throws IOException {
-////        assertThat( FS.provider().isSameFile( FS.getPath( "C:\\foo"), FS.getPath("D:\\foo")), is(false));
+////        assertThat( FS.provider().isSameFile( FS.getPath( "C:\\foo"), FS.getPath("D:\\foo"))).isEqualTo(false));
 ////    }
 //
     @Test
-    @Category({ Windows.class, RootComponent.class })
+    @Category( { Windows.class, RootComponent.class } )
     public void testWindowsGetFileNameHasNoRootComponent() {
-        assertThat( FS.getPath( "C:\\foo" ).getFileName().toString().startsWith( "C:" ), is( false ) );
+        assertThat( FS.getPath( "C:\\foo" ).getFileName().toString().startsWith( "C:" ) ).isFalse();
     }
 
     @Test
-    @Category({ Windows.class, RootComponent.class })
+    @Category( { Windows.class, RootComponent.class } )
     public void testWindowsNoRootComponentGetRootHasNoRootComponent() {
-        assertThat( FS.getPath( "\\foo" ).getRoot(), is( FS.getPath( "\\" ) ) );
+        assertThat( FS.getPath( "\\foo" ).getRoot() ).isEqualTo( FS.getPath( "\\" ) );
     }
 
     @Test
-    @Category({ Windows.class, DosAttributesT.class, Writable.class })
+    @Category( { Windows.class, DosAttributesT.class, Writable.class } )
     public void testWindowsIsHidden() throws IOException {
-        assertThat( Files.isHidden( fileTA()), is(false) );
+        assertThat( Files.isHidden( fileTA() ) ).isFalse();
 
         Files.getFileAttributeView( absTA(), DosFileAttributeView.class ).setHidden( true );
-        assertThat( Files.isHidden( fileTA()), is(true) );
+        assertThat( Files.isHidden( fileTA() ) ).isTrue();
 
         Files.setAttribute( absTA(), "dos:hidden", false );
-        assertThat( Files.isHidden( fileTA() ), is(false) );
+        assertThat( Files.isHidden( fileTA() ) ).isFalse();
     }
-
-
 
     // TODO defaultfs bugs
 //    @Test @Category( Windows.class )
 //    public void testWindowsNoRootComasdsadponentGetRootHasNoRootComponent() {
 //        System.out.println(absAB().resolve("\\foo"));
-//        System.out.println( FS.getPath("\\foo").getRoot());
-//        System.out.println( FS.getPath("\\foo").getRoot().resolve("huh").isAbsolute());
+//        System.out.println( FS.getPath("\\foo").absoluteGetRoot());
+//        System.out.println( FS.getPath("\\foo").absoluteGetRoot().resolve("huh").isAbsolute());
 //        System.out.println( FS.getPath( "\\foo" ).toAbsolutePath());
-//        assertThat(FS.getPath("\\foo").isAbsolute(), is(true));
-//        assertThat(FS.getPath("\\foo").isAbsolute(), is(true));
+//        assertThat(FS.getPath("\\foo").isAbsolute()).isEqualTo(true));
+//        assertThat(FS.getPath("\\foo").isAbsolute()).isEqualTo(true));
 //    }
 
     //  todo
@@ -211,7 +224,7 @@ public abstract class Tests17Windows extends Tests16Unix {
 //        Path one = getPathPABf();
 //        Path two = FS.getPath( one.toString().substring(2));
 //
-//        assertThat( two.normalize().toString().startsWith("C:"), is(false));
+//        assertThat( two.normalize().toString().startsWith("C:")).isEqualTo(false));
 //    }
 //
 //    @Test @Category( Windows.class )
@@ -220,7 +233,7 @@ public abstract class Tests17Windows extends Tests16Unix {
 //        Path one = getPathPABf();
 //        Path two = FS.getPath( one.toString().substring(2));
 //
-//        assertThat( two.toRealPath().toString().startsWith("C:"), is(true));
+//        assertThat( two.toRealPath().toString().startsWith("C:")).isEqualTo(true));
 //    }
 //
 //    @Test @Category( Windows.class )
@@ -229,7 +242,7 @@ public abstract class Tests17Windows extends Tests16Unix {
 //        Path one = getPathPABf();
 //        Path two = FS.getPath( one.toString().substring(2));
 //
-//        assertThat( FS.provider().isSameFile( one, two ), is(true));
+//        assertThat( FS.provider().isSameFile( one, two )).isEqualTo(true));
 //    }
 //
 //    @Test @Category( Windows.class )
@@ -238,12 +251,12 @@ public abstract class Tests17Windows extends Tests16Unix {
 //        Path one = getPathPABf();
 //        Path two = FS.getPath( one.toString().substring(2));
 //
-//        assertThat( two.toRealPath(), is(one));
+//        assertThat( two.toRealPath()).isEqualTo(one));
 //    }
 //
 //    @Test @Category( Windows.class )
 //    public void testWindowsForwardIsBackwardSlash() throws IOException {
-//        assertThat( FS.getPath("C:/"), is( FS.getPath("C:\\")));
+//        assertThat( FS.getPath("C:/")).isEqualTo( FS.getPath("C:\\")));
 //    }
 //
 //    @Test @Category( Windows.class )( expected = InvalidPathException.class )
@@ -252,9 +265,9 @@ public abstract class Tests17Windows extends Tests16Unix {
 //    }
 //
     @Test
-    @Category({ Windows.class, UNC.class })
+    @Category( { Windows.class, UNC.class } )
     public void testWindowsUNC1() throws IOException {
-        assertThat( FS.getPath( "\\\\mach\\foo\\ho" ).getNameCount(), is( 1 ) );
+        assertThat( FS.getPath( "\\\\mach\\foo\\ho" ).getNameCount() ).isEqualTo( 1 );
     }
 
     @Test( expected = InvalidPathException.class )
@@ -270,7 +283,7 @@ public abstract class Tests17Windows extends Tests16Unix {
     }
 
     @Test
-    @Category({ Windows.class, UNC.class })
+    @Category( { Windows.class, UNC.class } )
     public void testWindowsdUNCPlenty() throws IOException {
         try {
             FS.getPath( "\\//////\\\\localhost\\////foo" );
@@ -280,33 +293,33 @@ public abstract class Tests17Windows extends Tests16Unix {
     }
 
     @Test
-    @Category({ Windows.class, UNC.class })
+    @Category( { Windows.class, UNC.class } )
     public void testWindowsUNCSlash() throws IOException {
-        assertThat( FS.getPath( "//mach/foo/ho" ).getNameCount(), is( 1 ) );
+        assertThat( FS.getPath( "//mach/foo/ho" ).getNameCount() ).isEqualTo( 1 );
     }
 
     @Test
-    @Category({ Windows.class, UNC.class })
+    @Category( { Windows.class, UNC.class } )
     public void testWindowsUNCAbsolute() throws IOException {
-        assertThat( FS.getPath( "\\\\mach\\foo" ).isAbsolute(), is( true ) );
+        assertThat( FS.getPath( "\\\\mach\\foo" ).isAbsolute() ).isTrue();
     }
 
     @Test
-    @Category({ Windows.class, UNC.class })
+    @Category( { Windows.class, UNC.class } )
     public void testWindowsUNCAbsolute2() throws IOException {
-        assertThat( FS.getPath( "\\\\mach\\C$" ).isAbsolute(), is( true ) );
+        assertThat( FS.getPath( "\\\\mach\\C$" ).isAbsolute() ).isTrue();
     }
 
     @Test
-    @Category({ Windows.class, UNC.class })
+    @Category( { Windows.class, UNC.class } )
     public void testWindowsUNCRoot() throws IOException {
-        assertThat( FS.getPath( "\\\\mach\\C$" ).getRoot(), is( FS.getPath( "\\\\mach\\C$\\" ) ) );
+        assertThat( FS.getPath( "\\\\mach\\C$" ).getRoot() ).isEqualTo( FS.getPath( "\\\\mach\\C$\\" ) );
     }
 //
 //    // TODO check whether UNC is case sensitive
 ////    @Test @Category( Windows.class )
 ////    public void testWindowsUNCCase() throws IOException {
-//////        assertThat(FS.getPath("\\\\duH\\C$").getRoot(), is(FS.getPath("\\\\duh\\C$\\")));
+//////        assertThat(FS.getPath("\\\\duH\\C$").absoluteGetRoot()).isEqualTo(FS.getPath("\\\\duh\\C$\\")));
 ////    }
 //
 //
@@ -322,7 +335,7 @@ public abstract class Tests17Windows extends Tests16Unix {
 //                thrown = true;
 //            }
 //
-//            assertThat( "illegal char " + ill.charAt(i) + " did not throw" , thrown, is(true));
+//            assertThat( "illegal char " + ill.charAt(i) + " did not throw" , thrown).isEqualTo(true));
 //        }
 //    }
 //
@@ -364,12 +377,12 @@ public abstract class Tests17Windows extends Tests16Unix {
 //
 //    @Test @Category( Windows.class )
 //    public void testWindowsUNCToLocal() throws IOException {
-//        assumeThat( capabilities.canSeeLocalUNCShares(FS), is(true));
+//        assumeThat( capabilities.canSeeLocalUNCShares(FS)).isEqualTo(true));
 //
 //        Path file = getPathPAf();
 //        Path unc = FS.getPath( "\\\\localhost\\C$" + file.toString().substring(2));
 //
-//        assertThat( Files.readAllBytes( unc ), is( CONTENT ));
+//        assertThat( Files.readAllBytes( unc )).isEqualTo( CONTENT ));
 //
 //    }
 //
@@ -396,7 +409,7 @@ public abstract class Tests17Windows extends Tests16Unix {
 //        }
 //
 //        // and no throw
-//        assertThat(Files.exists( path ), is(false));
+//        assertThat(Files.exists( path )).isEqualTo(false));
 //    }
 //
 //    // todo stackoverflow
@@ -449,6 +462,5 @@ public abstract class Tests17Windows extends Tests16Unix {
     /*
      * ------------------------------------------------------------------
      */
-
 
 }

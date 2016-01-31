@@ -34,6 +34,7 @@ import java.nio.file.Path;
  * **** END LICENSE BLOCK ****
  */
 
+@SuppressWarnings({ "PMD.ExcessivePublicCount", "PMD.TooManyMethods" })
 public class CombinedBuilder {
 
     private final FSDescription descr;

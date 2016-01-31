@@ -4,7 +4,10 @@ import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 import de.pfabulist.lindwurm.niotest.tests.topics.WorkingDirectoryInPlaygroundTree;
 import de.pfabulist.lindwurm.niotest.tests.topics.Writable;
 
+import javax.annotation.Nonnull;
 import java.nio.file.Path;
+
+import static de.pfabulist.kleinod.nio.PathIKWID.absoluteGetRoot;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -39,11 +42,15 @@ public class ReadonlyPlayground<T> extends DescriptionBuilder<T> {
         super( descr, t );
     }
 
-    public ReadonlyPlayground<T> set( Path root ) {
+    public ReadonlyPlayground<T> set( @Nonnull Path root ) {
         descr.removeTopic( Writable.class );
         descr.props.put( "playground", root );
 
-        if ( !root.getRoot().equals( root.getFileSystem().getPath("").toAbsolutePath().getRoot())) {
+        if( !root.isAbsolute() ) {
+            throw new IllegalArgumentException( "readonly root must be absolute " + root );
+        }
+
+        if( !absoluteGetRoot( root ).equals( absoluteGetRoot( root.getFileSystem().getPath( "" ).toAbsolutePath() ) ) ) {
             descr.removeTopic( WorkingDirectoryInPlaygroundTree.class );
         }
 
@@ -51,12 +58,12 @@ public class ReadonlyPlayground<T> extends DescriptionBuilder<T> {
     }
 
     public ReadonlyPlayground<T> nonEmptyDir( Path dir ) {
-        descr.props.put( "nonemptyDir",  dir );
+        descr.props.put( "nonemptyDir", dir );
         return this;
     }
 
     public ReadonlyPlayground<T> emptyDir( Path dir ) {
-        descr.props.put( "emptyDir",  dir );
+        descr.props.put( "emptyDir", dir );
         return this;
     }
 

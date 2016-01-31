@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.zero;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.channels.SeekableByteChannel;
@@ -39,7 +40,7 @@ import java.util.Set;
  */
 public class NullFSProvider extends FileSystemProvider {
 
-    private FileSystem nullFS;
+    private @Nullable FileSystem nullFS;
 
     @Override
     public String getScheme() {

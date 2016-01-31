@@ -27,6 +27,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Collections;
 
+import static de.pfabulist.kleinod.nio.PathIKWID.absoluteGetRoot;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.READ;
 import static org.hamcrest.CoreMatchers.is;
@@ -58,6 +59,7 @@ import static org.junit.Assert.assertThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings({ "PMD.TooManyMethods" }) // todo ??
 public abstract class Tests07Closed extends Tests06Attributes {
 
     public static final String CLOSEABLE_PLAYGROUND = "closeablePlayground";
@@ -248,6 +250,7 @@ public abstract class Tests07Closed extends Tests06Attributes {
      * ----------------------------------------------------------------------------------------
      */
 
+    @SuppressWarnings( "PMD.EmptyCatchBlock" ) // no watchservice is ok
     public FileSystem getClosedFS() throws IOException {
 
         if( description.closedFSVars == null ) {
@@ -274,7 +277,7 @@ public abstract class Tests07Closed extends Tests06Attributes {
         Files.write( closedCf, CONTENT, standardOpen );
         description.closedFSVars.readChannel = Files.newByteChannel( closedCf, READ );
 
-        description.closedFSVars.uri = description.closedFSVars.play.getRoot().toUri();
+        description.closedFSVars.uri = absoluteGetRoot( description.closedFSVars.play ).toUri();
 
         description.closedFSVars.dirStream = Files.newDirectoryStream( description.closedFSVars.play );
 

@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.nio.FileTimeComparator;
 import de.pfabulist.lindwurm.niotest.tests.topics.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -14,15 +15,8 @@ import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.Map;
 
-import static de.pfabulist.lindwurm.niotest.matcher.ExceptionMatcher.throwsException;
-import static de.pfabulist.lindwurm.niotest.matcher.FileTimeMatcher.isCloseTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.fail;
 
 /**
@@ -51,7 +45,7 @@ import static org.junit.Assert.fail;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-@SuppressWarnings( "PMD.ExcessivePublicCount" )
+@SuppressWarnings({ "PMD.ExcessivePublicCount", "PMD.TooManyMethods" })
 public abstract class Tests06Attributes extends Tests05URI {
 
     public Tests06Attributes( FSDescription capa ) {
@@ -73,7 +67,8 @@ public abstract class Tests06Attributes extends Tests05URI {
     public void testGetCreationTimeIsRecent() throws IOException {
         FileTime created = Files.readAttributes( fileTA(), BasicFileAttributes.class ).creationTime();
 
-        assertThat( created, isCloseTo( FileTime.fromMillis( System.currentTimeMillis() ) ) );
+        assertThat( created ).usingComparator( FileTimeComparator.isWithIn( 2000 ) ).
+                isEqualTo( FileTime.fromMillis( System.currentTimeMillis() ) );
     }
 
     public static class SomeFileAttributes implements BasicFileAttributes {
@@ -124,10 +119,11 @@ public abstract class Tests06Attributes extends Tests05URI {
         }
     }
 
-    @Test( expected = UnsupportedOperationException.class )
+    @Test
     @Category( Attributes.class )
     public void testReadAttributesAskingForUnknownAttributesThrows() throws Exception {
-        Files.readAttributes( pathDefault(), SomeFileAttributes.class );
+        assertThatThrownBy( () -> Files.readAttributes( pathDefault(), SomeFileAttributes.class ) ).
+                isInstanceOf( UnsupportedOperationException.class );
     }
 
     @Test
@@ -145,13 +141,13 @@ public abstract class Tests06Attributes extends Tests05URI {
     @Test
     @Category( Attributes.class )
     public void testRootIsNotASymbolicLink() {
-        assertThat( "root is a symbolic link", Files.isSymbolicLink( defaultRoot() ), not( true ) );
+        assertThat( Files.isSymbolicLink( defaultRoot() ) ).isFalse();
     }
 
     @Test
     @Category( Attributes.class )
     public void testBasicIsASupportedFileAttributeView() {
-        assertThat( FS.supportedFileAttributeViews(), hasItem( "basic" ) );
+        assertThat( FS.supportedFileAttributeViews() ).contains( "basic" );
     }
 
     @Test
@@ -165,10 +161,10 @@ public abstract class Tests06Attributes extends Tests05URI {
         FileTime last2 = (FileTime) FS.provider().readAttributes( path, "basic:lastModifiedTime" ).get( "lastModifiedTime" );
         FileTime last3 = FS.provider().getFileAttributeView( path, BasicFileAttributeView.class ).readAttributes().lastModifiedTime();
 
-        assertThat( last0, is( last1 ) );
-        assertThat( last1, is( last2 ) );
-        assertThat( last2, is( last3 ) );
-        assertThat( last3, is( last0 ) );
+        assertThat( last0 ).isEqualTo( last1 );
+        assertThat( last1 ).isEqualTo( last2 );
+        assertThat( last2 ).isEqualTo( last3 );
+        assertThat( last3 ).isEqualTo( last0 );
     }
 
     @Test
@@ -186,8 +182,8 @@ public abstract class Tests06Attributes extends Tests05URI {
                     Object val2 = FS.provider().readAttributes( path, ad.getName() + ":" + key ).get( key );
                     Object val3 = ad.get( FS.provider().getFileAttributeView( path, ad.getViewType() ).readAttributes(), key );
 
-                    assertThat( "get attribute " + ad.getName() + ":" + key, val1, is( val2 ) );
-                    assertThat( "get attribute " + ad.getName() + ":" + key, val2, is( val3 ) );
+                    assertThat( val1 ).as( "get attribute " + ad.getName() + ":" + key ).isEqualTo( val2 );
+                    assertThat( val2 ).as( "get attribute ${1} : ${2}", ad.getName(), key ).isEqualTo( val3 );
                 }
             } catch( IOException e ) {
             }
@@ -195,11 +191,11 @@ public abstract class Tests06Attributes extends Tests05URI {
     }
 
     @Test
-    @Category({ Attributes.class, WorkingDirectoryInPlaygroundTree.class })
+    @Category( { Attributes.class, WorkingDirectoryInPlaygroundTree.class } )
     public void testGetLastModifiedViaStringOfRelativePath() throws IOException {
         Path path = getFile();
-        assertThat( FS.provider().readAttributes( pathDefault().toAbsolutePath().relativize( path ), "basic:lastModifiedTime" ).get( "lastModifiedTime" ),
-                    is( FS.provider().readAttributes( path, "basic:lastModifiedTime" ).get( "lastModifiedTime" ) ) );
+        assertThat( FS.provider().readAttributes( pathDefault().toAbsolutePath().relativize( path ), "basic:lastModifiedTime" ).get( "lastModifiedTime" ) ).
+                isEqualTo( FS.provider().readAttributes( path, "basic:lastModifiedTime" ).get( "lastModifiedTime" ) );
     }
 
     @Test
@@ -207,15 +203,15 @@ public abstract class Tests06Attributes extends Tests05URI {
     public void testGetAllBasicAttributes() throws IOException {
         Map<String, Object> attis = FS.provider().readAttributes( getFile(), "basic:*" );
 
-        assertThat( attis.keySet(), containsInAnyOrder( "size",
-                                                        "creationTime",
-                                                        "lastAccessTime",
-                                                        "lastModifiedTime",
-                                                        "fileKey",
-                                                        "isDirectory",
-                                                        "isRegularFile",
-                                                        "isSymbolicLink",
-                                                        "isOther" ) );
+        assertThat( attis.keySet() ).contains( "size",
+                                               "creationTime",
+                                               "lastAccessTime",
+                                               "lastModifiedTime",
+                                               "fileKey",
+                                               "isDirectory",
+                                               "isRegularFile",
+                                               "isSymbolicLink",
+                                               "isOther" );
 
     }
 
@@ -229,10 +225,10 @@ public abstract class Tests06Attributes extends Tests05URI {
                 Map<String, Object> attis = FS.provider().readAttributes( getFile(), ad.getName() + ":*" );
 
                 for( String key : ad.getAttributeNames() ) {
-                    assertThat( ad.getName() + ":" + key, attis.containsKey( key ), is( true ) );
+                    assertThat( attis.containsKey( key ) ).as( ad.getName() + ":" + key ).isTrue();
                 }
             } catch( IOException e ) {
-                assertThat( "failed", is( "not thrown" ) );
+                assertThat( "failed" ).isEqualTo( "not thrown" );
             }
         } );
     }
@@ -243,61 +239,61 @@ public abstract class Tests06Attributes extends Tests05URI {
     @Test
     @Category( Attributes.class )
     public void testUnsupportedAttributeViewReturnsNull() {
-        assertThat( FS.provider().getFileAttributeView( pathDefault(), UnsiView.class ), nullValue() );
+        assertThat( FS.provider().getFileAttributeView( pathDefault(), UnsiView.class ) ).isNull();
     }
 
     public interface UnsiAttris extends BasicFileAttributes {
     }
 
-    @Test( expected = UnsupportedOperationException.class )
+    @Test
     @Category( Attributes.class )
     public void testUnsupportedAttributesThrows() throws IOException {
-        FS.provider().readAttributes( pathDefault(), UnsiAttris.class );
+        assertThatThrownBy( () -> FS.provider().readAttributes( pathDefault(), UnsiAttris.class )).isInstanceOf( UnsupportedOperationException.class );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
+    @Test
     @Category( Attributes.class )
     public void testReadUnsupportedAttributeThrows() throws IOException {
-        FS.provider().readAttributes( pathDefault(), "thisissuchasillyattributesname:duda" );
+        assertThatThrownBy( () -> FS.provider().readAttributes( pathDefault(), "thisissuchasillyattributesname:duda" )).isInstanceOf( UnsupportedOperationException.class );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( Attributes.class )
     public void testReadAttributesUnknownAttributeThrows() throws IOException {
-        FS.provider().readAttributes( pathDefault(), "basic:duda" );
+        assertThatThrownBy( () -> FS.provider().readAttributes( pathDefault(), "basic:duda" )).isInstanceOf( IllegalArgumentException.class );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
+    @Test
     @Category( Attributes.class )
     public void testSetUnsupportedAttributeThrows() throws IOException {
-        FS.provider().setAttribute( fileTA(), "whoaa:freeze", true );
+        assertThatThrownBy( () -> FS.provider().setAttribute( fileTA(), "whoaa:freeze", true )).isInstanceOf( UnsupportedOperationException.class );
     }
 
     //    * @throws  UnsupportedOperationException
 //    *          if the attribute view is not available
 //    * @throws  IllegalArgumentException
 //    *          if the attribute name is not specified or is not recognized
-    @Test( expected = UnsupportedOperationException.class )
+    @Test
     @Category( Attributes.class )
     public void testGetUnsupportedAttributeThrows() throws IOException {
-        Files.getAttribute( fileTA(), "whoaa:freeze" );
+        assertThatThrownBy( () -> Files.getAttribute( fileTA(), "whoaa:freeze" ) ).isInstanceOf( UnsupportedOperationException.class );
     }
 
     @Test
     @Category( Attributes.class )
-    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+    @SuppressWarnings( "PMD.JUnitTestsShouldIncludeAssert" )
     public void testGetUnsupportedAttributeThrows2() throws IOException {
 
         description.getAttributeDescriptions().forEach(
-                ad -> assertThat( "attribute view " + ad.getName(),
-                                  () -> Files.getAttribute( getFile(), ad.getName() + ":areallystupidname" ),
-                                  throwsException( IllegalArgumentException.class ) ) );
+                ad -> assertThatThrownBy( () -> Files.getAttribute( getFile(), ad.getName() + ":areallystupidname" ) ).
+                        isInstanceOf( IllegalArgumentException.class ) );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( Attributes.class )
     public void testReadAttributesOneUnknownAttributeThrows() throws IOException {
-        FS.provider().readAttributes( pathDefault(), "basic:lastModifiedTime,duda" );
+        assertThatThrownBy( () -> FS.provider().readAttributes( pathDefault(), "basic:lastModifiedTime,duda" ) )
+                .isInstanceOf( IllegalArgumentException.class );
     }
 
     @Test
@@ -307,7 +303,8 @@ public abstract class Tests06Attributes extends Tests05URI {
         final Path file = getFile();
         FS.provider().setAttribute( file, "basic:lastModifiedTime", past );
 
-        assertThat( Files.getLastModifiedTime( file ), isCloseTo( past ) );
+        assertThat( Files.getLastModifiedTime( file ) ).
+                usingComparator( FileTimeComparator.isWithIn( 2000 ) ).isEqualTo( past );
     }
 
     @Test
@@ -317,7 +314,8 @@ public abstract class Tests06Attributes extends Tests05URI {
         final Path file = fileTA();
         Files.setLastModifiedTime( file, past );
 
-        assertThat( Files.getLastModifiedTime( file ), isCloseTo( past ) );
+        assertThat( Files.getLastModifiedTime( file ) ).
+                usingComparator( FileTimeComparator.isWithIn( 2000 ) ).isEqualTo( past );
     }
 
     @Test
@@ -327,55 +325,47 @@ public abstract class Tests06Attributes extends Tests05URI {
         final Path file = getFile();
         FS.provider().getFileAttributeView( file, BasicFileAttributeView.class ).setTimes( past, null, null );
 
-        assertThat( Files.getLastModifiedTime( file ), isCloseTo( past ) );
+        assertThat( Files.getLastModifiedTime( file ) ).
+                usingComparator( FileTimeComparator.isWithIn( 2000 ) ).isEqualTo( past );
     }
 
-    //todo
-//    @Test
-//    @Category( Attributes.class )     public void testSetasdcdsLastModifiedTimeViaView() throws IOException {
-//        final Path file = fileTA();
-//        FileTime past = FileTime.fromMillis( System.currentTimeMillis() - 100000 );
-//        BasicFileAttributeView view = FS.provider().getFileAttributeView( file, BasicFileAttributeView.class );
-//        BasicFileAttributes attis = view.readAttributes();
-//        view.setTimes( past, null, null );
-//
-//        assertThat( attis.lastModifiedTime(), isCloseTo( past ) );
-//    }
-
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( { Attributes.class, Writable.class } )
     public void testSetSizeThrows() throws IOException {
-        FS.provider().setAttribute( fileTA(), "basic:size", 7 );
+        assertThatThrownBy( () -> FS.provider().setAttribute( fileTA(), "basic:size", 7 ) ).
+                isInstanceOf( IllegalArgumentException.class );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( { Attributes.class, Writable.class } )
     public void testSetIsLinkThrows() throws IOException {
-        FS.provider().setAttribute( fileTA(), "basic:isSymbolicLink", true );
+        assertThatThrownBy( () -> FS.provider().setAttribute( fileTA(), "basic:isSymbolicLink", true ) ).
+                isInstanceOf( IllegalArgumentException.class );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( { Attributes.class, Writable.class } )
     public void testSetIsDirectoryThrows() throws IOException {
-        FS.provider().setAttribute( fileTA(), "basic:isDirectory", true );
+        assertThatThrownBy( () -> FS.provider().setAttribute( fileTA(), "basic:isDirectory", true ) ).
+                isInstanceOf( IllegalArgumentException.class );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( { Attributes.class, Writable.class } )
     public void testSetIsRegularFileThrows() throws IOException {
-        FS.provider().setAttribute( fileTA(), "basic:isRegularFile", true );
+        assertThatThrownBy( () -> FS.provider().setAttribute( fileTA(), "basic:isRegularFile", true )).isInstanceOf( IllegalArgumentException.class );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( { Attributes.class, Writable.class } )
     public void testSetFileKeyThrows() throws IOException {
-        FS.provider().setAttribute( fileTA(), "basic:fileKey", true );
+        assertThatThrownBy( () -> FS.provider().setAttribute( fileTA(), "basic:fileKey", true )).isInstanceOf( IllegalArgumentException.class );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     @Category( { Attributes.class, Writable.class } )
     public void testSetIsOtherThrows() throws IOException {
-        FS.provider().setAttribute( fileTA(), "basic:isOther", true );
+        assertThatThrownBy( () -> FS.provider().setAttribute( fileTA(), "basic:isOther", true )).isInstanceOf( IllegalArgumentException.class );
     }
 
     @Test
@@ -385,7 +375,9 @@ public abstract class Tests06Attributes extends Tests05URI {
         final Path file = fileTA();
         FS.provider().setAttribute( file, "basic:creationTime", past );
 
-        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).creationTime(), isCloseTo( past ) );
+        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).creationTime() ).
+                usingComparator( FileTimeComparator::roughlyComparableTo ).isEqualTo( past );
+
     }
 
     @Test
@@ -396,7 +388,7 @@ public abstract class Tests06Attributes extends Tests05URI {
         waitForAttribute();
 
         FS.provider().setAttribute( file, "basic:creationTime", FileTime.fromMillis( System.currentTimeMillis() - 100000 ) );
-        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime(), is( before ) );
+        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime() ).isEqualTo( before );
     }
 
     @Test
@@ -406,7 +398,8 @@ public abstract class Tests06Attributes extends Tests05URI {
         final Path file = fileTA();
         FS.provider().getFileAttributeView( file, BasicFileAttributeView.class ).setTimes( null, null, past );
 
-        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).creationTime(), isCloseTo( past ) );
+        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).creationTime() ).
+                usingComparator( FileTimeComparator::roughlyComparableTo ).isEqualTo( past );
     }
 
     @Test
@@ -416,7 +409,8 @@ public abstract class Tests06Attributes extends Tests05URI {
         final Path file = fileTA();
         FS.provider().setAttribute( file, "basic:lastAccessTime", past );
 
-        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime(), isCloseTo( past ) );
+        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime() ).
+                usingComparator( FileTimeComparator::roughlyComparableTo ).isEqualTo( past );
     }
 
     @Test
@@ -426,32 +420,33 @@ public abstract class Tests06Attributes extends Tests05URI {
         final Path file = fileTA();
         FS.provider().getFileAttributeView( file, BasicFileAttributeView.class ).setTimes( null, past, null );
 
-        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime(), isCloseTo( past ) );
+        assertThat( Files.readAttributes( file, BasicFileAttributes.class ).lastAccessTime() ).
+                usingComparator( FileTimeComparator::roughlyComparableTo ).isEqualTo( past );
     }
 
-    @Test( expected = NoSuchFileException.class )
+    @Test
     @Category( Attributes.class )
     public void testGetAttributeFromNonExistingFile() throws IOException {
-        Files.getLastModifiedTime( getNonExistingPath() );
+        assertThatThrownBy( () -> Files.getLastModifiedTime( getNonExistingPath() )).isInstanceOf( NoSuchFileException.class );
     }
 
-    @Test( expected = NoSuchFileException.class )
+    @Test
     @Category( Attributes.class )
     public void testReadAttributesByStringFromNonExistingFile() throws IOException {
-        Files.readAttributes( getNonExistingPath(), "basic:size" );
+        assertThatThrownBy( () -> Files.readAttributes( getNonExistingPath(), "basic:size" )).isInstanceOf( NoSuchFileException.class );
     }
 
     @Test
     @Category( Attributes.class )
     public void testReadAttributesViewFromNonExistingFile() throws IOException {
-        assertThat( FS.provider().getFileAttributeView( getNonExistingPath(), BasicFileAttributeView.class ), notNullValue() );
+        assertThat( FS.provider().getFileAttributeView( getNonExistingPath(), BasicFileAttributeView.class )).isNotNull();
     }
 
-    @Test( expected = NoSuchFileException.class )
+    @Test
     @Category( Attributes.class )
     public void testReadAttributesViewAndReadFromNonExistingFile() throws IOException {
         BasicFileAttributeView view = FS.provider().getFileAttributeView( getNonExistingPath(), BasicFileAttributeView.class );
-        view.readAttributes();
+        assertThatThrownBy( view::readAttributes ).isInstanceOf( NoSuchFileException.class );
     }
 
     @Test
@@ -476,8 +471,8 @@ public abstract class Tests06Attributes extends Tests05URI {
     @Test
     @Category( { Attributes.class, FileKeyT.class } )
     public void testFileKeyIsId() throws IOException {
-        assertThat( Files.readAttributes( getFile(), "basic:fileKey" ),
-                    is( not( Files.readAttributes( getNonEmptyDir(), "basic:fileKey" ) ) ) ); // nonEmptyDir here is just another existing path
+        assertThat( Files.readAttributes( getFile(), "basic:fileKey" )).
+                    isNotEqualTo( Files.readAttributes( getNonEmptyDir(), "basic:fileKey" ) ); // nonEmptyDir here is just another existing path
     }
 
     @Test
@@ -491,8 +486,7 @@ public abstract class Tests06Attributes extends Tests05URI {
 
         Object key2 = Files.readAttributes( tgt, "basic:fileKey" );
 
-        assertThat( key2,
-                    is( key ));
+        assertThat( key2 ).isEqualTo( key );
     }
 
     @Test

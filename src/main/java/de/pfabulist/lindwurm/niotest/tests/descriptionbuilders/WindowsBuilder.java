@@ -1,7 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
+import de.pfabulist.kleinod.nio.PathLimits;
 import de.pfabulist.kleinod.os.OS;
-import de.pfabulist.kleinod.os.PathLimits;
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 import de.pfabulist.lindwurm.niotest.tests.Tests10PathWithContent;
 import de.pfabulist.lindwurm.niotest.tests.topics.*;

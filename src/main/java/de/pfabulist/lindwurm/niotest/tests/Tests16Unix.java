@@ -1,7 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
+import de.pfabulist.kleinod.nio.PathLimits;
 import de.pfabulist.kleinod.os.OS;
-import de.pfabulist.kleinod.os.PathLimits;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.FileOwnerView;
 import de.pfabulist.lindwurm.niotest.tests.topics.HiddenDotFiles;
@@ -80,7 +80,7 @@ public abstract class Tests16Unix extends Tests13FileStore {
     }
 
     @Test
-    @Category({ Unix.class, HiddenDotFiles.class })
+    @Category( { Unix.class, HiddenDotFiles.class } )
     public void testDotFilesAreHidden() throws IOException {
         assertThat( Files.isHidden( getFile().resolve( ".dot" ) ) ).isTrue();
     }
@@ -89,8 +89,8 @@ public abstract class Tests16Unix extends Tests13FileStore {
     @Category( { Attributes.class, Posix.class, OwnerView.class } )
     public void testOwnerByTwoMethods() throws IOException {
 
-        assertThat( Files.getOwner( pathDefault() )).isEqualTo(
-                    Files.readAttributes( pathDefault(), PosixFileAttributes.class ).owner() );
+        assertThat( Files.getOwner( pathDefault() ) ).isEqualTo(
+                Files.readAttributes( pathDefault(), PosixFileAttributes.class ).owner() );
     }
 
     @Test
@@ -137,6 +137,18 @@ public abstract class Tests16Unix extends Tests13FileStore {
         assertThat( fname.length() ).isLessThan( limits.filenameCount( fname ) );
 
         assertThatThrownBy( () -> Files.write( absT().resolve( fname ), CONTENT ) ).isInstanceOf( FileSystemException.class );
+    }
+
+    @Test
+    @Category( { Unix.class } )
+    public void testDefaultPathIsSmallerThanAbsolute() {
+        assertThat( pathDefault().compareTo( absAB() ) ).isLessThan( 0 );
+    }
+
+    @Test
+    @Category( { Unix.class } )
+    public void testDefaultPathIsSmallerThanRelative() {
+        assertThat( pathDefault().compareTo( relAB() ) ).isLessThan( 0 );
     }
 
     // ?? should be true for osx

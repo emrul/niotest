@@ -79,7 +79,9 @@ public class JimTest extends AllTests {
                 nitpick( "testReadChannelOfDirDoesNotThrow", "who cares" ).
                 nitpick( "testRegisterWatchServiceOfClosedFS", "different exception" ).
                 nitpick( "testAppendAndReadThrows", "IllegalArg instead Unsupported" ).
-                fastOnly().
+                nitpick( "testDefaultPathIsSmallerThanAbsolute", "might be enough to be consistent" ).
+
+//                        fastOnly().
 
                 done();
 

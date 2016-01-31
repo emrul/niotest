@@ -1,15 +1,7 @@
-package de.pfabulist.lindwurm.niotest.tests;
-
-import org.junit.experimental.categories.Category;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-
-import javax.annotation.Nullable;
-
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -33,24 +25,12 @@ import javax.annotation.Nullable;
  * **** END LICENSE BLOCK ****
  */
 
-public class TestAnnotated extends TestWatcher {
-    private @Nullable Category categories;
+@ParametersAreNonnullByDefault
+@FieldsAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+package de.pfabulist.lindwurm.niotest.tests;
 
-    @Override
-    protected void starting( Description description) {
-        categories = description.getAnnotation( Category.class );
-    }
+import de.pfabulist.nonnullbydefault.FieldsAreNonnullByDefault;
+import de.pfabulist.nonnullbydefault.MethodsReturnNonnullByDefault;
 
-    public @Nullable Category getCats() {
-        return categories;
-    }
-
-    /** @return the name field attached to the marker.
-    Null if no annotation, "" if no value field. */
-    public @Nullable Class<?>[] getMarkerValue() {
-        if( categories == null) {
-            return null;
-        }
-        return categories.value();
-    }
-}
+import javax.annotation.ParametersAreNonnullByDefault;

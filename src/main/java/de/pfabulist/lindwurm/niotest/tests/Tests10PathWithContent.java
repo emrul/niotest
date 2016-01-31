@@ -16,6 +16,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.function.Function;
 
+import static de.pfabulist.kleinod.nio.PathIKWID.childGetParent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.fail;
@@ -46,7 +47,7 @@ import static org.junit.Assert.fail;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-@SuppressWarnings( "PMD.ExcessivePublicCount" )
+@SuppressWarnings({ "PMD.ExcessivePublicCount", "PMD.TooManyMethods" })
 public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 
     public static final String MAX_FILENAME_LENGTH = "getMaxFilenameLength";
@@ -250,13 +251,22 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     }
 
     @Test
+    public void testRootIsHiddenDoesNotThrow() {
+        try {
+            FS.provider().isHidden( defaultRoot() );
+        } catch( Exception e ) {
+            fail( "root has no name but call should not fail " + e );
+        }
+    }
+
+    @Test
     @Category( WorkingDirectoryInPlaygroundTree.class )
     public void testToRealPathReturnsAnAbsolutePath() throws Exception {
         assertThat( relativize( getFile() ).toRealPath() ).isAbsolute();
     }
 
     @Test
-    public void testToRealPathOfUnnormalizedResturnsAnNormalizedPath() throws Exception {
+    public void testToRealPathOfUnnormalizedReturnsAnNormalizedPath() throws Exception {
         Path real = unnormalize( getFile() ).toRealPath();
         assertThat( real.normalize() ).isEqualTo( real );
     }
@@ -296,7 +306,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, MaxFilename.class } )
     public void testWriteToMaxFilenameWorks() throws IOException {
         Path loong = absTLongFilename();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ) );
         Files.write( loong, CONTENT );
         assertThat( Files.readAllBytes( loong ) ).isEqualTo( CONTENT );
     }
@@ -305,7 +315,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, MaxPath.class } )
     public void testWriteToMaxPathWorks() throws IOException {
         Path loong = absTLongPath();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ));
         Files.write( loong, CONTENT );
         assertThat( Files.readAllBytes( loong ) ).isEqualTo( CONTENT );
     }
@@ -314,7 +324,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, MaxFilename.class } )
     public void testMaxFilenameWriteTooLongThrows() throws IOException {
         Path loong = absTTooLongFilename();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ));
         assertThatThrownBy( () -> Files.write( loong, CONTENT ) ).isInstanceOf( FileSystemException.class );
     }
 
@@ -322,7 +332,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, MaxPath.class, LimitedPath.class } )
     public void testCreateDirWithTooLongPathThrows() throws IOException {
         Path loong = absTTooLongPath();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ) );
         assertThatThrownBy( () -> Files.write( loong, CONTENT ) ).isInstanceOf( IOException.class );
     }
 
@@ -353,7 +363,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, MaxPath.class, LimitedPath.class } )
     public void testMaxPathDirTooLongThrows() throws IOException {
         Path loong = absTTooLongPath();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ));
         assertThatThrownBy( () -> Files.createDirectory( loong ) ).isInstanceOf( IOException.class );
     }
 
@@ -361,7 +371,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, Copy.class, MaxFilename.class } )
     public void testMaxFilenameCopyWorks() throws IOException {
         Path loong = absTLongFilename();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ) );
         Files.copy( fileTAB(), loong );
         assertThat( loong ).exists();
     }
@@ -370,7 +380,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, Copy.class, MaxPath.class } )
     public void testMaxPathCopyWorks() throws IOException {
         Path loong = absTLongPath();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ) );
         Files.copy( fileTAB(), loong );
         assertThat( loong ).exists();
     }
@@ -386,7 +396,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, Copy.class, MaxPath.class, LimitedPath.class } )
     public void testMaxPathCopyTooLongThrows() throws IOException {
         Path loong = absTTooLongPath();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ) );
         assertThatThrownBy( () -> Files.copy( fileTAB(), loong ) ).isInstanceOf( IOException.class );
     }
 
@@ -402,7 +412,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, HardLink.class, MaxPath.class } )
     public void testMaxPathHardLinkWorks() throws IOException {
         Path loong = absTLongPath();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ) );
         Files.createLink( loong, fileTAB() );
         assertThat( loong ).exists();
     }
@@ -418,7 +428,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { HardLink.class, Writable.class, MaxPath.class, LimitedPath.class } )
     public void testMaxPathHardLinkTooLongThrows() throws IOException {
         Path loong = absTTooLongPath();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ));
         assertThatThrownBy( () -> Files.createLink( loong, fileTAB() ) ).isInstanceOf( FileSystemException.class );
     }
 
@@ -434,7 +444,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Move.class, Writable.class, MaxPath.class } )
     public void testMaxPathMoveWorks() throws IOException {
         Path loong = absTLongPath();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ));
         Files.move( fileTAB(), loong );
         assertThat( loong ).exists();
 
@@ -451,7 +461,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
     @Category( { Writable.class, Move.class, MaxPath.class, LimitedPath.class } )
     public void testMaxPathMoveTooLongThrows() throws IOException {
         Path loong = absTTooLongPath();
-        Files.createDirectories( loong.getParent() );
+        Files.createDirectories( childGetParent( loong ));
         assertThatThrownBy( () -> Files.move( fileTAB(), loong ) ).isInstanceOf( IOException.class );
     }
 
@@ -491,7 +501,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
         // create file where last filename is mixed case
         Files.write( mixed, CONTENT );
 
-        try( DirectoryStream<Path> dir = Files.newDirectoryStream( file.getParent() ) ) {
+        try( DirectoryStream<Path> dir = Files.newDirectoryStream( childGetParent( file ) ) ) {
             for( Path kid : dir ) {
                 assertThat( kid.toString() ).isEqualTo( mixed.toString() );
                 assertThat( kid.toString() ).isNotEqualTo( file.toString() );
@@ -509,7 +519,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
         Files.write( mixCase( file ), CONTENT );
         Files.write( file, CONTENT );
 
-        try( DirectoryStream<Path> dstr = Files.newDirectoryStream( file.getParent() ) ) {
+        try( DirectoryStream<Path> dstr = Files.newDirectoryStream( childGetParent( file ) ) ) {
             Path kid = dstr.iterator().next();
             assertThat( kid.toString().toLowerCase() ).isEqualTo( file.toString().toLowerCase() );
             assertThat( kid.toString() ).isNotEqualTo( file.toString() );
@@ -525,7 +535,7 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
         // create file where last filename is mixed case
         Files.write( mixCase( file ), CONTENT );
 
-        try( DirectoryStream<Path> dir = Files.newDirectoryStream( file.getParent() ) ) {
+        try( DirectoryStream<Path> dir = Files.newDirectoryStream( childGetParent( file) ) ) {
             for( Path kid : dir ) {
                 assertThat( kid.toString() ).isNotEqualTo( mixCase( file ).toString() );
                 assertThat( kid.toString() ).isNotEqualTo( file.toString() );
@@ -602,7 +612,8 @@ public abstract class Tests10PathWithContent extends Tests09WrongProvider {
 //    }
 
     public Path unnormalize( Path path ) {
-        return path.getParent().resolve( ".." ).resolve( path.getParent().getFileName() ).resolve( path.getFileName() );
+        Path parent = childGetParent( path );
+        return parent.resolve( ".." ).resolve( parent.getFileName() ).resolve( "." ).resolve( path.getFileName() );
     }
 
     public Path absTLongFilename() {

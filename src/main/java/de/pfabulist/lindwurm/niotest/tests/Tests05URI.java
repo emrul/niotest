@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 
+import static de.pfabulist.kleinod.nio.PathIKWID.absoluteGetRoot;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
@@ -44,6 +45,7 @@ import static org.junit.Assert.assertThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings({ "PMD.TooManyMethods" }) // todo ?
 public abstract class Tests05URI extends Tests04Copy {
 
     public Tests05URI( FSDescription capa ) {
@@ -160,14 +162,12 @@ public abstract class Tests05URI extends Tests04Copy {
     }
 
     public static URI toURIWithRoot( FileSystem fs ) {
-        URI ret = fs.getPath( "" ).toAbsolutePath().getRoot().toUri();
-        return ret;
+        return absoluteGetRoot( fs.getPath( "" ).toAbsolutePath() ).toUri();
     }
 
     public static URI toURIWithoutPath( FileSystem fs ) {
-        Path root = fs.getPath( "" ).toAbsolutePath().getRoot();
-        URI ret = URI.create( Strings.withoutSuffix( root.toUri().toString(), root.toString().replace( '\\', '/') ) );
-        return ret;
+        Path root = absoluteGetRoot( fs.getPath( "" ).toAbsolutePath());
+        return URI.create( Strings.withoutSuffix( root.toUri().toString(), root.toString().replace( '\\', '/') ) );
     }
 
 }

@@ -50,6 +50,7 @@ public class NullFS extends FileSystem {
 
     @Override
     public void close() throws IOException {
+        // nothing to to do
     }
 
     @Override

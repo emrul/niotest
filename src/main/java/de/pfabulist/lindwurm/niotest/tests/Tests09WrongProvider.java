@@ -1,7 +1,7 @@
 package de.pfabulist.lindwurm.niotest.tests;
 
-import de.pfabulist.unchecked.Filess;
-import de.pfabulist.kleinod.paths.Pathss;
+import de.pfabulist.kleinod.nio.Filess;
+import de.pfabulist.kleinod.nio.Pathss;
 import de.pfabulist.lindwurm.niotest.tests.topics.AsynchronousFileChannel;
 import de.pfabulist.lindwurm.niotest.tests.topics.Copy;
 import de.pfabulist.lindwurm.niotest.tests.topics.Delete;
@@ -23,13 +23,14 @@ import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static de.pfabulist.kleinod.nio.PathIKWID.childGetParent;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -52,6 +53,7 @@ import static org.hamcrest.core.Is.is;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+@SuppressWarnings( { "PMD.TooManyMethods" } ) // todo ??
 public abstract class Tests09WrongProvider extends Tests08ThreadSafe {
 
     public static final String OTHER_PROVIDER_PLAYGROUND = "otherProviderPlayground";
@@ -60,52 +62,46 @@ public abstract class Tests09WrongProvider extends Tests08ThreadSafe {
         super( capa );
     }
 
-//    public static class CapBuilder09 extends CapBuilder07 {
-//        public AllCapabilitiesBuilder otherProviderPlayground( Path path ) {
-//            capa.attributes.put("otherProviderPlayground", path );
-//            return (AllCapabilitiesBuilder) this;
-//        }
-//    }
-
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     public void testNewByteChannelOtherProvider() throws IOException {
-        FS.provider().newByteChannel( otherProviderAbsA(), Collections.<OpenOption> emptySet() );
+        assertThatThrownBy( () -> FS.provider().newByteChannel( otherProviderAbsA(), Collections.<OpenOption> emptySet() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     public void testGetBasicFileAttributeViewProvider() throws IOException {
-        FS.provider().getFileAttributeView( otherProviderAbsA(), BasicFileAttributeView.class );
+        assertThatThrownBy( () -> FS.provider().getFileAttributeView( otherProviderAbsA(), BasicFileAttributeView.class ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( { Writable.class } )
     public void testCreateDirectoryOtherProvider() throws IOException {
-        FS.provider().createDirectory( otherProviderAbsA() );
+        assertThatThrownBy( () -> FS.provider().createDirectory( otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( FileChannelT.class )
     public void testNewFileChannelOtherProvider() throws IOException {
-        FS.provider().newFileChannel( otherProviderAbsA(), Collections.<OpenOption> emptySet() );
+        assertThatThrownBy( () -> FS.provider().newFileChannel( otherProviderAbsA(), Collections.<OpenOption> emptySet() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     public void testCheckAccessOtherProvider() throws IOException {
-        FS.provider().checkAccess( otherProviderAbsA() );
+        assertThatThrownBy( () -> FS.provider().checkAccess( otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( { Copy.class, Writable.class } )
     public void testCopyOtherProviderFrom() throws IOException {
-        FS.provider().copy( otherProviderAbsA(), absTA() );
+        assertThatThrownBy( () -> FS.provider().copy( otherProviderAbsA(), absTA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( { Copy.class, Writable.class } )
     public void testCopyOtherProviderTo() throws IOException {
-        FS.provider().copy( fileTA(), otherProviderAbsA() );
+        assertThatThrownBy( () -> FS.provider().copy( fileTA(), otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
+    // todo
 //    @Test
 //    public void testCopyOtherProviderWithFiles() throws IOException {
 //        Path defaultTarget = PathUtils.getTmpDir("foo").resolve("duh");
@@ -117,16 +113,16 @@ public abstract class Tests09WrongProvider extends Tests08ThreadSafe {
 //        Files.deleteIfExists(defaultTarget);
 //    }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( { Move.class, Writable.class } )
     public void testMoveOtherProviderFrom() throws IOException {
-        FS.provider().move( otherProviderAbsA(), absTA() );
+        assertThatThrownBy( () -> FS.provider().move( otherProviderAbsA(), absTA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( { Copy.class, Writable.class } )
     public void testMoveOtherProviderTo() throws IOException {
-        FS.provider().move( fileTAB(), otherProviderAbsA() );
+        assertThatThrownBy( () -> FS.provider().move( fileTAB(), otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
 //    @Test
@@ -140,103 +136,116 @@ public abstract class Tests09WrongProvider extends Tests08ThreadSafe {
 //        Files.deleteIfExists(defaultTarget);
 //    }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( { HardLink.class, Writable.class } )
     public void testHardLinkOfDifferentProvider() throws IOException {
-        FS.provider().createLink( otherProviderAbsA(), fileTA() );
+        assertThatThrownBy( () -> FS.provider().createLink( otherProviderAbsA(), fileTA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( { Writable.class, SymLink.class } )
-    public void testCreateSymLinkOtherProvider() throws IOException {
-        FS.provider().createSymbolicLink( otherProviderAbsA(), otherProviderAbsA() );
+    public void testCreateSymLinkFromOtherProviderPath() throws IOException {
+        assertThatThrownBy( () -> FS.provider().createSymbolicLink( otherProviderAbsA(), fileTA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
+    @Category( { Writable.class, SymLink.class } )
+    public void testCreateSymLinkToPathFromOtherProvider() throws IOException {
+        assertThatThrownBy( () -> FS.provider().createSymbolicLink( dirTA().resolve( "link" ), otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
+    }
+
+    @Test
     @Category( { Delete.class, Writable.class } )
     public void testDeleteOtherProvider() throws IOException {
-        FS.provider().delete( otherProviderAbsA() );
+        assertThatThrownBy( () -> FS.provider().delete( otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( { Delete.class, Writable.class } )
     public void testDeleteIfExistsOtherProvider() throws IOException {
-        FS.provider().deleteIfExists( otherProviderAbsA() );
+        assertThatThrownBy( () -> FS.provider().deleteIfExists( otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     public void testGetFileStoreOtherProvider() throws IOException {
-        FS.provider().getFileStore( otherProviderAbsA() );
+        assertThatThrownBy( () -> FS.provider().getFileStore( otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     public void testGetPathOtherURI() throws IOException {
-        FS.provider().getPath( otherProviderAbsA().toUri() );
+        assertThatThrownBy( () -> FS.provider().getPath( otherProviderAbsA().toUri() ) ).isInstanceOf( IllegalArgumentException.class );
     }
 
+    // todo
 //    @Test( expected = IllegalArgumentException.class )
 //    public void testGetFileSystemOtherURI() throws IOException {
 //        FS.provider().getFileSystem( capabilities.toURI().apply( otherProviderAbsA().getFileSystem()));
 //    }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     public void testIsHiddenOtherProvider() throws IOException {
-        FS.provider().isHidden( otherProviderAbsA() );
+        assertThatThrownBy( () -> FS.provider().isHidden( otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( { FileChannelT.class, AsynchronousFileChannel.class } )
     public void testNewAsynchronousFileChannelOtherProvider() throws IOException {
-        FS.provider().newAsynchronousFileChannel( otherProviderAbsA(), Collections.<OpenOption> emptySet(), null );
+        assertThatThrownBy( () -> FS.provider().newAsynchronousFileChannel( otherProviderAbsA(), Collections.<OpenOption> emptySet(), null ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-//    @Test( expected = ProviderMismatchException.class )
+    // todo
+//    @Test
 //    public void testNewInputStreamOtherProvider() throws IOException {
 //        assumeThat( FS, not(is( FileSystems.getDefault())));
 //
 //        FS.provider().newInputStream( otherProviderAbsA() );
 //    }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( Writable.class )
     public void testNewOutputStreamOtherProvider() throws IOException {
-        FS.provider().newOutputStream( otherProviderAbsA() );
+        assertThatThrownBy( () -> FS.provider().newOutputStream( otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     public void testNewDirectoryStreamOtherProvider() throws IOException {
-        FS.provider().newDirectoryStream( otherProviderAbsA(), null );
+        assertThatThrownBy( () -> FS.provider().newDirectoryStream( otherProviderAbsA(), null ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     public void testReadAttributesOtherProvider() throws IOException {
-        FS.provider().readAttributes( otherProviderAbsA(), BasicFileAttributes.class );
+        assertThatThrownBy( () -> FS.provider().readAttributes( otherProviderAbsA(), BasicFileAttributes.class ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     public void testReadAttributesStringOtherProvider() throws IOException {
-        FS.provider().readAttributes( otherProviderAbsA(), "*" );
+        assertThatThrownBy( () -> FS.provider().readAttributes( otherProviderAbsA(), "*" ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
+    @Test
     @Category( SymLink.class )
     public void testReadSymLinkOtherProvider() throws IOException {
-        FS.provider().readSymbolicLink( otherProviderAbsA() );
+        assertThatThrownBy( () -> FS.provider().readSymbolicLink( otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
-    @Test( expected = ProviderMismatchException.class )
-    public void testResolveWithPathFromOtherProvider() throws IOException {
-        absD().resolve( otherProviderAbsA() ); //, is(otherProviderAbsA()));
+    @Test
+    public void testResolveWithPathFromOtherProviderThrows() throws IOException {
+        assertThatThrownBy( () -> absD().resolve( otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
     @Test
     public void testIsSameFileOtherProvider() throws IOException {
-        assertThat( FS.provider().isSameFile( otherProviderAbsA(), getFile() ), is( false ) );
+        assertThat( FS.provider().isSameFile( otherProviderAbsA(), getFile() ) ).isFalse();
     }
 
     @Test
     public void testIsSameFileOtherProvider2() throws IOException {
-        assertThat( FS.provider().isSameFile( getFile(), otherProviderAbsA() ), is( false ) );
+        assertThat( FS.provider().isSameFile( getFile(), otherProviderAbsA() ) ).isFalse();
+    }
+
+    @Test
+    public void testResolveSiblingOtherProviderThrows() {
+        assertThatThrownBy( () -> absD().resolveSibling( otherProviderAbsA() ) ).isInstanceOf( ProviderMismatchException.class );
     }
 
     /*
@@ -247,6 +256,7 @@ public abstract class Tests09WrongProvider extends Tests08ThreadSafe {
         return getOtherProviderPlayground().resolve( nameA() );
     }
 
+    @SuppressWarnings( "PMD.ConfusingTernary" ) // != null is positive case
     protected Path getOtherProviderPlayground() {
 
         if( description.otherProviderPlayground == null ) {
@@ -268,7 +278,7 @@ public abstract class Tests09WrongProvider extends Tests08ThreadSafe {
     protected Path otherProviderFileA() {
         Path ret = otherProviderAbsA();
         if( !Files.exists( ret ) ) {
-            Filess.createDirectories( ret.getParent() );
+            Filess.createDirectories( childGetParent( ret ) );
             Filess.write( ret, CONTENT );
         }
         return ret;

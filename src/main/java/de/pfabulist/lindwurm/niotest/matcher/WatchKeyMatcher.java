@@ -1,5 +1,6 @@
 package de.pfabulist.lindwurm.niotest.matcher;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
@@ -9,6 +10,9 @@ import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.util.List;
+
+import static de.pfabulist.kleinod.nio.PathIKWID.childGetParent;
+import static de.pfabulist.kleinod.nio.PathIKWID.namedGetFilename;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
@@ -36,20 +40,22 @@ import java.util.List;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
+//@SuppressFBWarnings( "FindNullDeref" )
 public class WatchKeyMatcher extends TypeSafeMatcher<WatchKey> {
 
     private final Path file;
     private final WatchEvent.Kind<Path> kind;
 
+    @SuppressFBWarnings( value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "findbugs misses the null check before")
     public WatchKeyMatcher( Path file, WatchEvent.Kind<Path> kind ) {
         this.file = file;
         this.kind = kind;
 
-        if ( file == null ) {
+        if( file == null ) {
             throw new NullPointerException( "file is null" );
         }
 
-        if ( file.getParent() == null ) {
+        if( file.getParent() == null ) {
             throw new NullPointerException( "file is root" );
         }
     }
@@ -63,7 +69,7 @@ public class WatchKeyMatcher extends TypeSafeMatcher<WatchKey> {
             return false;
         }
 
-        if( !file.getParent().equals( key.watchable() ) ) {
+        if( !childGetParent( file ).equals( key.watchable() ) ) {
             return false;
         }
 
@@ -75,7 +81,7 @@ public class WatchKeyMatcher extends TypeSafeMatcher<WatchKey> {
 
         WatchEvent<?> event = events.get( 0 );
 
-        if( !file.getFileName().equals( event.context() ) ) {
+        if( !namedGetFilename( file ).equals( event.context() ) ) {
             return false;
         }
 
@@ -93,7 +99,7 @@ public class WatchKeyMatcher extends TypeSafeMatcher<WatchKey> {
             return;
         }
 
-        if( !file.getParent().equals( key.watchable() ) ) {
+        if( !childGetParent( file ).equals( key.watchable() ) ) {
             mismatchDescription.appendText( "key watches the wrong dir. expected: " + file.getParent() + " got: " + key.watchable() );
             return;
         }
