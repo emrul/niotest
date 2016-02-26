@@ -13,12 +13,13 @@ import java.nio.file.attribute.DosFileAttributeView;
 
 import static de.pfabulist.kleinod.nio.PathIKWID.childGetParent;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -189,6 +190,7 @@ public abstract class Tests17Windows extends Tests16Unix {
         assertThat( FS.getPath( "\\foo" ).getRoot() ).isEqualTo( FS.getPath( "\\" ) );
     }
 
+
     @Test
     @Category( { Windows.class, DosAttributesT.class, Writable.class } )
     public void testWindowsIsHidden() throws IOException {
@@ -270,16 +272,16 @@ public abstract class Tests17Windows extends Tests16Unix {
         assertThat( FS.getPath( "\\\\mach\\foo\\ho" ).getNameCount() ).isEqualTo( 1 );
     }
 
-    @Test( expected = InvalidPathException.class )
+    @Test
     @Category( Windows.class )
     public void testWindowsUNCNoHostName() throws IOException {
-        FS.getPath( "\\\\" );
+        assertThatThrownBy( () -> FS.getPath( "\\\\" )).isInstanceOf( InvalidPathException.class );
     }
 
-    @Test( expected = InvalidPathException.class )
+    @Test
     @Category( Windows.class )
     public void testWindowsdUNCNoShareName() throws IOException {
-        FS.getPath( "\\\\localhost" );
+        assertThatThrownBy( () -> FS.getPath( "\\\\localhost" )).isInstanceOf( InvalidPathException.class );
     }
 
     @Test

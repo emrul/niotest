@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -95,7 +95,7 @@ public abstract class Tests16Unix extends Tests13FileStore {
 
     @Test
     @Category( { Principals.class, Posix.class, Unix.class, PermissionChecks.class } )
-    public void testDifferentOwnerCantWrite() throws IOException {
+    public void testDifferentOwnerCanNotWrite() throws IOException {
         UserPrincipal none = FS.getUserPrincipalLookupService().lookupPrincipalByName( "root" );
 
         Files.setOwner( fileTA(), none );

@@ -805,14 +805,14 @@ public abstract class Tests01NoContent extends Tests00Setup {
 
     }
 
-    @Test( expected = NullPointerException.class )
+    @Test
     public void testResolveNull() throws IOException {
-        relAB().resolve( (String) null );
+        assertThatThrownBy( () ->relAB().resolve( (String) null )).isInstanceOf( NullPointerException.class );
     }
 
-    @Test( expected = NullPointerException.class )
+    @Test
     public void testNullPath() {
-        FS.getPath( null );
+        assertThatThrownBy( () ->FS.getPath( null )).isInstanceOf( NullPointerException.class );
     }
 
     /*

@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,6 @@ public abstract class Tests13FileStore extends Tests12DifferentFS {
     @Category( FileStores.class )
     public void testFileStoreIterable() {
         assertThat( FS.getFileStores() ).isNotEmpty();
-//        assertThat( FS.getFileStores(), not( emptyIterable() ) );
     }
 
     @Test( expected = NoSuchFileException.class )

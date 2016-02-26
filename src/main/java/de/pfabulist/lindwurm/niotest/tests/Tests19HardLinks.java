@@ -112,7 +112,7 @@ public abstract class Tests19HardLinks extends Tests18FileChannels {
 //    @Category({ HardLink.class})  public void testHardLinkToOtherThrows() throws IOException {
 //        assumeThat( capabilities.has2ndFileSystem()).isEqualTo(true));
 //
-//        Path orig = getPathOtherPAf();
+//        Path orig = otherFSFileTA();
 //        Path link = getPathPAC();
 //        Files.createLink(link, orig);
 //    }

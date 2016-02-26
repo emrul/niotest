@@ -56,12 +56,14 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-@SuppressWarnings({ "PMD.TooManyMethods" }) // todo
+@SuppressWarnings( { "PMD.TooManyMethods" } ) // todo
 public abstract class Tests11Watcher extends Tests10PathWithContent {
 
     public static final String WATCH_DELAY = "watchDelay";
 
-    private @Nullable WatchService watchService;
+    private
+    @Nullable
+    WatchService watchService;
 
     public Tests11Watcher( FSDescription capa ) {
         super( capa );
@@ -128,7 +130,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         Path toBeMoved = watchedFileA();
         watcherSetup( ENTRY_DELETE );
         Files.move( toBeMoved, absTA() );
-        assertThat( correctKey( watchServicePoll(),  toBeMoved, ENTRY_DELETE ) ).isTrue();
+        assertThat( correctKey( watchServicePoll(), toBeMoved, ENTRY_DELETE ) ).isTrue();
     }
 
     @Test
@@ -163,7 +165,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         watcherSetup( ENTRY_MODIFY );
         Files.readAllBytes( toBeModified );
 
-        assertThat( watchServicePoll()).isNull();
+        assertThat( watchServicePoll() ).isNull();
     }
 
     @Test
@@ -173,7 +175,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         watcherSetup( ENTRY_CREATE );
         Files.write( toBeModified, CONTENT_OTHER );
 
-        assertThat( watchServicePoll()).isNull();
+        assertThat( watchServicePoll() ).isNull();
     }
 
     @Test
@@ -181,7 +183,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
     public void testWatchInOtherDirCatchesNothing() throws Exception {
         watcherSetup( ENTRY_CREATE );
         fileTAB();
-        assertThat( watchServicePoll()).isNull();
+        assertThat( watchServicePoll() ).isNull();
     }
 
     @Test( timeout = 30000 )
@@ -194,7 +196,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
 
         Files.write( watchedAbsB(), CONTENT );
 
-        assertThat( watchServicePoll()).isNull();
+        assertThat( watchServicePoll() ).isNull();
     }
 
     @Test( timeout = 30000 )
@@ -324,7 +326,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         key.cancel();
         watchedFileA();
 
-        assertThat( watchServicePoll()).isNull();
+        assertThat( watchServicePoll() ).isNull();
     }
 
     @Test
@@ -341,6 +343,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
 
     @Test
     @Category( { SlowTest.class, Watchable.class, Writable.class } )
+    @SuppressWarnings( "PMD.EmptyCatchBlock" )
     public void testWatchServiceTakeBlocks() throws Exception {
         Path dir = dirTA();
         final WatchService watcher = dir.getFileSystem().newWatchService();
@@ -361,7 +364,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
 
         Thread.sleep( 1000 );
 
-        assertThat( interrupted.get()).isFalse();
+        assertThat( interrupted.get() ).isFalse();
 
     }
 
@@ -401,7 +404,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         watcher.close();
         waitForWatchService();
 
-        assertThat( key.isValid()).isFalse();
+        assertThat( key.isValid() ).isFalse();
 
     }
 
@@ -412,7 +415,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         final WatchService watcher = dir.getFileSystem().newWatchService();
         dir.register( watcher, ENTRY_CREATE );
 
-        assertThat( watcher.poll()).isNull();
+        assertThat( watcher.poll() ).isNull();
     }
 
     @Test
@@ -430,7 +433,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
 
         WatchKey watchKey = watcher.poll();
         watchKey.pollEvents();
-        assertThat( watchKey.pollEvents()).isEmpty();
+        assertThat( watchKey.pollEvents() ).isEmpty();
     }
 
     @Test
@@ -440,7 +443,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         Files.delete( watchedDir() );
         watchServicePoll();
 
-        assertThat( key.isValid()).isFalse();
+        assertThat( key.isValid() ).isFalse();
     }
 
     @Test
@@ -453,7 +456,7 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         Files.move( dir, absTB() );
         waitForWatchService();
 
-        assertThat( key.isValid()).isFalse();
+        assertThat( key.isValid() ).isFalse();
     }
 
     // todo assertj
@@ -565,7 +568,6 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
         return watchedDir().register( watchService, kinds );
     }
 
-
     public static boolean correctKey( WatchKey key, Path file, WatchEvent.Kind<Path> kind ) {
         if( key == null ) {
             return false;
@@ -580,18 +582,14 @@ public abstract class Tests11Watcher extends Tests10PathWithContent {
 
         List<WatchEvent<?>> events = key.pollEvents();
 
-        if( events.size() != 1 ) {
-            return false;
-        }
+        return events.stream().filter( ev -> {
+                                        if( !namedGetFilename( file ).equals( ev.context() ) ) {
+                                            return false;
+                                        }
 
-        WatchEvent<?> event = events.get( 0 );
-
-        if( !namedGetFilename( file ).equals( event.context() ) ) {
-            return false;
-        }
-
-        return event.kind().equals( kind );
+                                        return ev.kind().equals( kind );
+                                    } ).
+                findAny().isPresent();
     }
-
 
 }

@@ -2,7 +2,6 @@ package de.pfabulist.lindwurm.niotest.tests;
 
 import de.pfabulist.kleinod.nio.FileTimeComparator;
 import de.pfabulist.kleinod.nio.Filess;
-import de.pfabulist.lindwurm.niotest.matcher.IteratorMatcher;
 import de.pfabulist.lindwurm.niotest.tests.topics.AllwaysSync;
 import de.pfabulist.lindwurm.niotest.tests.topics.Attributes;
 import de.pfabulist.lindwurm.niotest.tests.topics.Basic;
@@ -24,7 +23,6 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.NonReadableChannelException;
 import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;

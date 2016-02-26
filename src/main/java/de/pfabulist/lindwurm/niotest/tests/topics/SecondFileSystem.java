@@ -1,20 +1,9 @@
-package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
-
-import de.pfabulist.lindwurm.niotest.tests.FSDescription;
-import de.pfabulist.lindwurm.niotest.tests.topics.NotDefaultFileSystem;
-import de.pfabulist.lindwurm.niotest.tests.topics.Readonly;
-import de.pfabulist.lindwurm.niotest.tests.topics.WorkingDirectoryInPlaygroundTree;
-
-import javax.annotation.Nonnull;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-
-import static de.pfabulist.kleinod.nio.PathIKWID.absoluteGetRoot;
+package de.pfabulist.lindwurm.niotest.tests.topics;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -38,29 +27,4 @@ import static de.pfabulist.kleinod.nio.PathIKWID.absoluteGetRoot;
  * **** END LICENSE BLOCK ****
  */
 
-public class Playground<T> extends DescriptionBuilder<T> {
-
-    public Playground( FSDescription description, T t ) {
-        super( description, t );
-    }
-
-    public T set( Path root ) {
-        descr.removeTopic( Readonly.class );
-        descr.props.put( "playground", root );
-
-        if( !root.isAbsolute() ) {
-            throw new IllegalArgumentException( "root path must be nonull and absolute " + root );
-        }
-
-        if( !absoluteGetRoot( root ).equals( absoluteGetRoot( root.getFileSystem().getPath( "" ).toAbsolutePath() ))) {
-            descr.removeTopic( WorkingDirectoryInPlaygroundTree.class );
-        }
-
-        if( root.getFileSystem().equals( FileSystems.getDefault() ) ) {
-            descr.removeTopic( NotDefaultFileSystem.class );
-        }
-
-        return t;
-    }
-
-}
+public interface SecondFileSystem extends Topic {}

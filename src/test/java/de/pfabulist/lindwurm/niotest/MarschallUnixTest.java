@@ -46,14 +46,24 @@ public class MarschallUnixTest extends AllTests {
     @BeforeClass
     public static void before() throws IOException {
 
-        fsDescription = build().unix().next().
-                playground().set( MemoryFileSystemBuilder.
-                                    newLinux().
-                                    addFileAttributeView( UserDefinedFileAttributeView.class ).
-                                    //addFileAttributeView( FileOwnerAttributeView.class ).
-                                    build( "marschallu" ).
+        fsDescription = build().
+                playgrounds().
+                    std( MemoryFileSystemBuilder.
+                            newLinux().
+                            addFileAttributeView( UserDefinedFileAttributeView.class ).
+                                         build( "marschallu" ).
                                     getPath( "play" ).
                                     toAbsolutePath() ).
+                    noSizeLimit().
+                    sameProviderDifferentFileSystem(
+                            MemoryFileSystemBuilder.
+                            newLinux().
+                            addFileAttributeView( UserDefinedFileAttributeView.class ).
+                                                                     build( "marschall2" ).
+                                    getPath( "play" ).
+                                    toAbsolutePath() ).
+                    next().
+                unix().next().
                 time().noLastAccessTime().next().
                 pathConstraints().
                     noMaxFilenameLength().
@@ -63,7 +73,6 @@ public class MarschallUnixTest extends AllTests {
                 hardlinks().no().
                 symlinks().noDirs().next().
                 watchable().no().
-                fileStores().noLimitedPlayground().next().
                 attributes().remove( "owner", FileOwnerView.class ).next().
                 bugScheme( "RelSymLink" ).
                 bug( "testAppendAndReadThrows" ).
@@ -80,12 +89,15 @@ public class MarschallUnixTest extends AllTests {
                 bug( "testDeleteWhileReading" ).
 
                 bug( "testDeleteWhileWriting" ).
-                bug( "testDifferentOwnerCantWrite" ).
+                bug( "testDifferentOwnerCanNotWrite" ).
                 bug( "testDotFilesAreHidden" ).
                 bug( "testFilesHaveOwners" ).
                 bug( "testOwnerByTwoMethods" ).
                 bug( "testReadChannelOfDirDoesNotThrow" ).
                 bug( "testEveryChannelWriteUpdatesLastModifiedTime" ).
+
+                bug( "testCopyToDifferentFS" ).
+                bug( "testMoveToDifferentFS" ).
 
                 done();
 

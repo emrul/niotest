@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import static org.junit.Assert.fail;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-@SuppressWarnings({ "PMD.ExcessivePublicCount", "PMD.TooManyMethods" })
+ @SuppressWarnings({ "PMD.ExcessivePublicCount", "PMD.TooManyMethods", "PMD.GodClass" })
 public abstract class Tests06Attributes extends Tests05URI {
 
     public Tests06Attributes( FSDescription capa ) {
@@ -63,7 +63,7 @@ public abstract class Tests06Attributes extends Tests05URI {
     }
 
     @Test
-    @Category( { Attributes.class, Writable.class } )
+    @Category( { Attributes.class, Writable.class, CreationTime.class } )
     public void testGetCreationTimeIsRecent() throws IOException {
         FileTime created = Files.readAttributes( fileTA(), BasicFileAttributes.class ).creationTime();
 

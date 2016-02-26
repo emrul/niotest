@@ -154,6 +154,7 @@ public abstract class Tests04Copy extends Tests03File {
 
     @Test
     @Category( { Writable.class, Move.class } )
+    @SuppressWarnings( "PMD.EmptyCatchBlock" ) // thats the point
     public void testFailedMoveLeavesOriginal() throws Exception {
         Files.write( tgt(), CONTENT, standardOpen );
 

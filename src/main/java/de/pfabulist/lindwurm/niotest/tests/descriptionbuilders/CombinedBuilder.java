@@ -10,7 +10,7 @@ import java.nio.file.Path;
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ import java.nio.file.Path;
  * **** END LICENSE BLOCK ****
  */
 
-@SuppressWarnings({ "PMD.ExcessivePublicCount", "PMD.TooManyMethods" })
+@SuppressWarnings( { "PMD.ExcessivePublicCount", "PMD.TooManyMethods" } )
 public class CombinedBuilder {
 
     private final FSDescription descr;
@@ -52,7 +52,7 @@ public class CombinedBuilder {
     }
 
     public CombinedBuilder bug( String name, boolean actually ) {
-        if ( actually ) {
+        if( actually ) {
             descr.addBug( name );
         }
 
@@ -72,20 +72,20 @@ public class CombinedBuilder {
     }
 
     public CombinedBuilder bugScheme( String scheme, boolean val ) {
-        if ( val ) {
+        if( val ) {
             descr.addBugScheme( scheme );
         }
 
         return this;
     }
 
-    public CombinedBuilder bugScheme( String scheme) {
+    public CombinedBuilder bugScheme( String scheme ) {
         descr.addBugScheme( scheme );
         return this;
     }
 
     public CombinedBuilder waitForFile( Path path ) {
-        while ( !Files.exists( path )) {
+        while( !Files.exists( path ) ) {
             try {
                 Thread.sleep( 2000 );
             } catch( InterruptedException e ) {
@@ -107,8 +107,6 @@ public class CombinedBuilder {
         return this;
     }
 
-
-
     // ----
 
     public ClosablePlayground<CombinedBuilder> closable() {
@@ -117,6 +115,14 @@ public class CombinedBuilder {
 
     public Playground<CombinedBuilder> playground() {
         return new Playground<>( descr, this );
+    }
+
+    public Playgrounds<CombinedBuilder> playgrounds() {
+        return new Playgrounds<>( descr, this );
+    }
+
+    public SecondFS<CombinedBuilder> secondFS() {
+        return new SecondFS<>( descr, this );
     }
 
     public ReadonlyPlayground<CombinedBuilder> readonlyPlayground() {
@@ -134,10 +140,10 @@ public class CombinedBuilder {
     public BasicAttributesBuilder<CombinedBuilder> time() {
         return new BasicAttributesBuilder<>( descr, this );
     }
+
     public BasicAttributesBuilder<CombinedBuilder> basicAttributes() {
         return new BasicAttributesBuilder<>( descr, this );
     }
-
 
     public PathConstraints<CombinedBuilder> pathConstraints() {
         return new PathConstraints( descr, this );
@@ -176,9 +182,12 @@ public class CombinedBuilder {
         return new AttributeBuilder<>( descr, this );
     }
 
-    public TestEnvironmentBuilder<CombinedBuilder> testEnv() { return new TestEnvironmentBuilder(descr, this); }
+    public TestEnvironmentBuilder<CombinedBuilder> testEnv() {
+        return new TestEnvironmentBuilder( descr, this );
+    }
 
     public SyncBuilder<CombinedBuilder> sync() {
         return new SyncBuilder( descr, this );
     }
+
 }

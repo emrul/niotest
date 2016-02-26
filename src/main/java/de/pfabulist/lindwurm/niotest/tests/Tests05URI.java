@@ -14,15 +14,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static de.pfabulist.kleinod.nio.PathIKWID.absoluteGetRoot;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * ** BEGIN LICENSE BLOCK *****
  * BSD License (2 clause)
- * Copyright (c) 2006 - 2015, Stephan Pfab
+ * Copyright (c) 2006 - 2016, Stephan Pfab
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +43,7 @@ import static org.junit.Assert.assertThat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **** END LICENSE BLOCK ****
  */
-@SuppressWarnings({ "PMD.TooManyMethods" }) // todo ?
+@SuppressWarnings( { "PMD.TooManyMethods" } ) // todo ?
 public abstract class Tests05URI extends Tests04Copy {
 
     public Tests05URI( FSDescription capa ) {
@@ -54,35 +52,36 @@ public abstract class Tests05URI extends Tests04Copy {
 
     @Test
     public void testFileSystemOfAPathIsTheConstructingOne() {
-        assertEquals( FS, FS.getPath( "" ).getFileSystem() );
+        assertThat( FS ).isEqualTo( FS.getPath( "" ).getFileSystem() );
     }
 
     @Test
     public void testSeparatorIsNotEmpty() {
-        assertThat( FS.getSeparator().isEmpty(), is( false ) );
+        assertThat( FS.getSeparator().isEmpty() ).isFalse();
     }
 
     @Test
     public void testSchemeIsNotEmpty() {
-        assertThat( FS.provider().getScheme().isEmpty(), is( false ) );
+        assertThat( FS.provider().getScheme().isEmpty() ).isFalse();
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     public void testProviderGetFileSystemWithWrongSchemeFails() {
-        FS.provider().getFileSystem(
-                URI.create( FS.provider().getScheme() + "N:" ) );
+        assertThatThrownBy( () -> FS.provider().getFileSystem( URI.create( FS.provider().getScheme() + "N:" ) ) ).
+                isInstanceOf( IllegalArgumentException.class );
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test
     public void testWrongUriAtProviderNewFails() throws IOException {
-        FS.provider().newFileSystem(
+        assertThatThrownBy( () -> FS.provider().newFileSystem(
                 URI.create( FS.provider().getScheme() + "N:" ),
-                Collections.EMPTY_MAP );
+                Collections.EMPTY_MAP ) ).
+                isInstanceOf( IllegalArgumentException.class );
     }
 
     @Test
     public void testToUriOfRelativePathIsTheUriOfTheAbsolute() throws Exception {
-        assertThat( pathDefault().toAbsolutePath().toUri(), is( pathDefault().toUri() ) );
+        assertThat( pathDefault().toAbsolutePath().toUri() ).isEqualTo( pathDefault().toUri() );
     }
 
 //    @Test( expected = IllegalArgumentException.class )
@@ -102,12 +101,13 @@ public abstract class Tests05URI extends Tests04Copy {
     @Test
     public void testGetExistingFileSystem() throws IOException {
         FileSystem fs = FS.provider().getFileSystem( toURI( FS ) );
-        assertThat( fs, is( FS ) );
+        assertThat( fs ).isEqualTo( FS );
     }
 
-    @Test( expected = FileSystemAlreadyExistsException.class )
+    @Test
     public void testNewFileSystemOfExistingThrows() throws IOException {
-        FS.provider().newFileSystem( toURI( FS ), getEnv() );
+        assertThatThrownBy( () -> FS.provider().newFileSystem( toURI( FS ), getEnv() ) ).
+                isInstanceOf( FileSystemAlreadyExistsException.class );
     }
 
     @Test
@@ -115,10 +115,10 @@ public abstract class Tests05URI extends Tests04Copy {
         Path path = getNonExistingPath();
         URI uri = path.toUri();
 
-        assertThat( uri, notNullValue() );
+        assertThat( uri ).isNotNull();
 
         Path back = Paths.get( uri );
-        assertThat( back, is( path ) );
+        assertThat( back ).isEqualTo( path );
     }
 
     @Test
@@ -126,7 +126,7 @@ public abstract class Tests05URI extends Tests04Copy {
         Path path = getEmptyDir().resolve( "z z" );
         URI uri = path.toUri();
 
-        assertThat( uri, notNullValue() );
+        assertThat( uri ).isNotNull();
     }
 
     @Test
@@ -134,10 +134,10 @@ public abstract class Tests05URI extends Tests04Copy {
         Path path = getEmptyDir().resolve( "z z" );
         URI uri = path.toUri();
 
-        assertThat( uri, notNullValue() );
+        assertThat( uri ).isNotNull();
 
         Path back = Paths.get( uri );
-        assertThat( back, is( path ) );
+        assertThat( back ).isEqualTo( path );
     }
 
     // ----------------------------------
@@ -166,8 +166,8 @@ public abstract class Tests05URI extends Tests04Copy {
     }
 
     public static URI toURIWithoutPath( FileSystem fs ) {
-        Path root = absoluteGetRoot( fs.getPath( "" ).toAbsolutePath());
-        return URI.create( Strings.withoutSuffix( root.toUri().toString(), root.toString().replace( '\\', '/') ) );
+        Path root = absoluteGetRoot( fs.getPath( "" ).toAbsolutePath() );
+        return URI.create( Strings.withoutSuffix( root.toUri().toString(), root.toString().replace( '\\', '/' ) ) );
     }
 
 }

@@ -9,6 +9,8 @@ import de.pfabulist.lindwurm.niotest.tests.topics.Posix;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileOwnerAttributeView;
@@ -52,19 +54,31 @@ public class MarschallWindowsTest extends AllTests {
     @BeforeClass
     public static void before() throws IOException {
 
+        FileSystem fs = MemoryFileSystemBuilder.
+                newWindows().
+                addRoot( "D:\\" ).
+                addFileAttributeView( UserDefinedFileAttributeView.class ).
+                //addFileAttributeView( FileOwnerAttributeView.class ).
+                        build( "marschallw" );
+        Path std = fs.getPath( "C:\\play" );
+        Path d = fs.getPath( "D:\\play" );
+
         fsDescription = build().
+                playgrounds().
+                    std( std ).
+                    sameFileSystemDifferentStore( d ).
+                    noClosable().
+                    noSizeLimit().
+                    noSameProviderDifferentFileSystem().
+                    next().
                 windows().noUNC().noRootComponents().next().
-                playground().set( MemoryFileSystemBuilder.
-                                    newWindows().
-                                    addFileAttributeView( UserDefinedFileAttributeView.class ).
-                                    //addFileAttributeView( FileOwnerAttributeView.class ).
-                                    build( "marschallw" ).getPath( "play" ).toAbsolutePath() ).
+                //playground().set( std ).
                 time().noLastAccessTime().next().
                 pathConstraints().
                     noMaxFilenameLength().
                     noMaxPathLength(). // timeout
                     next().
-                closable().no().
+                //closable().no().
                 hardlinks().no().
                 symlinks().noDirs().next().
                 watchable().no().

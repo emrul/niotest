@@ -53,12 +53,19 @@ public class DefaultFSTest extends AllTests {
 
         if( os.isOSX() ) {
             descr = build().
+                    playgrounds().
+                        std( Pathss.getTmpDir( "DefaultFileSystemTest" )).
+                        noSizeLimit().
+                        noClosable().
+                        differentProvider( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
+                        noSameProviderDifferentFileSystem().
+                        noSameFileSystemDifferentStore().
+                        next().
                     unix().hfsPlus().noPermissionChecks().next().
-                    playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
+//                    playground().set( Pathss.getTmpDir( "DefaultFileSystemTest" ) ).
                     fileStores().noLimitedPlayground().notExclusive().next().
-                    closable().no().
+                    //closable().no().
                     watchable().delay( 12000 ).
-                    otherProviderplayground().set( Jimfs.newFileSystem( Configuration.unix().toBuilder().setAttributeViews( "basic", "owner", "posix", "unix" ).build() ).getPath( "/other" ) ).
                     time().noLastAccessTime().noCreationTime().attributeDelay( 2000 ).next().
                     bug( "testEveryChannelWriteUpdatesLastModifiedTime", os.isWindows() ).
                     bug( "testIsSameFileOfDifferentPathNonExistingFileIsNot" ).

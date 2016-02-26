@@ -1,6 +1,10 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.kleinod.nio.PathLimits;
+import de.pfabulist.kleinod.nio.PathSpec;
+import de.pfabulist.kleinod.nio.PathSpecOSX;
+import de.pfabulist.kleinod.nio.PathSpecUnix;
+import de.pfabulist.kleinod.nio.PathSpecWindows;
 import de.pfabulist.kleinod.os.OS;
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 import de.pfabulist.lindwurm.niotest.tests.Tests10PathWithContent;
@@ -51,11 +55,13 @@ public class UnixBuilder<T> extends DescriptionBuilder<T>{
         super( descr, t );
 
         PathLimits pathLimits = new PathLimits( OS.UNIX );
+        PathSpec pathSpec = new PathSpecUnix();
+
         descr.props.put( Tests10PathWithContent.ONE_CHAR_COUNT, pathLimits.getBigChar() );
-        descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, pathLimits.getMaxFilenameLength() );
-        descr.props.put( Tests10PathWithContent.MAX_PATH_LENGTH, pathLimits.getMaxPathLength() );
-        descr.props.put( Tests10PathWithContent.GET_FILENAME_LENGTH, (Function<String,Integer>)pathLimits::filenameCount );
-        descr.props.put( Tests10PathWithContent.GET_PATH_LENGTH, (Function<String,Integer>)pathLimits::pathCount );
+        descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, pathSpec.getMaxFilenameLength() );
+        descr.props.put( Tests10PathWithContent.MAX_PATH_LENGTH, pathSpec.getMaxPathLength() );
+        descr.props.put( Tests10PathWithContent.GET_FILENAME_LENGTH, (Function<String,Integer>)pathSpec::getFilenameLength );
+        descr.props.put( Tests10PathWithContent.GET_PATH_LENGTH, (Function<String,Integer>)pathSpec::getPathLength );
 
 
 //        descr.removeTopic( LimitedPath.class ); theory but linux c limits
@@ -89,11 +95,12 @@ public class UnixBuilder<T> extends DescriptionBuilder<T>{
 
     public UnixBuilder<T> hfsPlus() {
         PathLimits pathLimits = new PathLimits( OS.OSX );
+        PathSpec pathSpec = new PathSpecOSX();
         descr.props.put( Tests10PathWithContent.ONE_CHAR_COUNT, pathLimits.getBigChar() );
-        descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, pathLimits.getMaxFilenameLength() );
-        descr.props.put( Tests10PathWithContent.MAX_PATH_LENGTH, pathLimits.getMaxPathLength() );
-        descr.props.put( Tests10PathWithContent.GET_FILENAME_LENGTH, (Function<String,Integer>)pathLimits::filenameCount );
-        descr.props.put( Tests10PathWithContent.GET_PATH_LENGTH, (Function<String,Integer>)pathLimits::pathCount );
+        descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, pathSpec.getMaxFilenameLength() );
+        descr.props.put( Tests10PathWithContent.MAX_PATH_LENGTH, pathSpec.getMaxPathLength() );
+        descr.props.put( Tests10PathWithContent.GET_FILENAME_LENGTH, (Function<String,Integer>)pathSpec::getFilenameLength );
+        descr.props.put( Tests10PathWithContent.GET_PATH_LENGTH, (Function<String,Integer>)pathSpec::getPathLength );
 
         descr.addTopic( CaseInsensitive.class );
         descr.removeTopic( NotOSX.class );

@@ -1,6 +1,8 @@
 package de.pfabulist.lindwurm.niotest.tests.descriptionbuilders;
 
 import de.pfabulist.kleinod.nio.PathLimits;
+import de.pfabulist.kleinod.nio.PathSpec;
+import de.pfabulist.kleinod.nio.PathSpecWindows;
 import de.pfabulist.kleinod.os.OS;
 import de.pfabulist.lindwurm.niotest.tests.FSDescription;
 import de.pfabulist.lindwurm.niotest.tests.Tests10PathWithContent;
@@ -46,11 +48,12 @@ public class WindowsBuilder<T> extends DescriptionBuilder<T> {
         descr.removeTopic( Unix.class );
 
         PathLimits pathLimits = new PathLimits( OS.WINDOWS );
+        PathSpec pathSpec = new PathSpecWindows();
         descr.props.put( Tests10PathWithContent.ONE_CHAR_COUNT, pathLimits.getBigChar() );
-        descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, pathLimits.getMaxFilenameLength() );
-        descr.props.put( Tests10PathWithContent.MAX_PATH_LENGTH, pathLimits.getMaxPathLength() );
-        descr.props.put( Tests10PathWithContent.GET_FILENAME_LENGTH, (Function<String,Integer>)pathLimits::filenameCount );
-        descr.props.put( Tests10PathWithContent.GET_PATH_LENGTH, (Function<String,Integer>)pathLimits::pathCount );
+        descr.props.put( Tests10PathWithContent.MAX_FILENAME_LENGTH, pathSpec.getMaxFilenameLength() );
+        descr.props.put( Tests10PathWithContent.MAX_PATH_LENGTH, pathSpec.getMaxPathLength() );
+        descr.props.put( Tests10PathWithContent.GET_FILENAME_LENGTH, (Function<String,Integer>)pathSpec::getFilenameLength );
+        descr.props.put( Tests10PathWithContent.GET_PATH_LENGTH, (Function<String,Integer>)pathSpec::getPathLength );
         descr.removeTopic( Posix.class );
         descr.removeTopic( MoveWhile.class );
         descr.removeTopic( NonCasePreserving.class );
@@ -84,4 +87,8 @@ public class WindowsBuilder<T> extends DescriptionBuilder<T> {
         return this;
     }
 
+    public WindowsBuilder<T> noDosAttributes() {
+        descr.removeTopic( DosAttributesT.class );
+        return this;
+    }
 }

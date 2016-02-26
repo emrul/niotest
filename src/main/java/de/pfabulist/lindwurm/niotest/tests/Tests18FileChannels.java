@@ -56,6 +56,7 @@ public abstract class Tests18FileChannels extends Tests17Windows {
 
     @Test
     @Category( FileChannelT.class )
+    @SuppressWarnings( "PMD.EmptyTryBlock" )
     public void testOpenFilChannel() throws IOException {
         try( FileChannel fch = FileChannel.open( fileTA(), Sets.asSet( WRITE, READ ) ) ) {
         } catch( Exception e ) {
